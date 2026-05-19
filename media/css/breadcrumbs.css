@@ -1,0 +1,39 @@
+/*
+ * HC Carlix - breadcrumbs.css
+ * Trilha de navegacao.
+ */
+
+.carlix-breadcrumbs {
+	padding-block: var(--carlix-breadcrumbs-space-top) var(--carlix-breadcrumbs-space-bottom);
+	background: var(--carlix-breadcrumbs-bg);
+	color: var(--carlix-breadcrumbs-text);
+	border-top: 1px solid color-mix(in srgb, var(--carlix-border) 70%, transparent);
+}
+
+.carlix-breadcrumbs a {
+	color: var(--carlix-breadcrumbs-link);
+}
+
+.mod-breadcrumbs,
+.breadcrumb {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--carlix-space-2);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	color: var(--carlix-breadcrumbs-text);
+	font-size: 0.9rem;
+}
+
+@media (max-width: 1023px) {
+	.carlix-breadcrumbs {
+		padding-block: var(--carlix-breadcrumbs-space-top-tablet) var(--carlix-breadcrumbs-space-bottom-tablet);
+	}
+}
+
+@media (max-width: 640px) {
+	.carlix-breadcrumbs {
+		padding-block: var(--carlix-breadcrumbs-space-top-mobile) var(--carlix-breadcrumbs-space-bottom-mobile);
+	}
+}

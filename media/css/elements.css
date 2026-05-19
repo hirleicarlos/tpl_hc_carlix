@@ -1,0 +1,348 @@
+/*
+ * HC Carlix - elements.css
+ * Elementos HTML comuns: tabelas, listas, alertas, badges e paginacao.
+ */
+
+.carlix-content p,
+.item-page p,
+.com-content-article p,
+.mod-custom p {
+	margin-block: 0 1rem;
+}
+
+.lead {
+	color: var(--carlix-muted);
+	font-size: 1.18rem;
+	line-height: 1.55;
+}
+
+.small,
+small {
+	font-size: 0.875em;
+}
+
+.text-muted {
+	color: var(--carlix-muted) !important;
+}
+
+hr {
+	margin-block: var(--carlix-space-6);
+	border: 0;
+	border-top: 1px solid var(--carlix-border);
+}
+
+blockquote {
+	margin: 0 0 var(--carlix-space-4);
+	padding: var(--carlix-space-4);
+	color: var(--carlix-muted);
+	background: #f7f8fa;
+	border-left: 4px solid var(--carlix-primary);
+	border-radius: var(--carlix-radius);
+}
+
+blockquote > :last-child {
+	margin-bottom: 0;
+}
+
+code,
+kbd,
+samp {
+	padding: 0.1rem 0.3rem;
+	color: #8d1f1f;
+	background: #fff1f1;
+	border-radius: 0.25rem;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+	font-size: 0.9em;
+}
+
+pre {
+	overflow: auto;
+	margin: 0 0 var(--carlix-space-4);
+	padding: var(--carlix-space-4);
+	color: #f8f9fa;
+	background: #202427;
+	border-radius: var(--carlix-radius);
+}
+
+pre code {
+	padding: 0;
+	color: inherit;
+	background: transparent;
+}
+
+.carlix-content ul:not(.carlix-nav):not(.mod-list):not(.pagination),
+.carlix-content ol,
+.item-page ul:not(.carlix-nav):not(.mod-list):not(.pagination),
+.item-page ol,
+.com-content-article ul:not(.carlix-nav):not(.mod-list):not(.pagination),
+.com-content-article ol,
+.mod-custom ul:not(.carlix-nav):not(.mod-list):not(.pagination),
+.mod-custom ol {
+	margin-block: 0 var(--carlix-space-4);
+	padding-left: 1.35rem;
+}
+
+.carlix-content li,
+.item-page li,
+.com-content-article li,
+.mod-custom li {
+	margin-block: 0.3rem;
+}
+
+.list-unstyled {
+	padding-left: 0 !important;
+	list-style: none !important;
+}
+
+.list-inline {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--carlix-space-2);
+	padding-left: 0 !important;
+	list-style: none !important;
+}
+
+dl {
+	display: grid;
+	grid-template-columns: max-content minmax(0, 1fr);
+	gap: var(--carlix-space-2) var(--carlix-space-4);
+	margin-block: 0 var(--carlix-space-4);
+}
+
+dt {
+	color: var(--carlix-heading);
+	font-weight: 800;
+}
+
+dd {
+	margin: 0;
+	color: var(--carlix-muted);
+}
+
+.table-responsive {
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+table,
+.table {
+	width: 100%;
+	margin-block: 0 var(--carlix-space-4);
+	color: var(--carlix-text);
+	background: #fff;
+	border-collapse: collapse;
+	border: 1px solid var(--carlix-border);
+	border-radius: var(--carlix-radius);
+	box-shadow: var(--carlix-shadow-sm);
+	overflow: hidden;
+}
+
+caption {
+	padding: var(--carlix-space-2) var(--carlix-space-3);
+	color: var(--carlix-muted);
+	text-align: left;
+	caption-side: bottom;
+}
+
+th,
+td,
+.table th,
+.table td {
+	padding: 0.8rem 0.95rem;
+	border-bottom: 1px solid var(--carlix-border);
+	text-align: left;
+	vertical-align: top;
+}
+
+thead th,
+.table thead th {
+	color: var(--carlix-heading);
+	background: #f7f8fa;
+	font-weight: 800;
+}
+
+tbody tr:last-child > th,
+tbody tr:last-child > td {
+	border-bottom: 0;
+}
+
+.table-striped tbody tr:nth-child(odd) {
+	background: #fafafa;
+}
+
+.table-hover tbody tr:hover {
+	background: color-mix(in srgb, var(--carlix-primary) 6%, #fff);
+}
+
+.table-bordered th,
+.table-bordered td {
+	border: 1px solid var(--carlix-border);
+}
+
+.alert {
+	position: relative;
+	margin-block: 0 var(--carlix-space-4);
+	padding: var(--carlix-space-4);
+	color: #5f3f00;
+	background: #fff8e6;
+	border: 1px solid #f7d889;
+	border-radius: var(--carlix-radius);
+}
+
+.alert > :last-child {
+	margin-bottom: 0;
+}
+
+.alert-heading {
+	margin-block: 0 var(--carlix-space-2);
+	color: inherit;
+}
+
+.alert-success {
+	color: #0f5132;
+	background: #dff3e8;
+	border-color: #badbcc;
+}
+
+.alert-info {
+	color: #055160;
+	background: #dff6fb;
+	border-color: #b6effb;
+}
+
+.alert-warning {
+	color: #664d03;
+	background: #fff3cd;
+	border-color: #ffecb5;
+}
+
+.alert-danger,
+.alert-error {
+	color: #842029;
+	background: #f8d7da;
+	border-color: #f5c2c7;
+}
+
+.badge {
+	display: inline-flex;
+	align-items: center;
+	width: fit-content;
+	padding: 0.25rem 0.5rem;
+	color: #fff;
+	background: var(--carlix-primary);
+	border-radius: 999px;
+	font-size: 0.75rem;
+	font-weight: 800;
+	line-height: 1;
+	vertical-align: baseline;
+}
+
+.badge.bg-secondary,
+.badge-secondary {
+	color: var(--carlix-heading);
+	background: #e8edf1;
+}
+
+.badge.bg-success,
+.badge-success {
+	background: #198754;
+}
+
+.badge.bg-danger,
+.badge-danger {
+	background: #dc3545;
+}
+
+.badge.bg-warning,
+.badge-warning {
+	color: #1f1f1f;
+	background: #ffc107;
+}
+
+.badge.bg-info,
+.badge-info {
+	color: #10242a;
+	background: #0dcaf0;
+}
+
+.pagination,
+.pager,
+.pagenavigation {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--carlix-space-2);
+	margin: var(--carlix-space-6) 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.page-item,
+.pagination li,
+.pager li,
+.pagenavigation li {
+	margin: 0;
+}
+
+.page-link,
+.pagination a,
+.pagination span,
+.pager a,
+.pagenavigation a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 2.35rem;
+	min-height: 2.35rem;
+	padding: 0.45rem 0.75rem;
+	color: var(--carlix-primary);
+	background: #fff;
+	border: 1px solid var(--carlix-border);
+	border-radius: var(--carlix-radius);
+	font-weight: 800;
+	text-decoration: none;
+}
+
+.page-link:hover,
+.page-link:focus-visible,
+.pagination a:hover,
+.pagination a:focus-visible,
+.pager a:hover,
+.pager a:focus-visible,
+.pagenavigation a:hover,
+.pagenavigation a:focus-visible {
+	color: #fff;
+	background: var(--carlix-primary);
+	border-color: var(--carlix-primary);
+	outline: 0;
+}
+
+.page-item.active .page-link,
+.pagination .active a,
+.pagination .active span {
+	color: #fff;
+	background: var(--carlix-primary);
+	border-color: var(--carlix-primary);
+}
+
+.page-item.disabled .page-link,
+.pagination .disabled a,
+.pagination .disabled span {
+	color: var(--carlix-muted);
+	background: #f7f8fa;
+	pointer-events: none;
+}
+
+@media (max-width: 640px) {
+	dl {
+		grid-template-columns: 1fr;
+		gap: var(--carlix-space-1);
+	}
+
+	th,
+	td,
+	.table th,
+	.table td {
+		padding: 0.65rem 0.75rem;
+	}
+}

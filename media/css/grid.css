@@ -1,0 +1,97 @@
+/*
+ * HC Carlix — grid.css
+ * Sistema de colunas próprio (CSS Grid, 12 colunas). Sem Bootstrap.
+ * Usa os tokens do variables.css (carregado antes via joomla.asset.json).
+ *
+ * LINHA      .carlix-row            (container prefixado — só nosso, sem colisão)
+ * COLUNAS    .col-1 .. .col-12      (span N de 12; simples)
+ * RESPONSIVO .col-md-N (>=768)  .col-lg-N (>=1024)
+ * OFFSET     .off-1 .. .off-11     (empurra a coluna para a direita)
+ * AUTO       .carlix-row.cols-N     (N colunas iguais sem marcar cada uma)
+ * GAP        padrão / .carlix-row--nogap / .carlix-row--gap-lg
+ *            tamanho via token --carlix-grid-gap (variables.css) ou
+ *            por linha: style="--carlix-grid-gap: 2rem"
+ *
+ * "col" só vira coluna DENTRO de .carlix-row → um .col-6 solto de um
+ * componente Joomla não é afetado, e não tocamos no .row do Bootstrap.
+ */
+
+.carlix-row {
+	display: grid;
+	grid-template-columns: repeat(12, 1fr);
+	gap: var(--carlix-grid-gap, 1.5rem);
+}
+
+/* Tamanho do espaço entre colunas */
+.carlix-row--nogap  { gap: 0; }
+.carlix-row--gap-lg { gap: calc(var(--carlix-grid-gap, 1.5rem) * 2); }
+
+/* Mobile-first: cada item ocupa a linha inteira por padrão */
+.carlix-row > * { grid-column: 1 / -1; min-width: 0; }
+
+/* Span explícito (vale em qualquer largura) */
+.carlix-row > .col-1  { grid-column: span 1; }
+.carlix-row > .col-2  { grid-column: span 2; }
+.carlix-row > .col-3  { grid-column: span 3; }
+.carlix-row > .col-4  { grid-column: span 4; }
+.carlix-row > .col-5  { grid-column: span 5; }
+.carlix-row > .col-6  { grid-column: span 6; }
+.carlix-row > .col-7  { grid-column: span 7; }
+.carlix-row > .col-8  { grid-column: span 8; }
+.carlix-row > .col-9  { grid-column: span 9; }
+.carlix-row > .col-10 { grid-column: span 10; }
+.carlix-row > .col-11 { grid-column: span 11; }
+.carlix-row > .col-12 { grid-column: span 12; }
+
+/* Offsets — empurram a coluna para a direita */
+.carlix-row > .off-1  { grid-column-start: 2; }
+.carlix-row > .off-2  { grid-column-start: 3; }
+.carlix-row > .off-3  { grid-column-start: 4; }
+.carlix-row > .off-4  { grid-column-start: 5; }
+.carlix-row > .off-5  { grid-column-start: 6; }
+.carlix-row > .off-6  { grid-column-start: 7; }
+.carlix-row > .off-7  { grid-column-start: 8; }
+.carlix-row > .off-8  { grid-column-start: 9; }
+.carlix-row > .off-9  { grid-column-start: 10; }
+.carlix-row > .off-10 { grid-column-start: 11; }
+.carlix-row > .off-11 { grid-column-start: 12; }
+
+/* ===== Breakpoint md (>= 768px) — tablet ===== */
+@media (min-width: 768px) {
+	/* Distribuição automática igual: .carlix-row.cols-N */
+	.carlix-row.cols-1  > * { grid-column: span 12; }
+	.carlix-row.cols-2  > * { grid-column: span 6; }
+	.carlix-row.cols-3  > * { grid-column: span 4; }
+	.carlix-row.cols-4  > * { grid-column: span 3; }
+	.carlix-row.cols-6  > * { grid-column: span 2; }
+	.carlix-row.cols-12 > * { grid-column: span 1; }
+
+	.carlix-row > .col-md-1  { grid-column: span 1; }
+	.carlix-row > .col-md-2  { grid-column: span 2; }
+	.carlix-row > .col-md-3  { grid-column: span 3; }
+	.carlix-row > .col-md-4  { grid-column: span 4; }
+	.carlix-row > .col-md-5  { grid-column: span 5; }
+	.carlix-row > .col-md-6  { grid-column: span 6; }
+	.carlix-row > .col-md-7  { grid-column: span 7; }
+	.carlix-row > .col-md-8  { grid-column: span 8; }
+	.carlix-row > .col-md-9  { grid-column: span 9; }
+	.carlix-row > .col-md-10 { grid-column: span 10; }
+	.carlix-row > .col-md-11 { grid-column: span 11; }
+	.carlix-row > .col-md-12 { grid-column: span 12; }
+}
+
+/* ===== Breakpoint lg (>= 1024px) — desktop ===== */
+@media (min-width: 1024px) {
+	.carlix-row > .col-lg-1  { grid-column: span 1; }
+	.carlix-row > .col-lg-2  { grid-column: span 2; }
+	.carlix-row > .col-lg-3  { grid-column: span 3; }
+	.carlix-row > .col-lg-4  { grid-column: span 4; }
+	.carlix-row > .col-lg-5  { grid-column: span 5; }
+	.carlix-row > .col-lg-6  { grid-column: span 6; }
+	.carlix-row > .col-lg-7  { grid-column: span 7; }
+	.carlix-row > .col-lg-8  { grid-column: span 8; }
+	.carlix-row > .col-lg-9  { grid-column: span 9; }
+	.carlix-row > .col-lg-10 { grid-column: span 10; }
+	.carlix-row > .col-lg-11 { grid-column: span 11; }
+	.carlix-row > .col-lg-12 { grid-column: span 12; }
+}

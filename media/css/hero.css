@@ -1,0 +1,83 @@
+/*
+ * HC Carlix - hero.css
+ * Banner principal e hero.
+ */
+
+.hc-banner-core,
+.hc-banner-core .mod-banners,
+.hc-banner-core .mod-banners__item {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	box-shadow: none;
+}
+
+.hc-hero {
+	position: relative;
+	overflow: hidden;
+	padding: var(--carlix-space-12);
+	color: #fff;
+	background:
+		linear-gradient(90deg, rgba(17, 17, 17, 0.94), rgba(17, 17, 17, 0.65)),
+		url("/images/banners/banner.jpg") center / cover;
+	border-radius: var(--carlix-radius-lg);
+	box-shadow: var(--carlix-shadow-lg);
+}
+
+.hc-kicker {
+	margin: 0 0 var(--carlix-space-3);
+	color: #ffd166;
+	font-weight: 900;
+	text-transform: uppercase;
+	letter-spacing: 0;
+}
+
+.hc-hero h1 {
+	max-width: 48rem;
+	margin: 0;
+	color: #fff;
+	font-family: var(--carlix-font-heading);
+	font-size: 2.75rem;
+	line-height: 1.05;
+}
+
+.hc-hero p {
+	max-width: 44rem;
+	margin-block: var(--carlix-space-4) 0;
+	color: rgba(255, 255, 255, 0.9);
+	font-size: 1.08rem;
+}
+
+.hc-hero-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--carlix-space-3);
+}
+
+@media (max-width: 1023px) {
+	.hc-hero {
+		padding: var(--carlix-space-8);
+	}
+
+	.hc-hero h1 {
+		font-size: 2.15rem;
+	}
+}
+
+@media (max-width: 640px) {
+	.hc-hero,
+	.hc-hero-actions {
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.hc-hero {
+		padding: var(--carlix-space-6);
+		border-radius: var(--carlix-radius);
+	}
+
+	.hc-hero h1 {
+		font-size: 1.85rem;
+	}
+}

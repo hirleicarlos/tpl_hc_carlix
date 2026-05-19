@@ -1,0 +1,272 @@
+/*
+ * HC Carlix - buttons.css
+ * Botoes e links de acao, com variacoes comuns no estilo Bootstrap.
+ */
+
+.btn,
+.hc-button,
+button[type="submit"],
+button[type="button"],
+button[type="reset"],
+input[type="submit"],
+input[type="button"],
+input[type="reset"] {
+	--btn-bg: var(--carlix-primary);
+	--btn-border: var(--btn-bg);
+	--btn-color: #fff;
+	--btn-hover-bg: color-mix(in srgb, var(--btn-bg) 84%, #000);
+	--btn-hover-border: var(--btn-hover-bg);
+	--btn-hover-color: var(--btn-color);
+
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--carlix-space-2);
+	min-height: 2.5rem;
+	padding: 0.55rem 0.95rem;
+	color: var(--btn-color);
+	background: var(--btn-bg);
+	border: 1px solid var(--btn-border);
+	border-radius: var(--carlix-radius);
+	font: inherit;
+	font-weight: 800;
+	line-height: 1.1;
+	text-align: center;
+	text-decoration: none;
+	vertical-align: middle;
+	cursor: pointer;
+	user-select: none;
+	transition:
+		color var(--carlix-transition),
+		background var(--carlix-transition),
+		border-color var(--carlix-transition),
+		box-shadow var(--carlix-transition),
+		transform var(--carlix-transition);
+}
+
+.btn:hover,
+.btn:focus-visible,
+.hc-button:hover,
+.hc-button:focus-visible,
+button[type="submit"]:hover,
+button[type="submit"]:focus-visible,
+button[type="button"]:hover,
+button[type="button"]:focus-visible,
+button[type="reset"]:hover,
+button[type="reset"]:focus-visible,
+input[type="submit"]:hover,
+input[type="submit"]:focus-visible,
+input[type="button"]:hover,
+input[type="button"]:focus-visible,
+input[type="reset"]:hover,
+input[type="reset"]:focus-visible {
+	color: var(--btn-hover-color);
+	background: var(--btn-hover-bg);
+	border-color: var(--btn-hover-border);
+	text-decoration: none;
+	box-shadow: var(--carlix-shadow-sm);
+	outline: 0;
+}
+
+.btn:active,
+.hc-button:active {
+	transform: translateY(1px);
+}
+
+.btn:disabled,
+.btn.disabled,
+.hc-button:disabled,
+.hc-button.disabled,
+button:disabled,
+input[type="submit"]:disabled,
+input[type="button"]:disabled,
+input[type="reset"]:disabled {
+	opacity: 0.58;
+	pointer-events: none;
+}
+
+.btn-primary,
+.hc-button-primary {
+	--btn-bg: var(--carlix-primary);
+	--btn-border: var(--carlix-primary);
+	--btn-color: #fff;
+}
+
+.btn-secondary,
+.hc-button-secondary {
+	--btn-bg: #f1f4f6;
+	--btn-border: var(--carlix-border);
+	--btn-color: var(--carlix-heading);
+	--btn-hover-bg: #e5eaee;
+	--btn-hover-border: #d7dfe5;
+	--btn-hover-color: var(--carlix-heading);
+}
+
+.btn-success {
+	--btn-bg: #198754;
+	--btn-border: #198754;
+	--btn-color: #fff;
+}
+
+.btn-danger {
+	--btn-bg: #dc3545;
+	--btn-border: #dc3545;
+	--btn-color: #fff;
+}
+
+.btn-warning {
+	--btn-bg: #ffc107;
+	--btn-border: #ffc107;
+	--btn-color: #1f1f1f;
+	--btn-hover-color: #1f1f1f;
+}
+
+.btn-info {
+	--btn-bg: #0dcaf0;
+	--btn-border: #0dcaf0;
+	--btn-color: #10242a;
+	--btn-hover-color: #10242a;
+}
+
+.btn-light {
+	--btn-bg: #f8f9fa;
+	--btn-border: #e5e7eb;
+	--btn-color: var(--carlix-heading);
+	--btn-hover-color: var(--carlix-heading);
+}
+
+.btn-dark {
+	--btn-bg: #212529;
+	--btn-border: #212529;
+	--btn-color: #fff;
+}
+
+.btn-outline-primary,
+.btn-outline-secondary,
+.btn-outline-success,
+.btn-outline-danger,
+.btn-outline-warning,
+.btn-outline-info,
+.btn-outline-light,
+.btn-outline-dark {
+	background: transparent;
+}
+
+.btn-outline-primary {
+	--btn-bg: transparent;
+	--btn-border: var(--carlix-primary);
+	--btn-color: var(--carlix-primary);
+	--btn-hover-bg: var(--carlix-primary);
+	--btn-hover-border: var(--carlix-primary);
+	--btn-hover-color: #fff;
+}
+
+.btn-outline-secondary {
+	--btn-bg: transparent;
+	--btn-border: #6c757d;
+	--btn-color: #5f6871;
+	--btn-hover-bg: #6c757d;
+	--btn-hover-border: #6c757d;
+	--btn-hover-color: #fff;
+}
+
+.btn-outline-success {
+	--btn-bg: transparent;
+	--btn-border: #198754;
+	--btn-color: #198754;
+	--btn-hover-bg: #198754;
+	--btn-hover-border: #198754;
+	--btn-hover-color: #fff;
+}
+
+.btn-outline-danger {
+	--btn-bg: transparent;
+	--btn-border: #dc3545;
+	--btn-color: #dc3545;
+	--btn-hover-bg: #dc3545;
+	--btn-hover-border: #dc3545;
+	--btn-hover-color: #fff;
+}
+
+.btn-outline-warning {
+	--btn-bg: transparent;
+	--btn-border: #ffc107;
+	--btn-color: #8a6500;
+	--btn-hover-bg: #ffc107;
+	--btn-hover-border: #ffc107;
+	--btn-hover-color: #1f1f1f;
+}
+
+.btn-outline-info {
+	--btn-bg: transparent;
+	--btn-border: #0dcaf0;
+	--btn-color: #087990;
+	--btn-hover-bg: #0dcaf0;
+	--btn-hover-border: #0dcaf0;
+	--btn-hover-color: #10242a;
+}
+
+.btn-outline-light {
+	--btn-bg: transparent;
+	--btn-border: #f8f9fa;
+	--btn-color: #f8f9fa;
+	--btn-hover-bg: #f8f9fa;
+	--btn-hover-border: #f8f9fa;
+	--btn-hover-color: #1f1f1f;
+}
+
+.btn-outline-dark {
+	--btn-bg: transparent;
+	--btn-border: #212529;
+	--btn-color: #212529;
+	--btn-hover-bg: #212529;
+	--btn-hover-border: #212529;
+	--btn-hover-color: #fff;
+}
+
+.btn-link,
+.hc-link {
+	--btn-bg: transparent;
+	--btn-border: transparent;
+	--btn-color: var(--carlix-primary);
+	--btn-hover-bg: transparent;
+	--btn-hover-border: transparent;
+	--btn-hover-color: var(--carlix-primary-hover);
+
+	min-height: 0;
+	padding-inline: 0;
+	text-decoration: underline;
+	text-decoration-thickness: 2px;
+	text-underline-offset: 0.22em;
+	box-shadow: none;
+}
+
+.btn-sm {
+	min-height: 2rem;
+	padding: 0.35rem 0.65rem;
+	font-size: 0.875rem;
+}
+
+.btn-lg {
+	min-height: 3rem;
+	padding: 0.75rem 1.25rem;
+	font-size: 1.08rem;
+}
+
+.btn-block,
+.d-grid > .btn,
+.d-grid > .hc-button {
+	width: 100%;
+}
+
+.btn-group,
+.btn-toolbar {
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--carlix-space-2);
+}
+
+.btn-group > .btn {
+	margin: 0;
+}

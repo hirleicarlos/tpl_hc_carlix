@@ -1,0 +1,386 @@
+/*
+ * HC Carlix - template.css
+ * Base geral do template: reset leve, estrutura e secoes principais.
+ *
+ * Nao colocar aqui componentes especificos como menu, breadcrumb,
+ * botoes, formularios, hero, artigos ou modulos. Eles ficam em arquivos
+ * CSS proprios para facilitar manutencao e overrides.
+ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+	overflow-x: clip;
+	-webkit-text-size-adjust: 100%;
+	text-size-adjust: 100%;
+}
+
+body {
+	margin: 0;
+	background: var(--carlix-bg);
+	color: var(--carlix-text);
+	font-family: var(--carlix-font-body);
+	font-size: var(--carlix-font-size);
+	line-height: var(--carlix-line-height);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+img, picture, video, svg {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+
+a { color: inherit; }
+
+.carlix-site {
+	background:
+		linear-gradient(180deg, #fff 0, #f7f8fa 38rem, #fff 38rem),
+		var(--carlix-bg);
+}
+
+.carlix-session {
+	display: block;
+	width: 100%;
+}
+
+.carlix-container {
+	width: 100%;
+	max-width: var(--carlix-container);
+	margin-inline: auto;
+	padding-inline: var(--carlix-space-4);
+}
+
+/* Largura do container por secao (override) com fallback na global.
+   "full" vira "none" (max-width: none = largura total, com padding). */
+.carlix-topbar      > .carlix-container { max-width: var(--carlix-topbar-container,      var(--carlix-container)); }
+.carlix-header      > .carlix-container { max-width: var(--carlix-header-container,      var(--carlix-container)); }
+.carlix-banner      > .carlix-container { max-width: var(--carlix-banner-container,      var(--carlix-container)); }
+.carlix-breadcrumbs > .carlix-container { max-width: var(--carlix-breadcrumbs-container, var(--carlix-container)); }
+.carlix-top         > .carlix-container { max-width: var(--carlix-top-container,         var(--carlix-container)); }
+.carlix-main        > .carlix-container { max-width: var(--carlix-main-container,        var(--carlix-container)); }
+.carlix-bottom      > .carlix-container { max-width: var(--carlix-bottom-container,      var(--carlix-container)); }
+.carlix-footer      > .carlix-container { max-width: var(--carlix-footer-container,      var(--carlix-container)); }
+.carlix-credits     > .carlix-container { max-width: var(--carlix-credits-container,     var(--carlix-container)); }
+
+.carlix-header,
+.carlix-top,
+.carlix-main,
+.carlix-bottom,
+.carlix-footer,
+.carlix-credits {
+	border-top: 1px solid color-mix(in srgb, var(--carlix-border) 70%, transparent);
+}
+
+.carlix-topbar {
+	padding-block: var(--carlix-topbar-space-top) var(--carlix-topbar-space-bottom);
+	background: var(--carlix-topbar-bg);
+	color: var(--carlix-topbar-text);
+	font-size: 0.875rem;
+}
+
+.carlix-header {
+	padding-block: var(--carlix-header-space-top) var(--carlix-header-space-bottom);
+	background: var(--carlix-header-bg);
+	color: var(--carlix-header-text);
+	backdrop-filter: blur(14px);
+	box-shadow: var(--carlix-shadow-sm);
+}
+
+/* Comportamento do cabecalho (parametro) */
+.carlix-header--static { position: static; }
+.carlix-header--sticky {
+	position: sticky;
+	top: 0;
+	z-index: 50;
+}
+.carlix-header--fixed {
+	position: fixed;
+	top: 0;
+	inset-inline: 0;
+	z-index: 50;
+}
+
+.carlix-header--floating {
+	position: sticky;
+	top: var(--carlix-space-3);
+	z-index: 50;
+	background: transparent;
+	box-shadow: none;
+	border-top: 0;
+}
+
+.carlix-header--floating > .carlix-container {
+	background: var(--carlix-header-bg);
+	border: 1px solid color-mix(in srgb, var(--carlix-border) 80%, transparent);
+	border-radius: var(--carlix-radius-lg);
+	box-shadow: var(--carlix-shadow);
+	transition:
+		box-shadow var(--carlix-transition),
+		transform var(--carlix-transition);
+}
+
+body.carlix-header-scrolled .carlix-header--floating > .carlix-container {
+	box-shadow: var(--carlix-shadow-lg);
+	transform: translateY(0.15rem);
+}
+
+/* compensa o header fixo (JS seta --carlix-header-h) */
+body.carlix-header-is-fixed { padding-top: var(--carlix-header-h, 0px); }
+
+.carlix-header .carlix-row {
+	align-items: center;
+}
+
+.carlix-logo-slot {
+	display: flex;
+	align-items: center;
+}
+
+.carlix-logo-slot--start { justify-content: flex-start; }
+.carlix-logo-slot--center { justify-content: center; }
+.carlix-logo-slot--end { justify-content: flex-end; }
+
+.carlix-brand,
+.hc-logo-showcase {
+	display: inline-flex;
+	align-items: center;
+	max-width: 13rem;
+	text-decoration: none;
+}
+
+.carlix-brand img,
+.hc-logo-showcase img {
+	max-height: 4rem;
+	object-fit: contain;
+}
+
+.carlix-menu {
+	display: flex;
+	justify-content: flex-start;
+}
+.carlix-menu--start  { justify-content: flex-start; }
+.carlix-menu--center { justify-content: center; }
+.carlix-menu--end    { justify-content: flex-end; }
+
+/* Botao voltar ao topo (parametro) */
+.carlix-to-top {
+	position: fixed;
+	right: 1.25rem;
+	bottom: 1.25rem;
+	z-index: 60;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.75rem;
+	height: 2.75rem;
+	padding: 0;
+	color: #fff;
+	background: var(--carlix-primary);
+	border: 0;
+	border-radius: 999px;
+	box-shadow: var(--carlix-shadow-lg);
+	font-size: 1.25rem;
+	line-height: 1;
+	cursor: pointer;
+	opacity: 0;
+	transform: translateY(0.75rem);
+	transition: opacity var(--carlix-transition), transform var(--carlix-transition), background var(--carlix-transition);
+}
+.carlix-to-top[hidden] { display: none; }
+.carlix-to-top.is-visible { opacity: 1; transform: translateY(0); }
+.carlix-to-top:hover,
+.carlix-to-top:focus-visible { background: var(--carlix-primary-hover); outline: 0; }
+@media print { .carlix-to-top { display: none !important; } }
+
+.carlix-search {
+	min-width: 0;
+}
+
+.carlix-banner {
+	padding-block: var(--carlix-banner-space-top) var(--carlix-banner-space-bottom);
+	background: var(--carlix-banner-bg);
+	color: var(--carlix-banner-text);
+}
+
+.carlix-top {
+	padding-block: var(--carlix-top-space-top) var(--carlix-top-space-bottom);
+	background: var(--carlix-top-bg);
+	color: var(--carlix-top-text);
+}
+
+.carlix-bottom {
+	padding-block: var(--carlix-bottom-space-top) var(--carlix-bottom-space-bottom);
+	background: var(--carlix-bottom-bg);
+	color: var(--carlix-bottom-text);
+}
+
+.carlix-top .carlix-row,
+.carlix-bottom .carlix-row,
+.carlix-footer .carlix-row {
+	align-items: stretch;
+}
+
+.carlix-top .carlix-row > div,
+.carlix-bottom .carlix-row > div,
+.carlix-sidebar {
+	display: flex;
+	flex-direction: column;
+	gap: var(--carlix-space-4);
+}
+
+.carlix-top .carlix-row > div {
+	height: 100%;
+}
+
+.carlix-top .carlix-row > div > * {
+	flex: 1 1 auto;
+	min-height: 100%;
+}
+
+.carlix-main {
+	padding-block: var(--carlix-main-space-top) var(--carlix-main-space-bottom);
+	background: var(--carlix-main-bg);
+	color: var(--carlix-main-text);
+}
+
+.carlix-main > .carlix-container > .carlix-row {
+	align-items: start;
+}
+
+.carlix-content {
+	min-width: 0;
+}
+
+.carlix-main-top {
+	margin-block: 0 var(--carlix-space-6);
+}
+
+.carlix-main-bottom {
+	margin-block: var(--carlix-space-6) 0;
+}
+
+.carlix-footer {
+	padding-block: var(--carlix-footer-space-top) var(--carlix-footer-space-bottom);
+	color: var(--carlix-footer-text);
+	background: var(--carlix-footer-bg);
+}
+
+.carlix-credits {
+	padding-block: var(--carlix-credits-space-top) var(--carlix-credits-space-bottom);
+	color: var(--carlix-credits-text);
+	background: var(--carlix-credits-bg);
+	font-size: 0.875rem;
+}
+
+.carlix-topbar a { color: var(--carlix-topbar-link); }
+.carlix-header a { color: var(--carlix-header-link); }
+.carlix-banner a { color: var(--carlix-banner-link); }
+.carlix-top a { color: var(--carlix-top-link); }
+.carlix-main a { color: var(--carlix-main-link); }
+.carlix-bottom a { color: var(--carlix-bottom-link); }
+.carlix-footer a { color: var(--carlix-footer-link); }
+.carlix-credits a { color: var(--carlix-credits-link); }
+
+.carlix-skip-link {
+	position: absolute;
+	left: -9999px;
+	top: 0;
+	z-index: 9999;
+	padding: var(--carlix-space-3) var(--carlix-space-4);
+	background: var(--carlix-primary);
+	color: #fff;
+	text-decoration: none;
+	border-radius: var(--carlix-radius);
+}
+
+.carlix-skip-link:focus {
+	left: var(--carlix-space-4);
+	top: var(--carlix-space-4);
+}
+
+@media (max-width: 1023px) {
+	.carlix-topbar {
+		padding-block: var(--carlix-topbar-space-top-tablet) var(--carlix-topbar-space-bottom-tablet);
+	}
+
+	.carlix-header {
+		padding-block: var(--carlix-header-space-top-tablet) var(--carlix-header-space-bottom-tablet);
+	}
+
+	.carlix-banner {
+		padding-block: var(--carlix-banner-space-top-tablet) var(--carlix-banner-space-bottom-tablet);
+	}
+
+	.carlix-top {
+		padding-block: var(--carlix-top-space-top-tablet) var(--carlix-top-space-bottom-tablet);
+	}
+
+	.carlix-main {
+		padding-block: var(--carlix-main-space-top-tablet) var(--carlix-main-space-bottom-tablet);
+	}
+
+	.carlix-bottom {
+		padding-block: var(--carlix-bottom-space-top-tablet) var(--carlix-bottom-space-bottom-tablet);
+	}
+
+	.carlix-footer {
+		padding-block: var(--carlix-footer-space-top-tablet) var(--carlix-footer-space-bottom-tablet);
+	}
+
+	.carlix-credits {
+		padding-block: var(--carlix-credits-space-top-tablet) var(--carlix-credits-space-bottom-tablet);
+	}
+
+	.carlix-search {
+		justify-content: flex-start;
+	}
+}
+
+@media (max-width: 640px) {
+	.carlix-container {
+		padding-inline: var(--carlix-space-3);
+	}
+
+	.carlix-header--floating {
+		top: 0;
+	}
+
+	.carlix-header--floating > .carlix-container {
+		border-inline: 0;
+		border-radius: 0;
+	}
+
+	.carlix-topbar {
+		padding-block: var(--carlix-topbar-space-top-mobile) var(--carlix-topbar-space-bottom-mobile);
+	}
+
+	.carlix-header {
+		padding-block: var(--carlix-header-space-top-mobile) var(--carlix-header-space-bottom-mobile);
+	}
+
+	.carlix-banner {
+		padding-block: var(--carlix-banner-space-top-mobile) var(--carlix-banner-space-bottom-mobile);
+	}
+
+	.carlix-top {
+		padding-block: var(--carlix-top-space-top-mobile) var(--carlix-top-space-bottom-mobile);
+	}
+
+	.carlix-main {
+		padding-block: var(--carlix-main-space-top-mobile) var(--carlix-main-space-bottom-mobile);
+	}
+
+	.carlix-bottom {
+		padding-block: var(--carlix-bottom-space-top-mobile) var(--carlix-bottom-space-bottom-mobile);
+	}
+
+	.carlix-footer {
+		padding-block: var(--carlix-footer-space-top-mobile) var(--carlix-footer-space-bottom-mobile);
+	}
+
+	.carlix-credits {
+		padding-block: var(--carlix-credits-space-top-mobile) var(--carlix-credits-space-bottom-mobile);
+	}
+}

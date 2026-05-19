@@ -1,0 +1,116 @@
+{
+	"$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
+	"name": "hc_carlix",
+	"version": "1.0.0",
+	"description": "HC Carlix Template Web Assets",
+	"license": "GPL-2.0-or-later",
+	"assets": [
+		{
+			"name": "template.hc_carlix.variables",
+			"type": "style",
+			"uri": "variables.css",
+			"version": "1.0.0"
+		},
+		{
+			"name": "template.hc_carlix.grid",
+			"type": "style",
+			"uri": "grid.css",
+			"version": "1.0.0",
+			"dependencies": [
+				"template.hc_carlix.variables"
+			]
+		},
+		{
+			"name": "template.hc_carlix.menu",
+			"type": "style",
+			"uri": "menu.css",
+			"version": "1.0.11",
+			"dependencies": [
+				"template.hc_carlix.variables"
+			]
+		},
+		{
+			"name": "template.hc_carlix.template",
+			"type": "style",
+			"uri": "template.css",
+			"version": "1.0.11",
+			"dependencies": [
+				"template.hc_carlix.grid"
+			]
+		},
+		{
+			"name": "template.hc_carlix.utilities",
+			"type": "style",
+			"uri": "utilities.css",
+			"version": "1.0.0",
+			"dependencies": [
+				"template.hc_carlix.template"
+			]
+		},
+		{
+			"name": "template.hc_carlix.buttons",
+			"type": "style",
+			"uri": "buttons.css",
+			"version": "1.0.1",
+			"dependencies": [
+				"template.hc_carlix.template"
+			]
+		},
+		{
+			"name": "template.hc_carlix.forms",
+			"type": "style",
+			"uri": "forms.css",
+			"version": "1.0.1",
+			"dependencies": [
+				"template.hc_carlix.buttons"
+			]
+		},
+		{
+			"name": "template.hc_carlix.elements",
+			"type": "style",
+			"uri": "elements.css",
+			"version": "1.0.0",
+			"dependencies": [
+				"template.hc_carlix.forms"
+			]
+		},
+		{
+			"name": "template.hc_carlix.breadcrumbs",
+			"type": "style",
+			"uri": "breadcrumbs.css",
+			"version": "1.0.1",
+			"dependencies": [
+				"template.hc_carlix.template"
+			]
+		},
+		{
+			"name": "template.hc_carlix.hero",
+			"type": "style",
+			"uri": "hero.css",
+			"version": "1.0.0",
+			"dependencies": [
+				"template.hc_carlix.buttons"
+			]
+		},
+		{
+			"name": "template.hc_carlix.modules",
+			"type": "style",
+			"uri": "modules.css",
+			"version": "1.0.2",
+			"dependencies": [
+				"template.hc_carlix.elements",
+				"template.hc_carlix.hero",
+				"template.hc_carlix.breadcrumbs"
+			]
+		},
+		{
+			"name": "template.hc_carlix.template",
+			"type": "script",
+			"uri": "template.js",
+			"version": "1.0.3",
+			"attributes": {
+				"defer": true
+			}
+		}
+	]
+}

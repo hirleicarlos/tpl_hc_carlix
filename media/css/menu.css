@@ -1,0 +1,521 @@
+/*
+ * HC Carlix - menu.css
+ * Estilos gerais para menus Joomla renderizados pelo override de mod_menu.
+ *
+ * Padrao do template: menu vertical em bloco.
+ * Header (.carlix-menu): menu horizontal com dropdown.
+ */
+
+/* ---- Base ---- */
+.carlix-nav,
+.carlix-nav .mod-menu__sub {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.carlix-nav .mod-menu__toggle-sub {
+	display: none;
+}
+
+.carlix-nav {
+	display: grid;
+	gap: var(--carlix-space-1);
+	width: 100%;
+}
+
+.carlix-nav .nav-item {
+	position: relative;
+	min-width: 0;
+}
+
+.carlix-nav a,
+.carlix-nav .mod-menu__heading,
+.carlix-nav .mod-menu__separator {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--carlix-space-3);
+	width: 100%;
+	min-height: 2.5rem;
+	padding: 0.55rem 0.75rem;
+	color: var(--carlix-text);
+	font-weight: 700;
+	line-height: 1.25;
+	text-decoration: none;
+	border: 1px solid transparent;
+	border-radius: var(--carlix-radius);
+	transition:
+		color var(--carlix-transition),
+		background var(--carlix-transition),
+		border-color var(--carlix-transition);
+}
+
+.carlix-nav a:hover,
+.carlix-nav a:focus-visible,
+.carlix-nav .mod-menu__heading:hover,
+.carlix-nav .mod-menu__heading:focus-visible,
+.carlix-nav .mod-menu__separator:hover,
+.carlix-nav .mod-menu__separator:focus-visible {
+	color: var(--carlix-primary);
+	background: color-mix(in srgb, var(--carlix-primary) 8%, #fff);
+	border-color: color-mix(in srgb, var(--carlix-primary) 18%, var(--carlix-border));
+	outline: 0;
+}
+
+.carlix-nav .current > a,
+.carlix-nav .active > a,
+.carlix-nav a[aria-current="page"] {
+	color: var(--carlix-primary);
+	background: color-mix(in srgb, var(--carlix-primary) 10%, #fff);
+	border-color: color-mix(in srgb, var(--carlix-primary) 24%, var(--carlix-border));
+}
+
+.carlix-nav .has-submenu > a::after,
+.carlix-nav .has-submenu > .mod-menu__heading::after,
+.carlix-nav .has-submenu > .mod-menu__separator::after {
+	content: "";
+	flex: 0 0 auto;
+	width: 0.45rem;
+	height: 0.45rem;
+	border-right: 2px solid currentColor;
+	border-bottom: 2px solid currentColor;
+	opacity: 0.65;
+	transform: rotate(45deg) translateY(-0.12rem);
+}
+
+/* ---- Vertical: padrao para mod_menu em qualquer posicao fora do header ---- */
+.carlix-nav-sub {
+	display: grid;
+	gap: var(--carlix-space-1);
+	margin: var(--carlix-space-1) 0 var(--carlix-space-2) var(--carlix-space-3);
+	padding-left: var(--carlix-space-3);
+	border-left: 2px solid color-mix(in srgb, var(--carlix-primary) 16%, var(--carlix-border));
+}
+
+.carlix-nav-sub a,
+.carlix-nav-sub .mod-menu__heading,
+.carlix-nav-sub .mod-menu__separator {
+	min-height: 2.15rem;
+	padding: 0.45rem 0.65rem;
+	font-size: 0.95rem;
+	font-weight: 650;
+}
+
+.carlix-nav-sub .carlix-nav-sub {
+	margin-left: var(--carlix-space-2);
+	border-left-style: dashed;
+}
+
+/* ---- Horizontal: header principal ---- */
+.carlix-mobile-nav {
+	display: none;
+}
+
+.carlix-menu .carlix-nav {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: flex-start;
+	gap: var(--carlix-space-1);
+}
+
+/* Alinhamento do menu (parametro) */
+.carlix-menu--start  .carlix-nav { justify-content: flex-start; }
+.carlix-menu--center .carlix-nav { justify-content: center; }
+.carlix-menu--end    .carlix-nav { justify-content: flex-end; }
+
+.carlix-menu .carlix-nav > .nav-item > a,
+.carlix-menu .carlix-nav > .nav-item > .mod-menu__heading,
+.carlix-menu .carlix-nav > .nav-item > .mod-menu__separator {
+	width: auto;
+	min-height: 2.35rem;
+	padding: 0.55rem 0.75rem;
+	white-space: nowrap;
+}
+
+.carlix-menu .carlix-nav > .active > a,
+.carlix-menu .carlix-nav > .current > a,
+.carlix-menu .carlix-nav > .nav-item > a[aria-current="page"] {
+	background: color-mix(in srgb, var(--carlix-primary) 9%, #fff);
+}
+
+.carlix-menu .carlix-nav-sub {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	z-index: 80;
+	display: grid;
+	gap: 0;
+	width: max-content;
+	min-width: var(--carlix-submenu-min-width, 18rem);
+	max-width: min(26rem, calc(100vw - 2rem));
+	margin: 0;
+	padding: var(--carlix-space-2);
+	background: #fff;
+	border: 1px solid var(--carlix-border);
+	border-radius: var(--carlix-radius);
+	box-shadow: var(--carlix-shadow-lg);
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(0.25rem);
+	pointer-events: none;
+	transition:
+		opacity var(--carlix-transition),
+		transform var(--carlix-transition),
+		visibility var(--carlix-transition);
+}
+
+.carlix-menu .carlix-nav-sub .carlix-nav-sub {
+	top: calc(-1 * var(--carlix-space-2));
+	left: calc(100% + var(--carlix-space-1));
+}
+
+.carlix-menu .has-submenu:hover > .carlix-nav-sub,
+.carlix-menu .has-submenu:focus-within > .carlix-nav-sub {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+	pointer-events: auto;
+}
+
+.carlix-menu .carlix-nav-sub a,
+.carlix-menu .carlix-nav-sub .mod-menu__heading,
+.carlix-menu .carlix-nav-sub .mod-menu__separator {
+	width: 100%;
+	min-height: 2.55rem;
+	padding: 0.65rem 0.85rem;
+	color: var(--carlix-text);
+	white-space: normal;
+	overflow-wrap: anywhere;
+	border-radius: calc(var(--carlix-radius) - 0.125rem);
+}
+
+.carlix-menu .carlix-nav-sub > .nav-item {
+	border-bottom: 1px solid color-mix(in srgb, var(--carlix-border) 78%, transparent);
+}
+
+.carlix-menu .carlix-nav-sub > .nav-item:last-child {
+	border-bottom: 0;
+}
+
+.carlix-menu .carlix-nav-sub .has-submenu > a::after,
+.carlix-menu .carlix-nav-sub .has-submenu > .mod-menu__heading::after,
+.carlix-menu .carlix-nav-sub .has-submenu > .mod-menu__separator::after {
+	transform: rotate(-45deg);
+}
+
+/* ---- Offcanvas mobile ---- */
+.carlix-menu-toggle,
+.carlix-offcanvas-close {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.75rem;
+	height: 2.75rem;
+	color: var(--carlix-menu-icon-color, var(--carlix-heading));
+	background: #fff;
+	border: 1px solid var(--carlix-border);
+	border-radius: var(--carlix-radius);
+	box-shadow: var(--carlix-shadow-sm);
+	cursor: pointer;
+	transition:
+		color var(--carlix-transition),
+		background var(--carlix-transition),
+		border-color var(--carlix-transition);
+}
+
+.carlix-menu-toggle:hover,
+.carlix-menu-toggle:focus-visible,
+.carlix-offcanvas-close:hover,
+.carlix-offcanvas-close:focus-visible {
+	color: var(--carlix-primary);
+	background: color-mix(in srgb, var(--carlix-primary) 8%, #fff);
+	border-color: color-mix(in srgb, var(--carlix-primary) 24%, var(--carlix-border));
+	outline: 0;
+}
+
+.carlix-menu-toggle-bars,
+.carlix-menu-toggle-bars::before,
+.carlix-menu-toggle-bars::after {
+	display: block;
+	width: 1.25rem;
+	height: 2px;
+	background: currentColor;
+	border-radius: 999px;
+	content: "";
+}
+
+.carlix-menu-toggle-bars {
+	position: relative;
+}
+
+.carlix-menu-toggle-bars::before,
+.carlix-menu-toggle-bars::after {
+	position: absolute;
+	left: 0;
+}
+
+.carlix-menu-toggle-bars::before {
+	top: -0.42rem;
+}
+
+.carlix-menu-toggle-bars::after {
+	top: 0.42rem;
+}
+
+.carlix-offcanvas-backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 90;
+	background: rgba(17, 17, 17, 0.55);
+	backdrop-filter: blur(2px);
+}
+
+.carlix-offcanvas {
+	position: fixed;
+	inset-block: 0;
+	right: 0;
+	z-index: 100;
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr) auto;
+	width: min(24rem, calc(100vw - 2rem));
+	max-width: 100%;
+	background: #fff;
+	box-shadow: var(--carlix-shadow-lg);
+	transform: translateX(100%);
+	visibility: hidden;
+	transition:
+		transform var(--carlix-transition),
+		visibility var(--carlix-transition);
+}
+
+.carlix-offcanvas-header {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: var(--carlix-space-4);
+	padding: var(--carlix-space-4);
+	border-bottom: 1px solid var(--carlix-border);
+}
+
+/* Alinhamento da logo do offcanvas (parametro) — botao fechar fica sempre na ponta */
+.carlix-offcanvas-header--start  .carlix-brand { margin-inline-end: auto; }
+.carlix-offcanvas-header--center .carlix-brand { margin-inline: auto; }
+.carlix-offcanvas-header--end    .carlix-brand { margin-inline-start: auto; }
+
+.carlix-offcanvas-header .carlix-brand {
+	max-width: 70%;
+}
+
+/* Altura da logo do offcanvas (parametro): sobrepoe o max-height global */
+.carlix-offcanvas-header .carlix-logo {
+	height: var(--carlix-oc-logo-h, 2.5rem);
+	width: auto;
+	max-height: none;
+}
+
+.carlix-offcanvas-close {
+	flex: 0 0 auto;
+	font-size: 1.6rem;
+	line-height: 1;
+}
+
+.carlix-offcanvas-nav {
+	min-height: 0;
+	overflow-y: auto;
+	padding: var(--carlix-space-4);
+}
+
+.carlix-offcanvas-modules {
+	display: grid;
+	gap: var(--carlix-space-3);
+	padding: var(--carlix-space-4);
+	border-top: 1px solid var(--carlix-border);
+	background: #f7f8fa;
+}
+
+.carlix-offcanvas-modules > * {
+	margin: 0;
+}
+
+.carlix-offcanvas-modules .mod-custom {
+	display: grid;
+	gap: var(--carlix-space-2);
+	color: var(--carlix-muted);
+	font-size: 0.95rem;
+}
+
+.carlix-offcanvas-modules .mod-custom p {
+	margin: 0;
+}
+
+.carlix-offcanvas-modules a {
+	color: var(--carlix-primary);
+	font-weight: 700;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.18em;
+}
+
+.carlix-offcanvas-open {
+	overflow: hidden;
+}
+
+/* Lado do offcanvas (parametro): direita = padrao, esquerda = variante */
+.carlix-offcanvas--left {
+	right: auto;
+	left: 0;
+	transform: translateX(-100%);
+}
+
+.carlix-offcanvas-open .carlix-offcanvas {
+	transform: translateX(0);
+	visibility: visible;
+}
+
+.carlix-offcanvas .carlix-nav {
+	gap: 0;
+}
+
+.carlix-offcanvas .carlix-nav a,
+.carlix-offcanvas .carlix-nav .mod-menu__heading,
+.carlix-offcanvas .carlix-nav .mod-menu__separator {
+	min-height: 2.75rem;
+	border-radius: 0;
+	border-width: 0;
+	border-bottom: 1px solid var(--carlix-border);
+}
+
+.carlix-offcanvas .carlix-nav-sub {
+	position: static;
+	display: none;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+	opacity: 1;
+	visibility: visible;
+	transform: none;
+	pointer-events: auto;
+}
+
+.carlix-offcanvas .submenu-open > .carlix-nav-sub {
+	display: grid;
+}
+
+.carlix-offcanvas .carlix-nav-sub a,
+.carlix-offcanvas .carlix-nav-sub .mod-menu__heading,
+.carlix-offcanvas .carlix-nav-sub .mod-menu__separator {
+	padding-left: var(--carlix-space-6);
+	white-space: normal;
+}
+
+.carlix-offcanvas .carlix-nav-sub .carlix-nav-sub a,
+.carlix-offcanvas .carlix-nav-sub .carlix-nav-sub .mod-menu__heading,
+.carlix-offcanvas .carlix-nav-sub .carlix-nav-sub .mod-menu__separator {
+	padding-left: var(--carlix-space-8);
+}
+
+.carlix-offcanvas .carlix-nav > .nav-item:last-child > a,
+.carlix-offcanvas .carlix-nav > .nav-item:last-child > .mod-menu__heading,
+.carlix-offcanvas .carlix-nav > .nav-item:last-child > .mod-menu__separator {
+	border-bottom-color: transparent;
+}
+
+.carlix-offcanvas .carlix-nav-sub .has-submenu > a::after,
+.carlix-offcanvas .carlix-nav-sub .has-submenu > .mod-menu__heading::after,
+.carlix-offcanvas .carlix-nav-sub .has-submenu > .mod-menu__separator::after {
+	transform: rotate(45deg) translateY(-0.12rem);
+}
+
+.carlix-offcanvas .submenu-open > a::after,
+.carlix-offcanvas .submenu-open > .mod-menu__heading::after,
+.carlix-offcanvas .submenu-open > .mod-menu__separator::after {
+	transform: rotate(225deg) translate(-0.1rem, -0.1rem);
+}
+
+/* ---- Sidebar e menus verticais explicitos ---- */
+.carlix-sidebar .carlix-nav,
+.carlix-nav--vertical {
+	gap: var(--carlix-space-1);
+}
+
+.carlix-sidebar .carlix-nav a,
+.carlix-sidebar .carlix-nav .mod-menu__heading,
+.carlix-sidebar .carlix-nav .mod-menu__separator,
+.carlix-nav--vertical a,
+.carlix-nav--vertical .mod-menu__heading,
+.carlix-nav--vertical .mod-menu__separator {
+	text-decoration: none;
+}
+
+/* ---- Footer ---- */
+.carlix-footer .carlix-nav {
+	gap: var(--carlix-space-1);
+}
+
+.carlix-footer .carlix-nav a,
+.carlix-footer .carlix-nav .mod-menu__heading,
+.carlix-footer .carlix-nav .mod-menu__separator {
+	color: var(--carlix-footer-link);
+	background: transparent;
+	border-color: transparent;
+	text-decoration: none;
+}
+
+.carlix-footer .carlix-nav a:hover,
+.carlix-footer .carlix-nav a:focus-visible,
+.carlix-footer .carlix-nav .mod-menu__heading:hover,
+.carlix-footer .carlix-nav .mod-menu__heading:focus-visible,
+.carlix-footer .carlix-nav .mod-menu__separator:hover,
+.carlix-footer .carlix-nav .mod-menu__separator:focus-visible,
+.carlix-footer .carlix-nav .current > a,
+.carlix-footer .carlix-nav .active > a {
+	color: var(--carlix-footer-link);
+	background: rgba(255, 255, 255, 0.08);
+	border-color: rgba(255, 255, 255, 0.12);
+}
+
+.carlix-footer .carlix-nav-sub {
+	border-left-color: rgba(255, 255, 255, 0.18);
+}
+
+.carlix-footer .carlix-nav-sub a,
+.carlix-footer .carlix-nav-sub .mod-menu__heading,
+.carlix-footer .carlix-nav-sub .mod-menu__separator {
+	color: var(--carlix-footer-link);
+	font-weight: 600;
+}
+
+.carlix-footer .hc-footer-menu {
+	display: grid;
+	gap: var(--carlix-space-2);
+}
+
+/* ---- Mobile: header usa offcanvas ---- */
+@media (max-width: 1023px) {
+	.carlix-menu {
+		display: none;
+	}
+
+	.carlix-mobile-nav {
+		display: flex;
+		justify-content: flex-end;
+	}
+}
+
+@media (min-width: 1024px) {
+	.carlix-offcanvas,
+	.carlix-offcanvas-backdrop {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.carlix-offcanvas {
+		transition: none;
+	}
+}

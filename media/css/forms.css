@@ -1,0 +1,231 @@
+/*
+ * HC Carlix - forms.css
+ * Campos, grupos de input e formularios de modulos Joomla.
+ */
+
+form {
+	margin: 0;
+}
+
+fieldset {
+	min-width: 0;
+	margin: 0 0 var(--carlix-space-4);
+	padding: var(--carlix-space-4);
+	border: 1px solid var(--carlix-border);
+	border-radius: var(--carlix-radius);
+}
+
+legend {
+	width: auto;
+	margin: 0;
+	padding-inline: var(--carlix-space-2);
+	color: var(--carlix-heading);
+	font-weight: 800;
+}
+
+label,
+.control-label,
+.form-label {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--carlix-space-2);
+	margin-block: 0 0.35rem;
+	color: var(--carlix-heading);
+	font-weight: 700;
+}
+
+.form-group,
+.control-group,
+.mb-3 {
+	display: grid;
+	gap: var(--carlix-space-2);
+	margin-block: 0 var(--carlix-space-4);
+}
+
+.controls {
+	min-width: 0;
+}
+
+.carlix-search .mod-finder__search,
+.input-group,
+.input-append,
+.input-prepend {
+	display: flex;
+	align-items: stretch;
+	gap: var(--carlix-space-2);
+}
+
+.form-control,
+.form-select,
+.inputbox,
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+select,
+textarea {
+	width: 100%;
+	min-height: 2.5rem;
+	padding: 0.55rem 0.75rem;
+	color: var(--carlix-text);
+	background: #fff;
+	border: 1px solid var(--carlix-border);
+	border-radius: var(--carlix-radius);
+	font: inherit;
+	line-height: 1.35;
+	box-shadow: none;
+	transition:
+		border-color var(--carlix-transition),
+		box-shadow var(--carlix-transition),
+		background var(--carlix-transition);
+}
+
+textarea,
+textarea.form-control {
+	min-height: 7rem;
+	resize: vertical;
+}
+
+select,
+.form-select {
+	padding-right: 2.25rem;
+	appearance: auto;
+}
+
+.form-control:focus,
+.form-select:focus,
+.inputbox:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	border-color: color-mix(in srgb, var(--carlix-primary) 55%, var(--carlix-border));
+	box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--carlix-primary) 18%, transparent);
+	outline: 0;
+}
+
+.form-control::placeholder,
+.inputbox::placeholder,
+input::placeholder,
+textarea::placeholder {
+	color: color-mix(in srgb, var(--carlix-muted) 68%, #fff);
+}
+
+.form-control:disabled,
+.form-control[readonly],
+.inputbox:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+	color: var(--carlix-muted);
+	background: #f3f5f7;
+	cursor: not-allowed;
+	opacity: 1;
+}
+
+.form-control.is-valid,
+.was-validated .form-control:valid {
+	border-color: #198754;
+}
+
+.form-control.is-invalid,
+.was-validated .form-control:invalid,
+.invalid {
+	border-color: #dc3545;
+}
+
+.valid-feedback,
+.invalid-feedback,
+.form-text,
+.help-block {
+	display: block;
+	margin-top: 0.25rem;
+	font-size: 0.875rem;
+}
+
+.form-text,
+.help-block {
+	color: var(--carlix-muted);
+}
+
+.valid-feedback {
+	color: #198754;
+}
+
+.invalid-feedback,
+.form-error-message {
+	color: #dc3545;
+}
+
+.form-check,
+.checkbox,
+.radio {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--carlix-space-2);
+	margin-block: 0.35rem;
+}
+
+.form-check-input,
+input[type="checkbox"],
+input[type="radio"] {
+	flex: 0 0 auto;
+	width: 1.05rem;
+	height: 1.05rem;
+	margin: 0.2rem 0 0;
+	accent-color: var(--carlix-primary);
+}
+
+.form-check-label {
+	margin: 0;
+	font-weight: 600;
+}
+
+.input-group > .form-control,
+.input-group > .form-select,
+.input-group > .inputbox {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.input-group-text {
+	display: inline-flex;
+	align-items: center;
+	min-height: 2.5rem;
+	padding: 0.55rem 0.75rem;
+	color: var(--carlix-muted);
+	background: #f7f8fa;
+	border: 1px solid var(--carlix-border);
+	border-radius: var(--carlix-radius);
+	font-weight: 700;
+}
+
+.mod-login,
+.mod-login__userdata,
+.mod-login .form-group {
+	display: grid;
+	gap: var(--carlix-space-2);
+}
+
+.mod-login__remember {
+	display: flex;
+	align-items: center;
+	gap: var(--carlix-space-2);
+}
+
+@media (max-width: 640px) {
+	.carlix-search .mod-finder__search,
+	.input-group,
+	.input-append,
+	.input-prepend {
+		align-items: stretch;
+		flex-direction: column;
+	}
+}

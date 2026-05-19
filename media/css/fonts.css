@@ -1,0 +1,21 @@
+/*
+ * HC Carlix — fonts.css
+ * Fontes self-hosted (sem CDN). Variable fonts, subset latin.
+ * Importado por variables.css. Arquivos .woff2 em ../fonts/.
+ */
+
+@font-face {
+	font-family: "Inter";
+	font-style: normal;
+	font-weight: 100 900;
+	font-display: swap;
+	src: url(../fonts/inter.woff2) format("woff2");
+}
+
+@font-face {
+	font-family: "Roboto";
+	font-style: normal;
+	font-weight: 100 900;
+	font-display: swap;
+	src: url(../fonts/roboto.woff2) format("woff2");
+}

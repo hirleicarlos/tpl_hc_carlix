@@ -1,0 +1,57 @@
+@import url("fonts.css");
+
+/*
+ * HC Carlix — variables.css
+ * FONTE ÚNICA de tokens. Toda variável --carlix-* mora AQUI e só aqui.
+ * As fontes ficam em fonts.css (arquivo separado) e são importadas acima.
+ *
+ * Arquivos .woff2 em ../fonts/ (media/templates/site/hc_carlix/fonts/).
+ */
+
+/* ===== Tokens (padrão; alguns sobrescritos via parâmetro no <style> inline) ===== */
+:root {
+	/* Tipografia */
+	--carlix-font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+	--carlix-font-heading: "Roboto", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+	--carlix-font-size: 1rem;
+	--carlix-line-height: 1.6;
+
+	/* Cores base */
+	--carlix-bg: #ffffff;
+	--carlix-text: #333333;          /* preto suave — param "Cor do texto" sobrescreve */
+	--carlix-heading: #111111;
+	--carlix-muted: #555555;
+	--carlix-border: #e6e6e6;
+	--carlix-primary: #d32f2f;
+	--carlix-primary-hover: color-mix(in srgb, var(--carlix-primary) 82%, #000);
+	--carlix-primary-light: color-mix(in srgb, var(--carlix-primary) 65%, #fff);
+
+	/* Cabeçalho (base) */
+	--carlix-header-bg: #ffffff;
+	--carlix-header-color: #1a1a1a;
+	--carlix-header-height: 72px;
+
+	/* Layout */
+	--carlix-container: 1200px;
+	--carlix-grid-gap: 1.5rem;
+	--carlix-radius: 0.5rem;
+	--carlix-radius-lg: 1rem;
+
+	/* Espaçamento (escala) */
+	--carlix-space-1: 0.25rem;
+	--carlix-space-2: 0.5rem;
+	--carlix-space-3: 0.75rem;
+	--carlix-space-4: 1rem;
+	--carlix-space-6: 1.5rem;
+	--carlix-space-8: 2rem;
+	--carlix-space-12: 3rem;
+	--carlix-space-16: 4rem;
+
+	/* Sombras */
+	--carlix-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+	--carlix-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.10), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+	--carlix-shadow-lg: 0 10px 20px -3px rgba(0, 0, 0, 0.12);
+
+	/* Transição padrão */
+	--carlix-transition: 200ms ease;
+}

@@ -1,0 +1,95 @@
+# ============================================================
+# HC Carlix Template — .gitignore
+# ============================================================
+
+# ---------- IDEs / Editores ----------
+.idea/
+.vscode/
+*.iml
+*.sublime-project
+*.sublime-workspace
+.project
+.settings/
+.buildpath
+nbproject/
+.history/
+
+# ---------- Sistema Operacional ----------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# ---------- Logs / Temporários ----------
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+.~lock.*
+
+# ---------- Dependências (caso adicione futuramente) ----------
+node_modules/
+vendor/
+composer.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ---------- Builds e distribuição ----------
+dist/
+build/
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+tpl_hc_carlix-*.zip
+
+# ---------- Cache / Build de assets ----------
+.cache/
+.parcel-cache/
+.sass-cache/
+.tmp/
+*.css.map
+*.js.map
+
+# ---------- Configuração local sensível ----------
+.env
+.env.local
+.env.*.local
+*.local
+
+# ---------- Cobertura de testes ----------
+coverage/
+.phpunit.result.cache
+.phpunit.cache/
+phpunit.xml
+.php-cs-fixer.cache
+.phpcs-cache
+
+# ---------- Documentação gerada ----------
+docs/_build/
+phpdoc-cache/
+
+# ---------- Joomla artifacts (caso o repo seja testado dentro de uma instalação) ----------
+configuration.php
+administrator/cache/
+cache/
+tmp/
+logs/
+
+# ---------- Mantém estes mesmo sendo "vazios" ----------
+!html/.gitkeep
+!media/images/.gitkeep
