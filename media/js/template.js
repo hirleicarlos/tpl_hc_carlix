@@ -20,11 +20,14 @@
 	/* ===================== OFFCANVAS ===================== */
 	function initOffcanvas() {
 		var body = document.body;
-		var toggle = document.querySelector('.carlix-menu-toggle');
+		var toggles = document.querySelectorAll('.carlix-menu-toggle');
+		var toggle = toggles[0];
 		var panel = document.querySelector('.carlix-offcanvas');
 		var backdrop = document.querySelector('.carlix-offcanvas-backdrop');
 		var closeButtons = document.querySelectorAll('[data-carlix-offcanvas-close]');
 		var desktopQuery = window.matchMedia('(min-width: 1024px)');
+		var keepDesktopOffcanvas = body.classList.contains('carlix-nav-type-offcanvas') || body.classList.contains('carlix-nav-type-menu-offcanvas');
+		var closeOnClick = !panel || panel.getAttribute('data-carlix-close-on-click') !== '0';
 		var lastFocus = null;
 		var submenuTriggerSelector = '.has-submenu > a, .has-submenu > .mod-menu__heading, .has-submenu > .mod-menu__separator';
 
@@ -44,7 +47,9 @@
 			backdrop.hidden = false;
 			body.classList.add('carlix-offcanvas-open');
 			panel.setAttribute('aria-hidden', 'false');
-			toggle.setAttribute('aria-expanded', 'true');
+			toggles.forEach(function (item) {
+				item.setAttribute('aria-expanded', 'true');
+			});
 
 			var focusable = getFocusable();
 			if (focusable.length) {
@@ -65,7 +70,9 @@
 		function closeMenu() {
 			body.classList.remove('carlix-offcanvas-open');
 			panel.setAttribute('aria-hidden', 'true');
-			toggle.setAttribute('aria-expanded', 'false');
+			toggles.forEach(function (item) {
+				item.setAttribute('aria-expanded', 'false');
+			});
 			backdrop.hidden = true;
 			closeAllSubmenus();
 
@@ -111,7 +118,9 @@
 		}
 
 		setupSubmenus();
-		toggle.addEventListener('click', toggleMenu);
+		toggles.forEach(function (item) {
+			item.addEventListener('click', toggleMenu);
+		});
 
 		closeButtons.forEach(function (button) {
 			button.addEventListener('click', closeMenu);
@@ -126,7 +135,7 @@
 				return;
 			}
 
-			if (event.target.closest('a[href]')) {
+			if (closeOnClick && event.target.closest('a[href]')) {
 				closeMenu();
 			}
 		});
@@ -177,11 +186,92 @@
 
 		if (typeof desktopQuery.addEventListener === 'function') {
 			desktopQuery.addEventListener('change', function (event) {
-				if (event.matches && body.classList.contains('carlix-offcanvas-open')) {
+				if (!keepDesktopOffcanvas && event.matches && body.classList.contains('carlix-offcanvas-open')) {
 					closeMenu();
 				}
 			});
 		}
+	}
+
+	/* ===================== MENU DESKTOP POR CLIQUE ===================== */
+	function initDesktopMenus() {
+		var desktopQuery = window.matchMedia('(min-width: 1024px)');
+		var triggerSelector = '.has-submenu > a, .has-submenu > .mod-menu__heading, .has-submenu > .mod-menu__separator';
+		var menus = document.querySelectorAll('.carlix-menu[data-carlix-menu-interaction="click"]');
+
+		if (!menus.length) {
+			return;
+		}
+
+		function closeSiblings(menu, item) {
+			menu.querySelectorAll('.submenu-open').forEach(function (current) {
+				if (current !== item && !current.contains(item)) {
+					current.classList.remove('submenu-open');
+					var currentTrigger = current.querySelector(':scope > a, :scope > .mod-menu__heading, :scope > .mod-menu__separator');
+
+					if (currentTrigger) {
+						currentTrigger.setAttribute('aria-expanded', 'false');
+					}
+				}
+			});
+		}
+
+		menus.forEach(function (menu) {
+			menu.querySelectorAll(triggerSelector).forEach(function (trigger) {
+				var item = trigger.parentElement;
+
+				if (!item || !item.querySelector(':scope > .carlix-nav-sub')) {
+					return;
+				}
+
+				trigger.setAttribute('aria-expanded', 'false');
+			});
+
+			menu.addEventListener('click', function (event) {
+				if (!desktopQuery.matches) {
+					return;
+				}
+
+				var trigger = event.target.closest(triggerSelector);
+
+				if (!trigger || !menu.contains(trigger)) {
+					return;
+				}
+
+				var item = trigger.parentElement;
+
+				if (!item || !item.querySelector(':scope > .carlix-nav-sub')) {
+					return;
+				}
+
+				event.preventDefault();
+				closeSiblings(menu, item);
+
+				var opened = item.classList.toggle('submenu-open');
+				trigger.setAttribute('aria-expanded', opened ? 'true' : 'false');
+			});
+		});
+
+		document.addEventListener('click', function (event) {
+			if (!desktopQuery.matches) {
+				return;
+			}
+
+			menus.forEach(function (menu) {
+				if (menu.contains(event.target)) {
+					return;
+				}
+
+				menu.querySelectorAll('.submenu-open').forEach(function (item) {
+					item.classList.remove('submenu-open');
+					var trigger = item.querySelector(':scope > a, :scope > .mod-menu__heading, :scope > .mod-menu__separator');
+
+					if (trigger) {
+						trigger.setAttribute('aria-expanded', 'false');
+					}
+				});
+			});
+		});
 	}
 
 	/* ===================== VOLTAR AO TOPO ===================== */
@@ -243,8 +333,10 @@
 		}
 
 		var behavior = header.getAttribute('data-carlix-header') || 'sticky';
+		var scrollBehavior = header.getAttribute('data-carlix-header-behavior') || 'always';
 		var body = document.body;
 		var ticking = false;
+		var lastScrollY = window.scrollY;
 
 		function setOffset() {
 			body.style.setProperty('--carlix-header-h', header.offsetHeight + 'px');
@@ -252,11 +344,17 @@
 
 		function setScrolled() {
 			ticking = false;
-			body.classList.toggle('carlix-header-scrolled', window.scrollY > 12);
+			var currentY = window.scrollY;
+			var goingDown = currentY > lastScrollY && currentY > header.offsetHeight;
+
+			body.classList.toggle('carlix-header-scrolled', currentY > 12);
+			body.classList.toggle('carlix-header-is-hidden', scrollBehavior === 'hide-down-show-up' && goingDown);
+			lastScrollY = currentY;
 		}
 
 		if (behavior === 'fixed') {
 			body.classList.add('carlix-header-is-fixed');
+			body.classList.toggle('carlix-header-overlay-content', header.classList.contains('carlix-header--overlay'));
 			setOffset();
 			window.addEventListener('resize', setOffset, { passive: true });
 		}
@@ -274,6 +372,7 @@
 
 	onReady(function () {
 		initOffcanvas();
+		initDesktopMenus();
 		initBackToTop();
 		initHeaderState();
 	});

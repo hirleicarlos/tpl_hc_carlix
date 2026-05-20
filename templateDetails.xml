@@ -7,7 +7,7 @@
 	<authorUrl>https://example.com</authorUrl>
 	<copyright>Copyright (C) 2026 Hirlei Carlos. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE</license>
-	<version>1.0.0</version>
+	<version>1.2.0</version>
 	<description>HC Carlix - Template Joomla 6.x leve, sem Bootstrap/jQuery, grid de 12 colunas, fontes self-hosted.</description>
 
 	<inheritable>1</inheritable>
@@ -19,6 +19,7 @@
 		<filename>offline.php</filename>
 		<filename>templateDetails.xml</filename>
 		<filename>joomla.asset.json</filename>
+		<folder>field</folder>
 		<folder>html</folder>
 	</files>
 
@@ -38,18 +39,33 @@
 
 	<positions>
 		<!-- TOPBAR -->
+		<position>topbar</position>
 		<position>topbar-1</position>
 		<position>topbar-2</position>
 		<position>topbar-3</position>
 		<position>topbar-4</position>
 		<!-- HEADER -->
+		<position>header</position>
+		<position>header-left</position>
+		<position>header-center</position>
+		<position>header-right</position>
 		<position>logo</position>
 		<position>menu</position>
-		<position>offcanvas</position>
 		<position>search</position>
+		<!-- NAVIGATION -->
+		<position>navigation</position>
+		<position>navigation-mobile</position>
 		<!-- BANNER -->
 		<position>banner</position>
+		<!-- HERO / SHOWCASE -->
+		<position>hero</position>
+		<position>hero-top</position>
+		<position>hero-bottom</position>
+		<position>showcase</position>
+		<position>showcase-a</position>
+		<position>showcase-b</position>
 		<!-- BREADCRUMBS -->
+		<position>breadcrumb</position>
 		<position>breadcrumbs</position>
 		<!-- TOP -->
 		<position>top-a</position>
@@ -57,25 +73,64 @@
 		<position>top-c</position>
 		<position>top-d</position>
 		<!-- MAIN -->
+		<position>content-top</position>
+		<position>content-bottom</position>
 		<position>sidebar-left</position>
 		<position>main-top</position>
 		<position>main-bottom</position>
 		<position>sidebar-right</position>
+		<!-- UTILITY / FEATURES -->
+		<position>utility-a</position>
+		<position>utility-b</position>
+		<position>utility-c</position>
+		<position>feature-a</position>
+		<position>feature-b</position>
+		<position>feature-c</position>
+		<position>feature-d</position>
 		<!-- BOTTOM -->
 		<position>bottom-a</position>
 		<position>bottom-b</position>
 		<position>bottom-c</position>
 		<position>bottom-d</position>
 		<!-- FOOTER -->
+		<position>footer</position>
+		<position>footer-a</position>
+		<position>footer-b</position>
+		<position>footer-c</position>
 		<position>footer-1</position>
 		<position>footer-2</position>
 		<position>footer-3</position>
 		<position>footer-4</position>
+		<position>copyright</position>
 		<!-- CREDITS -->
 		<position>credits-1</position>
 		<position>credits-2</position>
 		<position>credits-3</position>
 		<position>credits-4</position>
+		<!-- MOBILE / OFFCANVAS -->
+		<position>offcanvas</position>
+		<position>mobile-menu</position>
+		<!-- FLEX POSITIONS -->
+		<position>position-1</position>
+		<position>position-2</position>
+		<position>position-3</position>
+		<position>position-4</position>
+		<position>position-5</position>
+		<position>position-6</position>
+		<position>position-7</position>
+		<position>position-8</position>
+		<position>position-9</position>
+		<position>position-10</position>
+		<position>position-11</position>
+		<position>position-12</position>
+		<position>position-13</position>
+		<position>position-14</position>
+		<position>position-15</position>
+		<position>position-16</position>
+		<position>position-17</position>
+		<position>position-18</position>
+		<position>position-19</position>
+		<position>position-20</position>
 		<!-- OUTRAS -->
 		<position>debug</position>
 		<position>error-403</position>
@@ -91,19 +146,26 @@
 					<option value="center">TPL_HC_CARLIX_ALIGN_CENTER</option>
 					<option value="end">TPL_HC_CARLIX_ALIGN_END</option>
 				</field>
-				<field name="textColor" type="color" label="TPL_HC_CARLIX_TEXTCOLOR_LABEL" description="TPL_HC_CARLIX_TEXTCOLOR_DESC" default="#333333" />
-				<field name="primaryColor" type="color" label="TPL_HC_CARLIX_PRIMARY_COLOR_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#d32f2f" />
-				<field name="secondaryColor" type="color" label="TPL_HC_CARLIX_SECONDARY_COLOR_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#151515" />
-				<field name="containerWidth" type="text" label="TPL_HC_CARLIX_CONTAINER_WIDTH_LABEL" description="TPL_HC_CARLIX_CONTAINER_WIDTH_DESC" default="1200px" />
 				<field name="favicon" type="media" label="TPL_HC_CARLIX_FAVICON_LABEL" description="TPL_HC_CARLIX_FAVICON_DESC" />
 			</fieldset>
 
-			<fieldset name="navigation" label="TPL_HC_CARLIX_FIELDSET_NAVIGATION">
-				<field name="headerBehavior" type="list" label="TPL_HC_CARLIX_HEADER_BEHAVIOR_LABEL" description="TPL_HC_CARLIX_HEADER_BEHAVIOR_DESC" default="sticky" validate="options">
-					<option value="static">TPL_HC_CARLIX_HEADER_BEHAVIOR_STATIC</option>
-					<option value="sticky">TPL_HC_CARLIX_HEADER_BEHAVIOR_STICKY</option>
-					<option value="fixed">TPL_HC_CARLIX_HEADER_BEHAVIOR_FIXED</option>
-					<option value="floating">TPL_HC_CARLIX_HEADER_BEHAVIOR_FLOATING</option>
+			<fieldset name="layout" label="TPL_HC_CARLIX_FIELDSET_LAYOUT" addfieldpath="/templates/hc_carlix/field">
+				<field name="bodyBg" type="hidden" default="#ffffff" />
+				<field name="textColor" type="hidden" default="#333333" />
+				<field name="primaryColor" type="hidden" default="#d32f2f" />
+				<field name="secondaryColor" type="hidden" default="#151515" />
+				<field name="containerWidthValue" type="hidden" default="1320" />
+				<field name="containerWidthUnit" type="hidden" default="px" />
+				<field name="containerWidthCustom" type="hidden" />
+				<field name="backToTop" type="hidden" default="0" />
+				<field name="layoutManager" type="layoutmanager" label="TPL_HC_CARLIX_LAYOUT_MANAGER_LABEL" description="TPL_HC_CARLIX_LAYOUT_MANAGER_FIELD_DESC" hiddenLabel="true" hiddenDescription="true" filter="raw" />
+			</fieldset>
+
+			<fieldset name="menu" label="TPL_HC_CARLIX_FIELDSET_MENU">
+				<field name="navigationType" type="list" label="TPL_HC_CARLIX_NAVIGATION_TYPE_LABEL" description="TPL_HC_CARLIX_NAVIGATION_TYPE_DESC" default="menu-offcanvas" validate="options">
+					<option value="menu">TPL_HC_CARLIX_NAVIGATION_TYPE_MENU</option>
+					<option value="menu-offcanvas">TPL_HC_CARLIX_NAVIGATION_TYPE_MENU_OFFCANVAS</option>
+					<option value="offcanvas">TPL_HC_CARLIX_NAVIGATION_TYPE_OFFCANVAS</option>
 				</field>
 				<field name="menuAlign" type="list" label="TPL_HC_CARLIX_MENU_ALIGN_LABEL" description="TPL_HC_CARLIX_MENU_ALIGN_DESC" default="start" validate="options">
 					<option value="start">TPL_HC_CARLIX_ALIGN_START</option>
@@ -111,10 +173,37 @@
 					<option value="end">TPL_HC_CARLIX_ALIGN_END</option>
 				</field>
 				<field name="submenuMinWidth" type="text" label="TPL_HC_CARLIX_SUBMENU_MIN_WIDTH_LABEL" description="TPL_HC_CARLIX_SUBMENU_MIN_WIDTH_DESC" default="18rem" />
-				<field name="menuIconColor" type="color" label="TPL_HC_CARLIX_MENU_ICON_COLOR_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#111111" />
+				<field name="menuInteraction" type="list" label="TPL_HC_CARLIX_MENU_INTERACTION_LABEL" description="TPL_HC_CARLIX_MENU_INTERACTION_DESC" default="hover" validate="options">
+					<option value="hover">TPL_HC_CARLIX_MENU_INTERACTION_HOVER</option>
+					<option value="click">TPL_HC_CARLIX_MENU_INTERACTION_CLICK</option>
+				</field>
+				<field name="submenuDirection" type="list" label="TPL_HC_CARLIX_SUBMENU_DIRECTION_LABEL" description="TPL_HC_CARLIX_SUBMENU_DIRECTION_DESC" default="start" validate="options">
+					<option value="start">TPL_HC_CARLIX_ALIGN_START</option>
+					<option value="end">TPL_HC_CARLIX_ALIGN_END</option>
+				</field>
+				<field name="submenuAnimation" type="list" label="TPL_HC_CARLIX_SUBMENU_ANIMATION_LABEL" description="TPL_HC_CARLIX_SUBMENU_ANIMATION_DESC" default="slide" validate="options">
+					<option value="slide">TPL_HC_CARLIX_ANIMATION_SLIDE</option>
+					<option value="fade">TPL_HC_CARLIX_ANIMATION_FADE</option>
+					<option value="none">TPL_HC_CARLIX_ANIMATION_NONE</option>
+				</field>
+				<field name="submenuDelay" type="text" label="TPL_HC_CARLIX_SUBMENU_DELAY_LABEL" description="TPL_HC_CARLIX_SUBMENU_DELAY_DESC" default="0ms" />
 				<field name="offcanvasSide" type="list" label="TPL_HC_CARLIX_OFFCANVAS_SIDE_LABEL" description="TPL_HC_CARLIX_OFFCANVAS_SIDE_DESC" default="right" validate="options">
 					<option value="right">TPL_HC_CARLIX_SIDE_RIGHT</option>
 					<option value="left">TPL_HC_CARLIX_SIDE_LEFT</option>
+				</field>
+				<field name="offcanvasWidth" type="text" label="TPL_HC_CARLIX_OFFCANVAS_WIDTH_LABEL" description="TPL_HC_CARLIX_OFFCANVAS_WIDTH_DESC" default="24rem" />
+				<field name="offcanvasBackground" type="color" label="TPL_HC_CARLIX_OFFCANVAS_BG_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#ffffff" />
+				<field name="offcanvasTextColor" type="color" label="TPL_HC_CARLIX_OFFCANVAS_TEXT_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#333333" />
+				<field name="offcanvasOverlayOpacity" type="text" label="TPL_HC_CARLIX_OFFCANVAS_OVERLAY_OPACITY_LABEL" description="TPL_HC_CARLIX_OFFCANVAS_OVERLAY_OPACITY_DESC" default="0.55" />
+				<field name="offcanvasOverlayBlur" type="text" label="TPL_HC_CARLIX_OFFCANVAS_OVERLAY_BLUR_LABEL" description="TPL_HC_CARLIX_OFFCANVAS_OVERLAY_BLUR_DESC" default="2px" />
+				<field name="offcanvasSpeed" type="text" label="TPL_HC_CARLIX_OFFCANVAS_SPEED_LABEL" description="TPL_HC_CARLIX_OFFCANVAS_SPEED_DESC" default="200ms" />
+				<field name="offcanvasCloseOnClick" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_OFFCANVAS_CLOSE_ON_CLICK_LABEL" description="TPL_HC_CARLIX_OFFCANVAS_CLOSE_ON_CLICK_DESC" default="1" filter="integer">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field name="offcanvasShowLogo" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_OFFCANVAS_SHOW_LOGO_LABEL" description="TPL_HC_CARLIX_OFFCANVAS_SHOW_LOGO_DESC" default="1" filter="integer">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
 				</field>
 				<field name="offcanvasLogo" type="media" label="TPL_HC_CARLIX_OFFCANVAS_LOGO_LABEL" description="TPL_HC_CARLIX_OFFCANVAS_LOGO_DESC" />
 				<field name="offcanvasLogoAlign" type="list" label="TPL_HC_CARLIX_OFFCANVAS_LOGO_ALIGN_LABEL" description="TPL_HC_CARLIX_OFFCANVAS_LOGO_ALIGN_DESC" default="start" validate="options">
@@ -123,10 +212,23 @@
 					<option value="end">TPL_HC_CARLIX_ALIGN_END</option>
 				</field>
 				<field name="offcanvasLogoHeight" type="text" label="TPL_HC_CARLIX_OFFCANVAS_LOGO_HEIGHT_LABEL" description="TPL_HC_CARLIX_OFFCANVAS_LOGO_HEIGHT_DESC" default="2.5rem" />
-				<field name="backToTop" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_BACKTOTOP_LABEL" description="TPL_HC_CARLIX_BACKTOTOP_DESC" default="0" filter="integer">
-					<option value="0">JNO</option>
-					<option value="1">JYES</option>
+				<field name="mobileButtonPosition" type="list" label="TPL_HC_CARLIX_MOBILE_BUTTON_POSITION_LABEL" description="TPL_HC_CARLIX_MOBILE_BUTTON_POSITION_DESC" default="end" validate="options">
+					<option value="start">TPL_HC_CARLIX_ALIGN_START</option>
+					<option value="center">TPL_HC_CARLIX_ALIGN_CENTER</option>
+					<option value="end">TPL_HC_CARLIX_ALIGN_END</option>
 				</field>
+				<field name="mobileButtonSize" type="text" label="TPL_HC_CARLIX_MOBILE_BUTTON_SIZE_LABEL" description="TPL_HC_CARLIX_MOBILE_BUTTON_SIZE_DESC" default="2.75rem" />
+				<field name="mobileButtonColor" type="color" label="TPL_HC_CARLIX_MOBILE_BUTTON_COLOR_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#111111" />
+				<field name="mobileButtonBackground" type="color" label="TPL_HC_CARLIX_MOBILE_BUTTON_BG_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#ffffff" />
+				<field name="mobileButtonBorder" type="text" label="TPL_HC_CARLIX_MOBILE_BUTTON_BORDER_LABEL" description="TPL_HC_CARLIX_MOBILE_BUTTON_BORDER_DESC" default="1px solid #e6e6e6" />
+				<field name="mobileButtonRadius" type="text" label="TPL_HC_CARLIX_MOBILE_BUTTON_RADIUS_LABEL" description="TPL_HC_CARLIX_MOBILE_BUTTON_RADIUS_DESC" default="0.5rem" />
+			</fieldset>
+
+			<fieldset name="code" label="TPL_HC_CARLIX_FIELDSET_CODE">
+				<field name="gaId" type="text" label="TPL_HC_CARLIX_GA_LABEL" description="TPL_HC_CARLIX_GA_DESC" filter="cmd" />
+				<field name="headCode" type="textarea" label="TPL_HC_CARLIX_HEADCODE_LABEL" description="TPL_HC_CARLIX_HEADCODE_DESC" rows="6" filter="raw" />
+				<field name="bodyCode" type="textarea" label="TPL_HC_CARLIX_BODYCODE_LABEL" description="TPL_HC_CARLIX_BODYCODE_DESC" rows="6" filter="raw" />
+				<field name="customCss" type="textarea" label="TPL_HC_CARLIX_CUSTOMCSS_LABEL" description="TPL_HC_CARLIX_CUSTOMCSS_DESC" rows="6" filter="raw" />
 			</fieldset>
 
 			<fieldset name="seo" label="TPL_HC_CARLIX_FIELDSET_SEO">
@@ -154,129 +256,6 @@
 				<field name="schemaJsonLd" type="textarea" label="TPL_HC_CARLIX_SCHEMA_LABEL" description="TPL_HC_CARLIX_SCHEMA_DESC" rows="8" filter="raw" />
 			</fieldset>
 
-			<fieldset name="scripts" label="TPL_HC_CARLIX_FIELDSET_SCRIPTS">
-				<field name="gaId" type="text" label="TPL_HC_CARLIX_GA_LABEL" description="TPL_HC_CARLIX_GA_DESC" filter="cmd" />
-				<field name="headCode" type="textarea" label="TPL_HC_CARLIX_HEADCODE_LABEL" description="TPL_HC_CARLIX_HEADCODE_DESC" rows="6" filter="raw" />
-				<field name="bodyCode" type="textarea" label="TPL_HC_CARLIX_BODYCODE_LABEL" description="TPL_HC_CARLIX_BODYCODE_DESC" rows="6" filter="raw" />
-				<field name="customCss" type="textarea" label="TPL_HC_CARLIX_CUSTOMCSS_LABEL" description="TPL_HC_CARLIX_CUSTOMCSS_DESC" rows="6" filter="raw" />
-			</fieldset>
-
-			<fieldset name="topbar" label="TPL_HC_CARLIX_FIELDSET_TOPBAR">
-				<field name="topbarBg" type="color" label="TPL_HC_CARLIX_FIELD_BG_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#151515" />
-				<field name="topbarText" type="color" label="TPL_HC_CARLIX_FIELD_TEXT_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#f5f5f5" />
-				<field name="topbarLink" type="color" label="TPL_HC_CARLIX_FIELD_LINK_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#ffffff" />
-				<field name="topbarContainer" type="text" label="TPL_HC_CARLIX_SECTION_CONTAINER_LABEL" description="TPL_HC_CARLIX_SECTION_CONTAINER_DESC" />
-				<field name="topbarSpaceTopDesktop" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_DESKTOP_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.5rem" />
-				<field name="topbarSpaceBottomDesktop" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_DESKTOP_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.5rem" />
-				<field name="topbarSpaceTopTablet" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_TABLET_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.5rem" />
-				<field name="topbarSpaceBottomTablet" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_TABLET_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.5rem" />
-				<field name="topbarSpaceTopMobile" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_MOBILE_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.5rem" />
-				<field name="topbarSpaceBottomMobile" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_MOBILE_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.5rem" />
-			</fieldset>
-
-			<fieldset name="header" label="TPL_HC_CARLIX_FIELDSET_HEADER">
-				<field name="headerBg" type="color" label="TPL_HC_CARLIX_FIELD_BG_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#ffffff" />
-				<field name="headerText" type="color" label="TPL_HC_CARLIX_FIELD_TEXT_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#1a1a1a" />
-				<field name="headerLink" type="color" label="TPL_HC_CARLIX_FIELD_LINK_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#d32f2f" />
-				<field name="headerContainer" type="text" label="TPL_HC_CARLIX_SECTION_CONTAINER_LABEL" description="TPL_HC_CARLIX_SECTION_CONTAINER_DESC" />
-				<field name="headerSpaceTopDesktop" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_DESKTOP_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1rem" />
-				<field name="headerSpaceBottomDesktop" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_DESKTOP_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1rem" />
-				<field name="headerSpaceTopTablet" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_TABLET_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1rem" />
-				<field name="headerSpaceBottomTablet" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_TABLET_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1rem" />
-				<field name="headerSpaceTopMobile" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_MOBILE_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.75rem" />
-				<field name="headerSpaceBottomMobile" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_MOBILE_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.75rem" />
-			</fieldset>
-
-			<fieldset name="banner" label="TPL_HC_CARLIX_FIELDSET_BANNER">
-				<field name="bannerBg" type="color" label="TPL_HC_CARLIX_FIELD_BG_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#ffffff" />
-				<field name="bannerText" type="color" label="TPL_HC_CARLIX_FIELD_TEXT_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#333333" />
-				<field name="bannerLink" type="color" label="TPL_HC_CARLIX_FIELD_LINK_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#d32f2f" />
-				<field name="bannerContainer" type="text" label="TPL_HC_CARLIX_SECTION_CONTAINER_LABEL" description="TPL_HC_CARLIX_SECTION_CONTAINER_DESC" />
-				<field name="bannerSpaceTopDesktop" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_DESKTOP_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1.5rem" />
-				<field name="bannerSpaceBottomDesktop" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_DESKTOP_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1rem" />
-				<field name="bannerSpaceTopTablet" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_TABLET_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1.5rem" />
-				<field name="bannerSpaceBottomTablet" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_TABLET_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1rem" />
-				<field name="bannerSpaceTopMobile" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_MOBILE_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1rem" />
-				<field name="bannerSpaceBottomMobile" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_MOBILE_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1rem" />
-			</fieldset>
-
-			<fieldset name="breadcrumbs" label="TPL_HC_CARLIX_FIELDSET_BREADCRUMBS">
-				<field name="breadcrumbsBg" type="color" label="TPL_HC_CARLIX_FIELD_BG_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#ffffff" />
-				<field name="breadcrumbsText" type="color" label="TPL_HC_CARLIX_FIELD_TEXT_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#555555" />
-				<field name="breadcrumbsLink" type="color" label="TPL_HC_CARLIX_FIELD_LINK_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#d32f2f" />
-				<field name="breadcrumbsContainer" type="text" label="TPL_HC_CARLIX_SECTION_CONTAINER_LABEL" description="TPL_HC_CARLIX_SECTION_CONTAINER_DESC" />
-				<field name="breadcrumbsSpaceTopDesktop" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_DESKTOP_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.75rem" />
-				<field name="breadcrumbsSpaceBottomDesktop" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_DESKTOP_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.75rem" />
-				<field name="breadcrumbsSpaceTopTablet" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_TABLET_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.75rem" />
-				<field name="breadcrumbsSpaceBottomTablet" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_TABLET_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.75rem" />
-				<field name="breadcrumbsSpaceTopMobile" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_MOBILE_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.5rem" />
-				<field name="breadcrumbsSpaceBottomMobile" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_MOBILE_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.5rem" />
-			</fieldset>
-
-			<fieldset name="top" label="TPL_HC_CARLIX_FIELDSET_TOP">
-				<field name="topBg" type="color" label="TPL_HC_CARLIX_FIELD_BG_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#ffffff" />
-				<field name="topText" type="color" label="TPL_HC_CARLIX_FIELD_TEXT_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#333333" />
-				<field name="topLink" type="color" label="TPL_HC_CARLIX_FIELD_LINK_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#d32f2f" />
-				<field name="topContainer" type="text" label="TPL_HC_CARLIX_SECTION_CONTAINER_LABEL" description="TPL_HC_CARLIX_SECTION_CONTAINER_DESC" />
-				<field name="topSpaceTopDesktop" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_DESKTOP_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="2rem" />
-				<field name="topSpaceBottomDesktop" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_DESKTOP_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="2rem" />
-				<field name="topSpaceTopTablet" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_TABLET_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1.5rem" />
-				<field name="topSpaceBottomTablet" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_TABLET_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1.5rem" />
-				<field name="topSpaceTopMobile" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_MOBILE_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1rem" />
-				<field name="topSpaceBottomMobile" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_MOBILE_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1rem" />
-			</fieldset>
-
-			<fieldset name="main" label="TPL_HC_CARLIX_FIELDSET_MAIN">
-				<field name="mainBg" type="color" label="TPL_HC_CARLIX_FIELD_BG_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#ffffff" />
-				<field name="mainText" type="color" label="TPL_HC_CARLIX_FIELD_TEXT_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#333333" />
-				<field name="mainLink" type="color" label="TPL_HC_CARLIX_FIELD_LINK_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#d32f2f" />
-				<field name="mainContainer" type="text" label="TPL_HC_CARLIX_SECTION_CONTAINER_LABEL" description="TPL_HC_CARLIX_SECTION_CONTAINER_DESC" />
-				<field name="mainSpaceTopDesktop" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_DESKTOP_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="2rem" />
-				<field name="mainSpaceBottomDesktop" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_DESKTOP_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="2rem" />
-				<field name="mainSpaceTopTablet" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_TABLET_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1.5rem" />
-				<field name="mainSpaceBottomTablet" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_TABLET_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1.5rem" />
-				<field name="mainSpaceTopMobile" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_MOBILE_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1rem" />
-				<field name="mainSpaceBottomMobile" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_MOBILE_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1rem" />
-			</fieldset>
-
-			<fieldset name="bottom" label="TPL_HC_CARLIX_FIELDSET_BOTTOM">
-				<field name="bottomBg" type="color" label="TPL_HC_CARLIX_FIELD_BG_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#f3f6f7" />
-				<field name="bottomText" type="color" label="TPL_HC_CARLIX_FIELD_TEXT_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#333333" />
-				<field name="bottomLink" type="color" label="TPL_HC_CARLIX_FIELD_LINK_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#d32f2f" />
-				<field name="bottomContainer" type="text" label="TPL_HC_CARLIX_SECTION_CONTAINER_LABEL" description="TPL_HC_CARLIX_SECTION_CONTAINER_DESC" />
-				<field name="bottomSpaceTopDesktop" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_DESKTOP_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="2rem" />
-				<field name="bottomSpaceBottomDesktop" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_DESKTOP_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="2rem" />
-				<field name="bottomSpaceTopTablet" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_TABLET_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1.5rem" />
-				<field name="bottomSpaceBottomTablet" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_TABLET_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1.5rem" />
-				<field name="bottomSpaceTopMobile" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_MOBILE_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1rem" />
-				<field name="bottomSpaceBottomMobile" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_MOBILE_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1rem" />
-			</fieldset>
-
-			<fieldset name="footer" label="TPL_HC_CARLIX_FIELDSET_FOOTER">
-				<field name="footerBg" type="color" label="TPL_HC_CARLIX_FIELD_BG_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#d32f2f" />
-				<field name="footerText" type="color" label="TPL_HC_CARLIX_FIELD_TEXT_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#ffffff" />
-				<field name="footerLink" type="color" label="TPL_HC_CARLIX_FIELD_LINK_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#ffffff" />
-				<field name="footerContainer" type="text" label="TPL_HC_CARLIX_SECTION_CONTAINER_LABEL" description="TPL_HC_CARLIX_SECTION_CONTAINER_DESC" />
-				<field name="footerSpaceTopDesktop" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_DESKTOP_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="2.5rem" />
-				<field name="footerSpaceBottomDesktop" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_DESKTOP_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="2.5rem" />
-				<field name="footerSpaceTopTablet" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_TABLET_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="2rem" />
-				<field name="footerSpaceBottomTablet" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_TABLET_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="2rem" />
-				<field name="footerSpaceTopMobile" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_MOBILE_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1.5rem" />
-				<field name="footerSpaceBottomMobile" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_MOBILE_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="1.5rem" />
-			</fieldset>
-
-			<fieldset name="credits" label="TPL_HC_CARLIX_FIELDSET_CREDITS">
-				<field name="creditsBg" type="color" label="TPL_HC_CARLIX_FIELD_BG_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#a51f1f" />
-				<field name="creditsText" type="color" label="TPL_HC_CARLIX_FIELD_TEXT_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#ffffff" />
-				<field name="creditsLink" type="color" label="TPL_HC_CARLIX_FIELD_LINK_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#ffffff" />
-				<field name="creditsContainer" type="text" label="TPL_HC_CARLIX_SECTION_CONTAINER_LABEL" description="TPL_HC_CARLIX_SECTION_CONTAINER_DESC" />
-				<field name="creditsSpaceTopDesktop" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_DESKTOP_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.75rem" />
-				<field name="creditsSpaceBottomDesktop" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_DESKTOP_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.75rem" />
-				<field name="creditsSpaceTopTablet" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_TABLET_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.75rem" />
-				<field name="creditsSpaceBottomTablet" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_TABLET_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.75rem" />
-				<field name="creditsSpaceTopMobile" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_TOP_MOBILE_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.75rem" />
-				<field name="creditsSpaceBottomMobile" type="text" label="TPL_HC_CARLIX_FIELD_SPACE_BOTTOM_MOBILE_LABEL" description="TPL_HC_CARLIX_FIELD_SPACE_DESC" default="0.75rem" />
-			</fieldset>
 		</fields>
 	</config>
 </extension>

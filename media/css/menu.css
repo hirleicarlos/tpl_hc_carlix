@@ -164,6 +164,7 @@
 		opacity var(--carlix-transition),
 		transform var(--carlix-transition),
 		visibility var(--carlix-transition);
+	transition-delay: var(--carlix-submenu-delay, 0ms);
 }
 
 .carlix-menu .carlix-nav-sub .carlix-nav-sub {
@@ -171,12 +172,47 @@
 	left: calc(100% + var(--carlix-space-1));
 }
 
+.carlix-menu--submenu-end .carlix-nav > .nav-item > .carlix-nav-sub {
+	right: 0;
+	left: auto;
+}
+
+.carlix-menu--submenu-end .carlix-nav-sub .carlix-nav-sub {
+	right: calc(100% + var(--carlix-space-1));
+	left: auto;
+}
+
 .carlix-menu .has-submenu:hover > .carlix-nav-sub,
-.carlix-menu .has-submenu:focus-within > .carlix-nav-sub {
+.carlix-menu .has-submenu:focus-within > .carlix-nav-sub,
+.carlix-menu .submenu-open > .carlix-nav-sub {
 	opacity: 1;
 	visibility: visible;
 	transform: translateY(0);
 	pointer-events: auto;
+}
+
+.carlix-menu--interaction-click .has-submenu:hover > .carlix-nav-sub {
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(0.25rem);
+	pointer-events: none;
+}
+
+.carlix-menu--interaction-click .submenu-open > .carlix-nav-sub,
+.carlix-menu--interaction-click .has-submenu:focus-within > .carlix-nav-sub {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+	pointer-events: auto;
+}
+
+.carlix-menu--anim-fade .carlix-nav-sub {
+	transform: none;
+}
+
+.carlix-menu--anim-none .carlix-nav-sub {
+	transition: none;
+	transform: none;
 }
 
 .carlix-menu .carlix-nav-sub a,
@@ -211,12 +247,12 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 2.75rem;
-	height: 2.75rem;
-	color: var(--carlix-menu-icon-color, var(--carlix-heading));
-	background: #fff;
-	border: 1px solid var(--carlix-border);
-	border-radius: var(--carlix-radius);
+	width: var(--carlix-mobile-button-size, 2.75rem);
+	height: var(--carlix-mobile-button-size, 2.75rem);
+	color: var(--carlix-mobile-button-color, var(--carlix-menu-icon-color, var(--carlix-heading)));
+	background: var(--carlix-mobile-button-bg, #fff);
+	border: var(--carlix-mobile-button-border, 1px solid var(--carlix-border));
+	border-radius: var(--carlix-mobile-button-radius, var(--carlix-radius));
 	box-shadow: var(--carlix-shadow-sm);
 	cursor: pointer;
 	transition:
@@ -268,8 +304,8 @@
 	position: fixed;
 	inset: 0;
 	z-index: 90;
-	background: rgba(17, 17, 17, 0.55);
-	backdrop-filter: blur(2px);
+	background: rgba(17, 17, 17, var(--carlix-oc-overlay-opacity, 0.55));
+	backdrop-filter: blur(var(--carlix-oc-overlay-blur, 2px));
 }
 
 .carlix-offcanvas {
@@ -279,15 +315,16 @@
 	z-index: 100;
 	display: grid;
 	grid-template-rows: auto minmax(0, 1fr) auto;
-	width: min(24rem, calc(100vw - 2rem));
+	width: min(var(--carlix-oc-width, 24rem), calc(100vw - 2rem));
 	max-width: 100%;
-	background: #fff;
+	background: var(--carlix-oc-bg, #fff);
+	color: var(--carlix-oc-text, var(--carlix-text));
 	box-shadow: var(--carlix-shadow-lg);
 	transform: translateX(100%);
 	visibility: hidden;
 	transition:
-		transform var(--carlix-transition),
-		visibility var(--carlix-transition);
+		transform var(--carlix-oc-speed, var(--carlix-transition)),
+		visibility var(--carlix-oc-speed, var(--carlix-transition));
 }
 
 .carlix-offcanvas-header {
@@ -381,6 +418,7 @@
 .carlix-offcanvas .carlix-nav .mod-menu__heading,
 .carlix-offcanvas .carlix-nav .mod-menu__separator {
 	min-height: 2.75rem;
+	color: var(--carlix-oc-text, var(--carlix-text));
 	border-radius: 0;
 	border-width: 0;
 	border-bottom: 1px solid var(--carlix-border);
@@ -505,6 +543,12 @@
 		display: flex;
 		justify-content: flex-end;
 	}
+
+	.carlix-mobile-nav--start { justify-content: flex-start; }
+	.carlix-mobile-nav--center { justify-content: center; }
+	.carlix-mobile-nav--end { justify-content: flex-end; }
+
+	/* Mobile sempre usa offcanvas; o tipo escolhido vale para desktop. */
 }
 
 @media (min-width: 1024px) {
@@ -512,6 +556,21 @@
 	.carlix-offcanvas-backdrop {
 		display: none;
 	}
+
+	.carlix-nav-type-offcanvas .carlix-offcanvas,
+	.carlix-nav-type-offcanvas .carlix-offcanvas-backdrop,
+	.carlix-nav-type-menu-offcanvas .carlix-offcanvas,
+	.carlix-nav-type-menu-offcanvas .carlix-offcanvas-backdrop {
+		display: grid;
+	}
+
+	.carlix-mobile-nav--desktop {
+		display: flex;
+	}
+
+	.carlix-mobile-nav--start { justify-content: flex-start; }
+	.carlix-mobile-nav--center { justify-content: center; }
+	.carlix-mobile-nav--end { justify-content: flex-end; }
 }
 
 @media (prefers-reduced-motion: reduce) {

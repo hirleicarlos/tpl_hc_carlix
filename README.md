@@ -5,7 +5,7 @@
 ![PHP](https://img.shields.io/badge/PHP-8.3%2B-blue)
 ![CSS](https://img.shields.io/badge/CSS-Nativo%20%7C%20Custom%20Properties-red)
 ![JS](https://img.shields.io/badge/JS-Vanilla-black)
-![Version](https://img.shields.io/badge/version-1.0.0-brightgreen)
+![Version](https://img.shields.io/badge/version-1.2.0-brightgreen)
 ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-green)
 
 ---
@@ -71,6 +71,9 @@ tpl_hc_carlix/
 ├── LICENSE                                ← Licença GPL
 ├── README.md                              ← Documentação do projeto
 │
+├── field/
+│   └── layoutmanager.php                  ← Campo customizado do Layout Manager
+│
 ├── pt-BR.tpl_hc_carlix.ini                ← Traduções frontend/admin
 ├── pt-BR.tpl_hc_carlix.sys.ini            ← Traduções de sistema
 ├── en-GB.tpl_hc_carlix.ini                ← Traduções frontend/admin
@@ -105,10 +108,12 @@ tpl_hc_carlix/
     │   ├── breadcrumbs.css                ← Breadcrumbs
     │   ├── hero.css                       ← Banners/heros
     │   ├── modules.css                    ← Módulos Joomla
-    │   └── menu.css                       ← Menus desktop, vertical e offcanvas
+    │   ├── menu.css                       ← Menus desktop, vertical e offcanvas
+    │   └── layout-manager.css             ← Interface admin do Layout Manager
     │
     ├── js/
-    │   └── template.js                    ← Offcanvas, submenus mobile, header e back-to-top
+    │   ├── template.js                    ← Offcanvas, submenus mobile, header e back-to-top
+    │   └── layout-manager.js              ← Builder visual admin em JavaScript puro
     │
     ├── fonts/
     │   ├── inter.woff2                    ← Fonte de corpo/UI
@@ -189,6 +194,23 @@ As posições foram pensadas para testar e povoar o site com recursos reais do J
 | `error-403` | Conteúdo extra para erro 403 |
 | `error-404` | Conteúdo extra para erro 404 |
 
+### Posições Extras para o Layout Manager
+
+A próxima fase adiciona posições semânticas e flexíveis sem apagar as antigas.
+
+| Grupo | Posições |
+|-------|----------|
+| Estrutura | `topbar`, `header`, `navigation`, `navigation-mobile`, `mobile-menu` |
+| Header | `header-left`, `header-center`, `header-right` |
+| Hero / showcase | `hero`, `hero-top`, `hero-bottom`, `showcase`, `showcase-a`, `showcase-b` |
+| Conteúdo | `breadcrumb`, `content-top`, `content-bottom`, `main-top`, `main-bottom` |
+| Utilitárias | `utility-a`, `utility-b`, `utility-c` |
+| Features | `feature-a`, `feature-b`, `feature-c`, `feature-d` |
+| Footer semântico | `footer`, `footer-a`, `footer-b`, `footer-c`, `copyright` |
+| Flexíveis | `position-1` até `position-20` |
+
+Todas aparecem automaticamente no select de `Module Position` do Layout Manager porque o campo lê o `templateDetails.xml`.
+
 ---
 
 ## 🏗 Layout Principal
@@ -248,6 +270,127 @@ O conteúdo principal adapta a largura conforme `sidebar-left` e `sidebar-right`
 
 ---
 
+## 🧱 Layout Manager
+
+O HC Carlix agora possui uma primeira evolução do Layout Manager nativo do template.
+
+Ele continua seguindo a regra principal do projeto:
+
+> O HC Carlix não é page builder. Ele organiza visualmente a estrutura do template usando posições Joomla.
+
+### Onde fica
+
+| Parte | Arquivo |
+|------|---------|
+| Campo Joomla | `field/layoutmanager.php` |
+| Interface visual | `media/js/layout-manager.js` |
+| Estilo admin | `media/css/layout-manager.css` |
+| Valor salvo | parâmetro `layoutManager` no estilo do template |
+| Render frontend | `index.php` |
+
+### Estrutura da interface
+
+| Coluna | Função |
+|--------|--------|
+| Esquerda | Paleta com ícones para `Header`, `Nav`, `Section`, `Row`, `Column`, `Footer` |
+| Centro | Canvas visual amplo com o item raiz `SITE` e a árvore do layout |
+| Direita | Configurações do item selecionado |
+
+### Regras aplicadas
+
+| Regra | Comportamento |
+|-------|---------------|
+| SITE | raiz global do layout, sempre selecionável no canvas |
+| Header | máximo 1 |
+| Nav | máximo 1 |
+| Footer | máximo 1 |
+| Component Area | máximo 1 e obrigatória antes de salvar |
+| Main Navigation | máximo 1 |
+| Nav section x Main Navigation column | não podem coexistir |
+| Header/Nav/Footer | exatamente 1 Row |
+| Row | pelo menos 1 Column |
+| Grid | soma por breakpoint não pode passar de 12 |
+| Colunas novas | recalcula automaticamente `12`, `6+6`, `4+4+4`, `3+3+3+3` |
+| Gap da Row | liga/desliga gap e salva valor + unidade, iniciando em `15px` |
+
+### Validações e avisos
+
+A versão `1.2.0` troca os avisos vermelhos soltos por um painel recolhível de validação.
+
+| Recurso | Comportamento |
+|--------|---------------|
+| Estado geral | Mostra quantidade de erros, avisos e infos |
+| Categorias | `info`, `warning`, `error` |
+| Dedupe | Mensagens repetidas são agrupadas |
+| Clique no aviso | Seleciona o item relacionado no construtor |
+| Fechar aviso | Oculta o aviso atual sem apagar a regra |
+| Destaque visual | Item com problema ganha borda discreta |
+
+Também existe um sistema de toast leve para ações como tentar adicionar outro `Header`, `Footer`, `Nav`, `Main Navigation` ou `Component Area`. Cada bloco usa um único botão de ações com ícone para configurar, adicionar linha/coluna, duplicar, mover e deletar com confirmação.
+
+### Header no Layout Manager
+
+O Header suporta:
+
+| Modo | Comportamento |
+|------|---------------|
+| `static` | fluxo normal da página |
+| `sticky` | acompanha o scroll no topo |
+| `fixed` | fica fixo sobre a página |
+
+Configurações disponíveis:
+
+- comportamento `sempre visível` ou `esconder ao descer / mostrar ao subir`
+- altura desktop, tablet e mobile
+- shrink ao scroll
+- sombra ao scroll
+- fundo ao scroll
+- transparência inicial
+- blur
+- overlay content
+- offset automático do body/main
+- cores, imagem de fundo, borda, sombra, padding, margin, classe e id
+
+### JSON
+
+O JSON salvo usa `version: 2`, um objeto `site` e uma lista `items`.
+
+O objeto `site` guarda as configurações globais:
+
+- `bodyBg`
+- `textColor`
+- `primaryColor`
+- `secondaryColor`
+- `containerWidthValue`
+- `containerWidthUnit`
+- `containerWidthCustom`
+- `backToTop`
+
+Cada item estrutural pode ter:
+
+- `type`: `header`, `nav`, `section`, `footer`
+- `rows`
+- `columns`
+- `settings`
+- `componentArea`
+- `mainNavigation`
+- `position`
+- `grid` por breakpoint
+
+O `index.php` mantém fallback: se `layoutManager` estiver vazio ou inválido, o layout antigo continua funcionando.
+
+### Importar e Exportar
+
+A interface tem botões para:
+
+- exportar JSON
+- importar JSON
+- resetar para o layout padrão
+
+Esse recurso ajuda a testar variações sem transformar o template em construtor de conteúdo.
+
+---
+
 ## 🧭 Sistema de Menu
 
 O menu foi uma das primeiras áreas ajustadas, porque o Joomla 6 mudou detalhes do `mod_menu` e o template precisava controlar o layout sem depender do Cassiopeia/Bootstrap.
@@ -281,9 +424,13 @@ Parâmetros administrativos:
 
 | Campo | Valores |
 |------|---------|
+| Tipo de navegação | Somente Menu, Menu + Offcanvas, Somente Offcanvas |
 | Alinhamento do menu | Esquerda, centro, direita |
 | Largura mínima do submenu | Ex.: `18rem`, `320px`, `clamp(18rem, 24vw, 26rem)` |
-| Cor do ícone mobile | Cor do botão hamburguer |
+| Acionamento do submenu | Hover ou click |
+| Direção do submenu | Esquerda ou direita |
+| Animação do submenu | Slide, fade ou nenhuma |
+| Delay do submenu | Ex.: `0ms`, `120ms`, `0.2s` |
 
 ### Submenu desktop
 
@@ -334,19 +481,14 @@ Os parâmetros ficam organizados em fieldsets nativos do Joomla:
 
 ```text
 Geral
-Navegação
+Layout
+Menu
+Código
 SEO
-Scripts e códigos
-Topbar
-Header
-Banner
-Breadcrumbs
-Top
-Main / Conteúdo
-Bottom
-Footer
-Créditos
+Atribuir Menu
 ```
+
+As antigas guias por seção foram removidas da administração principal. A configuração visual de `SITE`, `Header`, `Nav`, `Section`, `Row`, `Column` e `Footer` fica dentro da guia `Layout`, sempre no painel da direita do Layout Manager.
 
 ---
 
@@ -356,26 +498,38 @@ Créditos
 |------|-----------|
 | Logotipo | Logo principal do header |
 | Alinhamento da logo | Esquerda, centro ou direita |
+| Favicon | Ícone do site |
+
+## 🎨 SITE no Layout Manager
+
+O item `SITE` é a raiz global do construtor. Ao selecionar `SITE`, a coluna direita mostra as configurações globais:
+
+| Campo | Descrição |
+|------|-----------|
+| Cor de fundo do body | Cor base do fundo do site |
 | Cor do texto | Cor base do site |
 | Cor primária | Cor principal de botões, links e estados |
 | Cor secundária | Cor de apoio |
-| Largura máxima do container | Padrão `1200px` |
-| Favicon | Ícone do site |
+| Valor do container | Padrão atual `1320` |
+| Unidade do container | `px`, `rem`, `%`, `vw`, `full` ou `custom` |
+| Container custom | Valor avançado como `min(1320px, 96vw)` |
+| Botão voltar ao topo | Liga/desliga botão flutuante |
+| Tipografia futura | Campo reservado para evolução |
+| Comportamento global | Presets globais futuros |
 
 ### Container
 
 O container global usa:
 
 ```css
---carlix-container: 1200px;
+--carlix-container: 1320px;
 ```
 
 Valores aceitos:
 
 | Exemplo | Resultado |
 |--------|-----------|
-| `1200px` | largura fixa máxima |
-| `1320px` | container mais largo |
+| `1320px` | largura fixa máxima padrão |
 | `90rem` | largura baseada na fonte |
 | `full` | largura total com padding |
 | `min(1320px, 96vw)` | largura responsiva avançada |
@@ -386,24 +540,33 @@ Valores aceitos:
 
 | Campo | Descrição |
 |------|-----------|
-| Comportamento do cabeçalho | `static`, `sticky`, `fixed`, `floating` |
+| Tipo de navegação | `Somente Menu`, `Menu + Offcanvas`, `Somente Offcanvas` |
 | Alinhamento do menu | Esquerda, centro ou direita |
 | Largura mínima do submenu | Controla dropdown desktop |
-| Cor do ícone do menu mobile | Cor do hamburguer |
+| Acionamento do submenu | Hover/focus ou click |
+| Direção do submenu | Dropdown alinhado à esquerda ou direita |
+| Animação do submenu | Slide, fade ou sem animação |
+| Delay do submenu | Tempo CSS como `0ms`, `120ms` ou `0.2s` |
 | Lado do offcanvas | Direita ou esquerda |
+| Largura do offcanvas | Ex.: `24rem`, `360px`, `min(24rem, 92vw)` |
+| Fundo/texto do offcanvas | Cores da gaveta mobile |
+| Overlay/blur/velocidade | Ajustes de fundo e animação |
+| Fechar ao clicar em link | Liga/desliga fechamento automático |
+| Mostrar logo no offcanvas | Liga/desliga logo do topo da gaveta |
 | Logo do menu mobile | Pode ser diferente da logo normal |
 | Alinhamento da logo mobile | Esquerda, centro ou direita |
 | Altura da logo mobile | Ex.: `2.5rem`, `40px`, `3rem` |
-| Botão voltar ao topo | Liga/desliga botão flutuante |
+| Botão mobile | Posição, tamanho, cor, fundo, borda e radius |
 
-### Header
+### Tipos de navegação
 
-| Modo | Comportamento |
-|-----|---------------|
-| `static` | Header rola normalmente |
-| `sticky` | Gruda no topo ao rolar |
-| `fixed` | Sempre fixo no topo, com compensação de altura via JS |
-| `floating` | Header flutuante com sombra ao iniciar rolagem |
+| Tipo | Desktop | Mobile |
+|-----|---------|--------|
+| Somente Menu | Menu horizontal tradicional | Botão hamburguer + offcanvas |
+| Menu + Offcanvas | Menu horizontal + botão hamburguer | Botão hamburguer + offcanvas |
+| Somente Offcanvas | Botão hamburguer | Botão hamburguer + offcanvas |
+
+O comportamento do `Header` (`static`, `sticky`, `fixed`) fica no item `Header` dentro do Layout Manager, não mais misturado na aba de navegação.
 
 ---
 
@@ -443,9 +606,9 @@ As descrições usam `&lt;head&gt;`, `&lt;/head&gt;`, `&lt;/body&gt;` e `&lt;sty
 
 ---
 
-## 🎨 Parâmetros por Seção
+## 🎨 Configuração Visual por Item
 
-Cada seção visual tem a mesma estrutura de campos:
+Cada item selecionado no Layout Manager tem sua própria configuração no painel direito.
 
 | Campo | Desktop | Tablet | Mobile |
 |------|---------|--------|--------|
@@ -456,18 +619,15 @@ Cada seção visual tem a mesma estrutura de campos:
 | Espaço superior | Sim | Sim | Sim |
 | Espaço inferior | Sim | Sim | Sim |
 
-Seções com parâmetros:
+Itens configuráveis:
 
 ```text
-topbar
-header
-banner
-breadcrumbs
-top
-main
-bottom
-footer
-credits
+Header
+Nav
+Section
+Footer
+Row
+Column
 ```
 
 ### Espaçamentos
@@ -520,7 +680,7 @@ px, rem, em, %, vw, vh, clamp(), min(), max(), calc()
 
 | Token | Valor |
 |------|-------|
-| `--carlix-container` | `1200px` |
+| `--carlix-container` | `1320px` |
 | `--carlix-grid-gap` | `1.5rem` |
 | `--carlix-radius` | `0.5rem` |
 | `--carlix-radius-lg` | `1rem` |
@@ -734,9 +894,9 @@ Todos os assets são declarados em `joomla.asset.json`.
 
 | Asset | Arquivo | Versão atual |
 |------|---------|--------------|
-| `template.hc_carlix.variables` | `variables.css` | `1.0.0` |
-| `template.hc_carlix.grid` | `grid.css` | `1.0.0` |
-| `template.hc_carlix.template` | `template.css` | `1.0.11` |
+| `template.hc_carlix.variables` | `variables.css` | `1.2.1` |
+| `template.hc_carlix.grid` | `grid.css` | `1.0.1` |
+| `template.hc_carlix.template` | `template.css` | `1.0.13` |
 | `template.hc_carlix.utilities` | `utilities.css` | `1.0.0` |
 | `template.hc_carlix.buttons` | `buttons.css` | `1.0.1` |
 | `template.hc_carlix.forms` | `forms.css` | `1.0.1` |
@@ -744,14 +904,16 @@ Todos os assets são declarados em `joomla.asset.json`.
 | `template.hc_carlix.breadcrumbs` | `breadcrumbs.css` | `1.0.1` |
 | `template.hc_carlix.hero` | `hero.css` | `1.0.0` |
 | `template.hc_carlix.modules` | `modules.css` | `1.0.2` |
-| `template.hc_carlix.menu` | `menu.css` | `1.0.11` |
-| `template.hc_carlix.template` | `template.js` | `1.0.3` |
+| `template.hc_carlix.menu` | `menu.css` | `1.2.1` |
+| `template.hc_carlix.template` | `template.js` | `1.2.1` |
+| `template.hc_carlix.layout-manager` | `layout-manager.css` | `1.2.3` |
+| `template.hc_carlix.layout-manager` | `layout-manager.js` | `1.2.3` |
 
 ### Importante sobre versões
 
 | Tipo | Valor |
 |-----|-------|
-| Versão pública do template | `1.0.0` |
+| Versão pública do template | `1.2.0` |
 | Versões de assets | controle interno de cache |
 
 O template só deve mudar de versão pública quando for decidido publicar uma nova versão. Alterações em CSS/JS podem subir versões individuais no `joomla.asset.json` para forçar atualização de cache.
@@ -768,6 +930,10 @@ php -l index.php
 
 ```bash
 node --check media/js/template.js
+```
+
+```bash
+node --check media/js/layout-manager.js
 ```
 
 ```bash
@@ -842,14 +1008,14 @@ O desenvolvimento deve evitar alterações diretas no core do Joomla. Quando hou
 Versão pública atual:
 
 ```text
-1.0.0
+1.2.0
 ```
 
 Exemplo de empacotamento:
 
 ```bash
 cd ~/projetos
-zip -r tpl_hc_carlix-1.0.0.zip tpl_hc_carlix \
+zip -r tpl_hc_carlix-1.2.0.zip tpl_hc_carlix \
   -x "tpl_hc_carlix/.git/*" \
   -x "tpl_hc_carlix/.idea/*" \
   -x "tpl_hc_carlix/tpl_hc_carlix.zip" \
@@ -881,9 +1047,9 @@ Sistema → Estilos do site → HC Carlix
 | Separar `menu.css` | Menu tem regras próprias desktop/mobile |
 | Reaproveitar o mesmo menu no offcanvas | Evita duplicar estrutura no Joomla |
 | Criar posição `offcanvas` | Permite testar módulos dentro do menu mobile |
-| Usar fieldsets por seção | Admin fica simples e previsível |
-| Usar espaçamentos por device | Desktop, tablet e mobile podem ser diferentes |
-| Manter versão pública `1.0.0` | Só muda quando houver decisão de release |
+| Concentrar seções no Layout Manager | Evita abas duplicadas e coloca a configuração visual no item certo |
+| Usar espaçamentos por device | Desktop, tablet e mobile podem ser diferentes dentro do layout |
+| Evoluir versão pública para `1.2.0` | Refinamento do Layout Manager, validações/toasts e navegação/offcanvas configurável |
 | Escapar tags nas descrições `.ini` | Evita quebrar o formulário do administrator |
 
 ---
