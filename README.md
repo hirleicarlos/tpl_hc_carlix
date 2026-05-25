@@ -5,7 +5,7 @@
 ![PHP](https://img.shields.io/badge/PHP-8.3%2B-blue)
 ![CSS](https://img.shields.io/badge/CSS-Nativo%20%7C%20Custom%20Properties-red)
 ![JS](https://img.shields.io/badge/JS-Vanilla-black)
-![Version](https://img.shields.io/badge/version-1.2.0-brightgreen)
+![Version](https://img.shields.io/badge/version-1.2.1-brightgreen)
 ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-green)
 
 ---
@@ -296,6 +296,16 @@ Ele continua seguindo a regra principal do projeto:
 | Centro | Canvas visual amplo com o item raiz `SITE` e a árvore do layout |
 | Direita | Configurações do item selecionado |
 
+### Ferramentas do Layout
+
+As ações de JSON ficam em uma modal acessada pelo botão `Ferramentas` no topo do Layout Manager.
+
+| Ação | Comportamento |
+|------|---------------|
+| Exportar | Copia o JSON atual para a área de transferência ou baixa um arquivo `.json` |
+| Importar | Aceita JSON colado em textarea ou upload de arquivo `.json` |
+| Reset | Exige confirmação antes de restaurar o layout padrão |
+
 ### Regras aplicadas
 
 | Regra | Comportamento |
@@ -304,18 +314,22 @@ Ele continua seguindo a regra principal do projeto:
 | Header | máximo 1 |
 | Nav | máximo 1 |
 | Footer | máximo 1 |
-| Component Area | máximo 1 e obrigatória antes de salvar |
+| Área do componente | máximo 1 e obrigatória antes de salvar |
 | Main Navigation | máximo 1 |
 | Nav section x Main Navigation column | não podem coexistir |
-| Header/Nav/Footer | exatamente 1 Row |
+| Header/Nav/Footer | minimo 1 Row e podem ter varias Rows |
 | Row | pelo menos 1 Column |
 | Grid | soma por breakpoint não pode passar de 12 |
 | Colunas novas | recalcula automaticamente `12`, `6+6`, `4+4+4`, `3+3+3+3` |
 | Gap da Row | liga/desliga gap e salva valor + unidade, iniciando em `15px` |
+| Responsivo | usa toggles independentes para ocultar no desktop, tablet e mobile |
+| Position visual | usa campo CSS livre com chips rápidos, permitindo até duas posições como `center top` |
+| Scroll do painel | alterar controles não deve mandar a sidebar de volta para o topo |
+| IDs | somente `Header` e `Footer` usam ID; demais estruturas usam classes |
 
 ### Validações e avisos
 
-A versão `1.2.0` troca os avisos vermelhos soltos por um painel recolhível de validação.
+A versão `1.2.1` mantém os avisos em painel recolhível e moderniza os controles do Layout Manager.
 
 | Recurso | Comportamento |
 |--------|---------------|
@@ -326,7 +340,7 @@ A versão `1.2.0` troca os avisos vermelhos soltos por um painel recolhível de 
 | Fechar aviso | Oculta o aviso atual sem apagar a regra |
 | Destaque visual | Item com problema ganha borda discreta |
 
-Também existe um sistema de toast leve para ações como tentar adicionar outro `Header`, `Footer`, `Nav`, `Main Navigation` ou `Component Area`. Cada bloco usa um único botão de ações com ícone para configurar, adicionar linha/coluna, duplicar, mover e deletar com confirmação.
+Também existe um sistema de toast leve para ações como tentar adicionar outro `Header`, `Footer`, `Nav`, `Main Navigation` ou `Área do componente`. Cada bloco usa um único botão de ações com ícone para configurar, adicionar linha/coluna, duplicar, mover e deletar com confirmação.
 
 ### Header no Layout Manager
 
@@ -357,14 +371,26 @@ O JSON salvo usa `version: 2`, um objeto `site` e uma lista `items`.
 
 O objeto `site` guarda as configurações globais:
 
-- `bodyBg`
-- `textColor`
-- `primaryColor`
-- `secondaryColor`
+- `visual.backgroundType`
+- `visual.backgroundColor`
+- `visual.backgroundGradient`
+- `visual.backgroundImage`
+- `visual.backgroundPosition`
+- `visual.backgroundSize`
+- `visual.backgroundRepeat`
+- `visual.backgroundAttachment`
+- `visual.backgroundOpacity`
+- `visual.overlayEnabled`
+- `visual.overlayColor`
+- `visual.overlayOpacity`
+- `visual.textColor`
 - `containerWidthValue`
 - `containerWidthUnit`
 - `containerWidthCustom`
-- `backToTop`
+- `responsive.hideDesktop`
+- `responsive.hideTablet`
+- `responsive.hideMobile`
+- `behavior.backToTop`
 
 Cada item estrutural pode ter:
 
@@ -494,11 +520,36 @@ As antigas guias por seção foram removidas da administração principal. A con
 
 ## ⚙️ Geral
 
+### Logo / Identidade
+
 | Campo | Descrição |
 |------|-----------|
-| Logotipo | Logo principal do header |
-| Alinhamento da logo | Esquerda, centro ou direita |
-| Favicon | Ícone do site |
+| Tipo de logo | Radio `Imagem` ou `Texto`; controla a renderização real no frontend |
+| Texto da logo | Usado somente no tipo Texto. Se vazio, usa `HC Carlix` |
+| Slogan | Usado somente no tipo Texto e renderizado abaixo do nome |
+| Logo | Imagem principal, via Media Manager |
+| Retina Logo | Versão 2x usada no `srcset` da imagem principal |
+| Mobile Logo | Versão alternativa via `<picture>` para telas pequenas |
+| Sticky Header Logo | Troca a imagem quando header sticky/fixed/flutuante entra em scroll |
+| Logo Alt Text | Texto alternativo da imagem; fallback `HC Carlix` |
+| Logo Width / Height | Tamanho opcional. Aceita número em px automático, `px`, `rem`, `em`, `%`, `vw`, `vh` ou `auto` |
+| Logo Alignment | Esquerda, centro ou direita |
+| Logo Custom Link | Link aplicado na logo textual ou imagem. Padrão: `/` |
+
+### Site
+
+| Campo | Descrição |
+|------|-----------|
+| Favicon | Ícone do site, via Media Manager |
+| Apple Touch Icon | Ícone para atalhos em dispositivos Apple; se vazio, a tag não é renderizada |
+| Cor do navegador mobile | Gera `<meta name="theme-color">` no frontend |
+
+Renderização no frontend:
+
+- `Tipo de logo = Texto`: renderiza link textual com `.carlix-logo--text`, título e slogan.
+- `Tipo de logo = Imagem`: renderiza link com imagem, `alt`, `srcset` retina, mobile via `<picture>` e dimensões opcionais.
+- Se a imagem principal estiver vazia no tipo Imagem, o frontend usa a logo padrão do template.
+- A posição Joomla `logo` continua existindo; módulo antigo publicado nela fica como fallback apenas para estilos antigos sem parâmetros novos de identidade salvos.
 
 ## 🎨 SITE no Layout Manager
 
@@ -506,16 +557,19 @@ O item `SITE` é a raiz global do construtor. Ao selecionar `SITE`, a coluna dir
 
 | Campo | Descrição |
 |------|-----------|
-| Cor de fundo do body | Cor base do fundo do site |
-| Cor do texto | Cor base do site |
-| Cor primária | Cor principal de botões, links e estados |
-| Cor secundária | Cor de apoio |
+| Tipo de fundo | Nenhum, cor, gradiente ou imagem |
+| Cor de fundo do body | Cor base do fundo do site, com opacidade |
+| Gradiente de fundo | Aceita valores CSS como `linear-gradient()` |
+| Imagem de fundo | Imagem do Media Manager ou valor CSS como `url()` |
+| Background position | Campo livre com chips para montar até duas posições |
+| Background size/repeat/attachment | Controles separados para o fundo global |
+| Overlay | Cor e opacidade sobre imagem de fundo |
+| Cor global do texto | Cor base aplicada no `body` |
 | Valor do container | Padrão atual `1320` |
-| Unidade do container | `px`, `rem`, `%`, `vw`, `full` ou `custom` |
+| Unidade do container | `px`, `rem`, `vw` ou `custom` |
 | Container custom | Valor avançado como `min(1320px, 96vw)` |
-| Botão voltar ao topo | Liga/desliga botão flutuante |
-| Tipografia futura | Campo reservado para evolução |
-| Comportamento global | Presets globais futuros |
+| Botão voltar ao topo | Switch moderno para ligar/desligar botão flutuante |
+| Responsivo | Toggles para ocultar no desktop, tablet e mobile |
 
 ### Container
 
@@ -595,12 +649,17 @@ O Joomla e os componentes ainda podem definir metadados específicos por página
 
 ## 🔌 Scripts e Códigos
 
-| Campo | Descrição |
-|------|-----------|
-| Google Analytics 4 | ID `G-XXXXXXXXXX`, injeta `gtag.js` |
-| Código antes de `</head>` | GTM, Search Console, metas extras, pixels |
-| Código antes de `</body>` | Noscript, chat, widgets, scripts finais |
-| CSS personalizado | CSS extra sem precisar tag `<style>` |
+A aba `Código` foi reorganizada em cards técnicos para scripts, CSS, JavaScript, integrações, performance, segurança e desenvolvimento. O campo exclusivo de GA4 foi removido da interface; instalações antigas com `gaId` continuam com fallback no frontend.
+
+| Grupo | Campos principais |
+|------|-------------------|
+| Scripts Globais | código no `<head>`, após abertura do `<body>`, antes de `</body>` e `noscript` |
+| CSS Personalizado | CSS global, desktop, tablet, mobile, crítico e adicional |
+| JavaScript Personalizado | JavaScript no head, footer e DOM Ready |
+| Integrações & Tracking | GTM, GA, Meta Pixel, TikTok Pixel, Clarity, Hotjar, LinkedIn e verificações |
+| Performance Técnica | defer, async, lazy load, font-display, DNS prefetch, preconnect e preloads |
+| Segurança | helpers para referrer policy, X-Frame-Options e CSP simples |
+| Desenvolvimento | mostrar posições, grid, breakpoints, áreas vazias e desativar minificação/cache |
 
 As descrições usam `&lt;head&gt;`, `&lt;/head&gt;`, `&lt;/body&gt;` e `&lt;style&gt;` escapados para não quebrar o formulário do administrator.
 
@@ -896,24 +955,24 @@ Todos os assets são declarados em `joomla.asset.json`.
 |------|---------|--------------|
 | `template.hc_carlix.variables` | `variables.css` | `1.2.1` |
 | `template.hc_carlix.grid` | `grid.css` | `1.0.1` |
-| `template.hc_carlix.template` | `template.css` | `1.0.13` |
-| `template.hc_carlix.utilities` | `utilities.css` | `1.0.0` |
+| `template.hc_carlix.template` | `template.css` | `1.0.19` |
+| `template.hc_carlix.utilities` | `utilities.css` | `1.0.1` |
 | `template.hc_carlix.buttons` | `buttons.css` | `1.0.1` |
 | `template.hc_carlix.forms` | `forms.css` | `1.0.1` |
 | `template.hc_carlix.elements` | `elements.css` | `1.0.0` |
 | `template.hc_carlix.breadcrumbs` | `breadcrumbs.css` | `1.0.1` |
 | `template.hc_carlix.hero` | `hero.css` | `1.0.0` |
 | `template.hc_carlix.modules` | `modules.css` | `1.0.2` |
-| `template.hc_carlix.menu` | `menu.css` | `1.2.1` |
-| `template.hc_carlix.template` | `template.js` | `1.2.1` |
-| `template.hc_carlix.layout-manager` | `layout-manager.css` | `1.2.3` |
-| `template.hc_carlix.layout-manager` | `layout-manager.js` | `1.2.3` |
+| `template.hc_carlix.menu` | `menu.css` | `1.2.2` |
+| `template.hc_carlix.template` | `template.js` | `1.2.3` |
+| `template.hc_carlix.layout-manager` | `layout-manager.css` | `1.2.17` |
+| `template.hc_carlix.layout-manager` | `layout-manager.js` | `1.2.17` |
 
 ### Importante sobre versões
 
 | Tipo | Valor |
 |-----|-------|
-| Versão pública do template | `1.2.0` |
+| Versão pública do template | `1.2.1` |
 | Versões de assets | controle interno de cache |
 
 O template só deve mudar de versão pública quando for decidido publicar uma nova versão. Alterações em CSS/JS podem subir versões individuais no `joomla.asset.json` para forçar atualização de cache.
@@ -1008,14 +1067,14 @@ O desenvolvimento deve evitar alterações diretas no core do Joomla. Quando hou
 Versão pública atual:
 
 ```text
-1.2.0
+1.2.1
 ```
 
 Exemplo de empacotamento:
 
 ```bash
 cd ~/projetos
-zip -r tpl_hc_carlix-1.2.0.zip tpl_hc_carlix \
+zip -r tpl_hc_carlix-1.2.1.zip tpl_hc_carlix \
   -x "tpl_hc_carlix/.git/*" \
   -x "tpl_hc_carlix/.idea/*" \
   -x "tpl_hc_carlix/tpl_hc_carlix.zip" \
@@ -1049,7 +1108,7 @@ Sistema → Estilos do site → HC Carlix
 | Criar posição `offcanvas` | Permite testar módulos dentro do menu mobile |
 | Concentrar seções no Layout Manager | Evita abas duplicadas e coloca a configuração visual no item certo |
 | Usar espaçamentos por device | Desktop, tablet e mobile podem ser diferentes dentro do layout |
-| Evoluir versão pública para `1.2.0` | Refinamento do Layout Manager, validações/toasts e navegação/offcanvas configurável |
+| Evoluir versão pública para `1.2.1` | Layout Manager com SITE reorganizado, toggles modernos, aba Código expandida e Position livre com chips |
 | Escapar tags nas descrições `.ini` | Evita quebrar o formulário do administrator |
 
 ---

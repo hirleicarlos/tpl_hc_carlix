@@ -7,7 +7,7 @@
 	<authorUrl>https://example.com</authorUrl>
 	<copyright>Copyright (C) 2026 Hirlei Carlos. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE</license>
-	<version>1.2.0</version>
+	<version>1.2.1</version>
 	<description>HC Carlix - Template Joomla 6.x leve, sem Bootstrap/jQuery, grid de 12 colunas, fontes self-hosted.</description>
 
 	<inheritable>1</inheritable>
@@ -140,24 +140,43 @@
 	<config>
 		<fields name="params">
 			<fieldset name="general" label="TPL_HC_CARLIX_FIELDSET_GENERAL">
-				<field name="logo" type="media" label="TPL_HC_CARLIX_LOGO_LABEL" description="TPL_HC_CARLIX_LOGO_DESC" />
+				<field name="logoIdentityGroup" type="spacer" label="TPL_HC_CARLIX_GROUP_LOGO_IDENTITY" />
+				<field name="logoType" type="list" label="TPL_HC_CARLIX_LOGO_TYPE_LABEL" description="TPL_HC_CARLIX_LOGO_TYPE_DESC" default="image" validate="options">
+					<option value="image">TPL_HC_CARLIX_LOGO_TYPE_IMAGE</option>
+					<option value="text">TPL_HC_CARLIX_LOGO_TYPE_TEXT</option>
+				</field>
+				<field name="logoText" type="text" label="TPL_HC_CARLIX_LOGO_TEXT_LABEL" description="TPL_HC_CARLIX_LOGO_TEXT_DESC" default="HC Carlix" showon="logoType:text" />
+				<field name="logoSlogan" type="text" label="TPL_HC_CARLIX_LOGO_SLOGAN_LABEL" description="TPL_HC_CARLIX_LOGO_SLOGAN_DESC" default="Lightweight Joomla Template" showon="logoType:text" />
+				<field name="logo" type="media" label="TPL_HC_CARLIX_LOGO_LABEL" description="TPL_HC_CARLIX_LOGO_DESC" preview="true" showon="logoType:image" />
+				<field name="retinaLogo" type="media" label="TPL_HC_CARLIX_RETINA_LOGO_LABEL" description="TPL_HC_CARLIX_RETINA_LOGO_DESC" preview="true" showon="logoType:image" />
+				<field name="mobileLogo" type="media" label="TPL_HC_CARLIX_MOBILE_LOGO_LABEL" description="TPL_HC_CARLIX_MOBILE_LOGO_DESC" preview="true" showon="logoType:image" />
+				<field name="stickyLogo" type="media" label="TPL_HC_CARLIX_STICKY_LOGO_LABEL" description="TPL_HC_CARLIX_STICKY_LOGO_DESC" preview="true" showon="logoType:image" />
+				<field name="logoAlt" type="text" label="TPL_HC_CARLIX_LOGO_ALT_LABEL" description="TPL_HC_CARLIX_LOGO_ALT_DESC" default="HC Carlix" showon="logoType:image" />
+				<field name="logoWidth" type="text" label="TPL_HC_CARLIX_LOGO_WIDTH_LABEL" description="TPL_HC_CARLIX_LOGO_WIDTH_DESC" showon="logoType:image" />
+				<field name="logoHeight" type="text" label="TPL_HC_CARLIX_LOGO_HEIGHT_LABEL" description="TPL_HC_CARLIX_LOGO_HEIGHT_DESC" showon="logoType:image" />
 				<field name="logoAlign" type="list" label="TPL_HC_CARLIX_LOGO_ALIGN_LABEL" description="TPL_HC_CARLIX_LOGO_ALIGN_DESC" default="start" validate="options">
 					<option value="start">TPL_HC_CARLIX_ALIGN_START</option>
 					<option value="center">TPL_HC_CARLIX_ALIGN_CENTER</option>
 					<option value="end">TPL_HC_CARLIX_ALIGN_END</option>
 				</field>
-				<field name="favicon" type="media" label="TPL_HC_CARLIX_FAVICON_LABEL" description="TPL_HC_CARLIX_FAVICON_DESC" />
+				<field name="logoCustomLink" type="text" label="TPL_HC_CARLIX_LOGO_CUSTOM_LINK_LABEL" description="TPL_HC_CARLIX_LOGO_CUSTOM_LINK_DESC" default="/" />
+				<field name="generalSiteGroup" type="spacer" label="TPL_HC_CARLIX_GROUP_SITE" />
+				<field name="favicon" type="media" label="TPL_HC_CARLIX_FAVICON_LABEL" description="TPL_HC_CARLIX_FAVICON_DESC" preview="true" />
+				<field name="appleTouchIcon" type="media" label="TPL_HC_CARLIX_APPLE_TOUCH_ICON_LABEL" description="TPL_HC_CARLIX_APPLE_TOUCH_ICON_DESC" preview="true" />
+				<field name="themeColor" type="color" label="TPL_HC_CARLIX_THEME_COLOR_LABEL" description="TPL_HC_CARLIX_THEME_COLOR_DESC" default="#d32f2f" />
 			</fieldset>
 
 			<fieldset name="layout" label="TPL_HC_CARLIX_FIELDSET_LAYOUT" addfieldpath="/templates/hc_carlix/field">
 				<field name="bodyBg" type="hidden" default="#ffffff" />
 				<field name="textColor" type="hidden" default="#333333" />
-				<field name="primaryColor" type="hidden" default="#d32f2f" />
-				<field name="secondaryColor" type="hidden" default="#151515" />
 				<field name="containerWidthValue" type="hidden" default="1320" />
 				<field name="containerWidthUnit" type="hidden" default="px" />
 				<field name="containerWidthCustom" type="hidden" />
 				<field name="backToTop" type="hidden" default="0" />
+				<field name="smoothScroll" type="hidden" default="1" />
+				<field name="reduceMotion" type="hidden" default="0" />
+				<field name="visibleFocus" type="hidden" default="1" />
+				<field name="enhancedContrast" type="hidden" default="0" />
 				<field name="layoutManager" type="layoutmanager" label="TPL_HC_CARLIX_LAYOUT_MANAGER_LABEL" description="TPL_HC_CARLIX_LAYOUT_MANAGER_FIELD_DESC" hiddenLabel="true" hiddenDescription="true" filter="raw" />
 			</fieldset>
 
@@ -192,8 +211,8 @@
 					<option value="left">TPL_HC_CARLIX_SIDE_LEFT</option>
 				</field>
 				<field name="offcanvasWidth" type="text" label="TPL_HC_CARLIX_OFFCANVAS_WIDTH_LABEL" description="TPL_HC_CARLIX_OFFCANVAS_WIDTH_DESC" default="24rem" />
-				<field name="offcanvasBackground" type="color" label="TPL_HC_CARLIX_OFFCANVAS_BG_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#ffffff" />
-				<field name="offcanvasTextColor" type="color" label="TPL_HC_CARLIX_OFFCANVAS_TEXT_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#333333" />
+				<field name="offcanvasBackground" type="text" label="TPL_HC_CARLIX_OFFCANVAS_BG_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#ffffff" filter="raw" />
+				<field name="offcanvasTextColor" type="text" label="TPL_HC_CARLIX_OFFCANVAS_TEXT_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#333333" filter="raw" />
 				<field name="offcanvasOverlayOpacity" type="text" label="TPL_HC_CARLIX_OFFCANVAS_OVERLAY_OPACITY_LABEL" description="TPL_HC_CARLIX_OFFCANVAS_OVERLAY_OPACITY_DESC" default="0.55" />
 				<field name="offcanvasOverlayBlur" type="text" label="TPL_HC_CARLIX_OFFCANVAS_OVERLAY_BLUR_LABEL" description="TPL_HC_CARLIX_OFFCANVAS_OVERLAY_BLUR_DESC" default="2px" />
 				<field name="offcanvasSpeed" type="text" label="TPL_HC_CARLIX_OFFCANVAS_SPEED_LABEL" description="TPL_HC_CARLIX_OFFCANVAS_SPEED_DESC" default="200ms" />
@@ -218,21 +237,90 @@
 					<option value="end">TPL_HC_CARLIX_ALIGN_END</option>
 				</field>
 				<field name="mobileButtonSize" type="text" label="TPL_HC_CARLIX_MOBILE_BUTTON_SIZE_LABEL" description="TPL_HC_CARLIX_MOBILE_BUTTON_SIZE_DESC" default="2.75rem" />
-				<field name="mobileButtonColor" type="color" label="TPL_HC_CARLIX_MOBILE_BUTTON_COLOR_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#111111" />
-				<field name="mobileButtonBackground" type="color" label="TPL_HC_CARLIX_MOBILE_BUTTON_BG_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#ffffff" />
+				<field name="mobileButtonColor" type="text" label="TPL_HC_CARLIX_MOBILE_BUTTON_COLOR_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#111111" filter="raw" />
+				<field name="mobileButtonBackground" type="text" label="TPL_HC_CARLIX_MOBILE_BUTTON_BG_LABEL" description="TPL_HC_CARLIX_FIELD_COLOR_DESC" default="#ffffff" filter="raw" />
 				<field name="mobileButtonBorder" type="text" label="TPL_HC_CARLIX_MOBILE_BUTTON_BORDER_LABEL" description="TPL_HC_CARLIX_MOBILE_BUTTON_BORDER_DESC" default="1px solid #e6e6e6" />
 				<field name="mobileButtonRadius" type="text" label="TPL_HC_CARLIX_MOBILE_BUTTON_RADIUS_LABEL" description="TPL_HC_CARLIX_MOBILE_BUTTON_RADIUS_DESC" default="0.5rem" />
 			</fieldset>
 
 			<fieldset name="code" label="TPL_HC_CARLIX_FIELDSET_CODE">
-				<field name="gaId" type="text" label="TPL_HC_CARLIX_GA_LABEL" description="TPL_HC_CARLIX_GA_DESC" filter="cmd" />
+				<field name="codeScriptsGroup" type="spacer" label="TPL_HC_CARLIX_CODE_GROUP_GLOBAL_SCRIPTS" />
 				<field name="headCode" type="textarea" label="TPL_HC_CARLIX_HEADCODE_LABEL" description="TPL_HC_CARLIX_HEADCODE_DESC" rows="6" filter="raw" />
+				<field name="bodyStartCode" type="textarea" label="TPL_HC_CARLIX_BODYSTARTCODE_LABEL" description="TPL_HC_CARLIX_BODYSTARTCODE_DESC" rows="6" filter="raw" />
 				<field name="bodyCode" type="textarea" label="TPL_HC_CARLIX_BODYCODE_LABEL" description="TPL_HC_CARLIX_BODYCODE_DESC" rows="6" filter="raw" />
+				<field name="noscriptCode" type="textarea" label="TPL_HC_CARLIX_NOSCRIPT_CODE_LABEL" description="TPL_HC_CARLIX_NOSCRIPT_CODE_DESC" rows="4" filter="raw" />
+
+				<field name="codeCssGroup" type="spacer" label="TPL_HC_CARLIX_CODE_GROUP_CUSTOM_CSS" />
+				<field name="criticalCss" type="textarea" label="TPL_HC_CARLIX_CRITICAL_CSS_LABEL" description="TPL_HC_CARLIX_CRITICAL_CSS_DESC" rows="5" filter="raw" />
 				<field name="customCss" type="textarea" label="TPL_HC_CARLIX_CUSTOMCSS_LABEL" description="TPL_HC_CARLIX_CUSTOMCSS_DESC" rows="6" filter="raw" />
+				<field name="customCssDesktop" type="textarea" label="TPL_HC_CARLIX_CUSTOMCSS_DESKTOP_LABEL" description="TPL_HC_CARLIX_CUSTOMCSS_DESKTOP_DESC" rows="5" filter="raw" />
+				<field name="customCssTablet" type="textarea" label="TPL_HC_CARLIX_CUSTOMCSS_TABLET_LABEL" description="TPL_HC_CARLIX_CUSTOMCSS_TABLET_DESC" rows="5" filter="raw" />
+				<field name="customCssMobile" type="textarea" label="TPL_HC_CARLIX_CUSTOMCSS_MOBILE_LABEL" description="TPL_HC_CARLIX_CUSTOMCSS_MOBILE_DESC" rows="5" filter="raw" />
+				<field name="additionalCss" type="textarea" label="TPL_HC_CARLIX_ADDITIONAL_CSS_LABEL" description="TPL_HC_CARLIX_ADDITIONAL_CSS_DESC" rows="5" filter="raw" />
+
+				<field name="codeJsGroup" type="spacer" label="TPL_HC_CARLIX_CODE_GROUP_CUSTOM_JS" />
+				<field name="customJsHead" type="textarea" label="TPL_HC_CARLIX_CUSTOMJS_HEAD_LABEL" description="TPL_HC_CARLIX_CUSTOMJS_HEAD_DESC" rows="5" filter="raw" />
+				<field name="customJsFooter" type="textarea" label="TPL_HC_CARLIX_CUSTOMJS_FOOTER_LABEL" description="TPL_HC_CARLIX_CUSTOMJS_FOOTER_DESC" rows="5" filter="raw" />
+				<field name="customJsDomReady" type="textarea" label="TPL_HC_CARLIX_CUSTOMJS_DOMREADY_LABEL" description="TPL_HC_CARLIX_CUSTOMJS_DOMREADY_DESC" rows="5" filter="raw" />
+
+				<field name="codeTrackingGroup" type="spacer" label="TPL_HC_CARLIX_CODE_GROUP_TRACKING" />
+				<field name="gtmId" type="text" label="TPL_HC_CARLIX_GTM_ID_LABEL" description="TPL_HC_CARLIX_GTM_ID_DESC" filter="cmd" />
+				<field name="gaMeasurementId" type="text" label="TPL_HC_CARLIX_GA_MEASUREMENT_ID_LABEL" description="TPL_HC_CARLIX_GA_MEASUREMENT_ID_DESC" filter="cmd" />
+				<field name="metaPixelId" type="text" label="TPL_HC_CARLIX_META_PIXEL_ID_LABEL" description="TPL_HC_CARLIX_META_PIXEL_ID_DESC" filter="cmd" />
+				<field name="tiktokPixelId" type="text" label="TPL_HC_CARLIX_TIKTOK_PIXEL_ID_LABEL" description="TPL_HC_CARLIX_TIKTOK_PIXEL_ID_DESC" filter="cmd" />
+				<field name="clarityId" type="text" label="TPL_HC_CARLIX_CLARITY_ID_LABEL" description="TPL_HC_CARLIX_CLARITY_ID_DESC" filter="cmd" />
+				<field name="hotjarId" type="text" label="TPL_HC_CARLIX_HOTJAR_ID_LABEL" description="TPL_HC_CARLIX_HOTJAR_ID_DESC" filter="cmd" />
+				<field name="linkedInPartnerId" type="text" label="TPL_HC_CARLIX_LINKEDIN_PARTNER_ID_LABEL" description="TPL_HC_CARLIX_LINKEDIN_PARTNER_ID_DESC" filter="cmd" />
+				<field name="googleSiteVerification" type="text" label="TPL_HC_CARLIX_GOOGLE_VERIFICATION_LABEL" description="TPL_HC_CARLIX_GOOGLE_VERIFICATION_DESC" filter="string" />
+				<field name="bingSiteVerification" type="text" label="TPL_HC_CARLIX_BING_VERIFICATION_LABEL" description="TPL_HC_CARLIX_BING_VERIFICATION_DESC" filter="string" />
+				<field name="pinterestVerification" type="text" label="TPL_HC_CARLIX_PINTEREST_VERIFICATION_LABEL" description="TPL_HC_CARLIX_PINTEREST_VERIFICATION_DESC" filter="string" />
+				<field name="facebookDomainVerification" type="text" label="TPL_HC_CARLIX_FACEBOOK_VERIFICATION_LABEL" description="TPL_HC_CARLIX_FACEBOOK_VERIFICATION_DESC" filter="string" />
+
+				<field name="codePerformanceGroup" type="spacer" label="TPL_HC_CARLIX_CODE_GROUP_PERFORMANCE" />
+				<field name="deferJavaScript" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_DEFER_JS_LABEL" description="TPL_HC_CARLIX_DEFER_JS_DESC" default="0" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+				<field name="asyncScripts" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_ASYNC_SCRIPTS_LABEL" description="TPL_HC_CARLIX_ASYNC_SCRIPTS_DESC" default="0" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+				<field name="lazyIframes" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_LAZY_IFRAMES_LABEL" description="TPL_HC_CARLIX_LAZY_IFRAMES_DESC" default="0" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+				<field name="lazyImages" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_LAZY_IMAGES_LABEL" description="TPL_HC_CARLIX_LAZY_IMAGES_DESC" default="0" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+				<field name="fontDisplaySwap" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_FONT_DISPLAY_SWAP_LABEL" description="TPL_HC_CARLIX_FONT_DISPLAY_SWAP_DESC" default="1" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+				<field name="dnsPrefetch" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_DNS_PREFETCH_LABEL" description="TPL_HC_CARLIX_DNS_PREFETCH_DESC" default="0" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+				<field name="dnsPrefetchHosts" type="textarea" label="TPL_HC_CARLIX_DNS_PREFETCH_HOSTS_LABEL" description="TPL_HC_CARLIX_DNS_PREFETCH_HOSTS_DESC" rows="3" filter="raw" showon="dnsPrefetch:1" />
+				<field name="externalPreconnect" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_PRECONNECT_LABEL" description="TPL_HC_CARLIX_PRECONNECT_DESC" default="0" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+				<field name="preconnectUrls" type="textarea" label="TPL_HC_CARLIX_PRECONNECT_URLS_LABEL" description="TPL_HC_CARLIX_PRECONNECT_URLS_DESC" rows="3" filter="raw" showon="externalPreconnect:1" />
+				<field name="removeRenderBlocking" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_REMOVE_RENDER_BLOCKING_LABEL" description="TPL_HC_CARLIX_REMOVE_RENDER_BLOCKING_DESC" default="0" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+				<field name="preloadFonts" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_PRELOAD_FONTS_LABEL" description="TPL_HC_CARLIX_PRELOAD_FONTS_DESC" default="0" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+				<field name="preloadFontUrls" type="textarea" label="TPL_HC_CARLIX_PRELOAD_FONT_URLS_LABEL" description="TPL_HC_CARLIX_PRELOAD_FONT_URLS_DESC" rows="3" filter="raw" showon="preloadFonts:1" />
+				<field name="preloadCriticalImage" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_PRELOAD_CRITICAL_IMAGE_LABEL" description="TPL_HC_CARLIX_PRELOAD_CRITICAL_IMAGE_DESC" default="0" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+				<field name="preloadCriticalImageUrl" type="text" label="TPL_HC_CARLIX_PRELOAD_CRITICAL_IMAGE_URL_LABEL" description="TPL_HC_CARLIX_PRELOAD_CRITICAL_IMAGE_URL_DESC" filter="raw" showon="preloadCriticalImage:1" />
+
+				<field name="codeSecurityGroup" type="spacer" label="TPL_HC_CARLIX_CODE_GROUP_SECURITY" />
+				<field name="enableReferrerPolicy" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_REFERRER_POLICY_LABEL" description="TPL_HC_CARLIX_REFERRER_POLICY_DESC" default="0" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+				<field name="referrerPolicyValue" type="list" label="TPL_HC_CARLIX_REFERRER_POLICY_VALUE_LABEL" description="TPL_HC_CARLIX_REFERRER_POLICY_VALUE_DESC" default="strict-origin-when-cross-origin" validate="options" showon="enableReferrerPolicy:1">
+					<option value="no-referrer">no-referrer</option>
+					<option value="no-referrer-when-downgrade">no-referrer-when-downgrade</option>
+					<option value="origin">origin</option>
+					<option value="origin-when-cross-origin">origin-when-cross-origin</option>
+					<option value="same-origin">same-origin</option>
+					<option value="strict-origin">strict-origin</option>
+					<option value="strict-origin-when-cross-origin">strict-origin-when-cross-origin</option>
+					<option value="unsafe-url">unsafe-url</option>
+				</field>
+				<field name="xFrameOptionsHelper" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_X_FRAME_OPTIONS_LABEL" description="TPL_HC_CARLIX_X_FRAME_OPTIONS_DESC" default="0" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+				<field name="xFrameOptionsValue" type="list" label="TPL_HC_CARLIX_X_FRAME_OPTIONS_VALUE_LABEL" description="TPL_HC_CARLIX_X_FRAME_OPTIONS_VALUE_DESC" default="SAMEORIGIN" validate="options" showon="xFrameOptionsHelper:1"><option value="SAMEORIGIN">SAMEORIGIN</option><option value="DENY">DENY</option></field>
+				<field name="cspHelper" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_CSP_HELPER_LABEL" description="TPL_HC_CARLIX_CSP_HELPER_DESC" default="0" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+				<field name="cspPolicy" type="textarea" label="TPL_HC_CARLIX_CSP_POLICY_LABEL" description="TPL_HC_CARLIX_CSP_POLICY_DESC" rows="4" filter="raw" showon="cspHelper:1" />
+
+				<field name="codeDevelopmentGroup" type="spacer" label="TPL_HC_CARLIX_CODE_GROUP_DEVELOPMENT" />
+				<field name="devShowPositions" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_DEV_SHOW_POSITIONS_LABEL" description="TPL_HC_CARLIX_DEV_SHOW_POSITIONS_DESC" default="0" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+				<field name="devShowGrid" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_DEV_SHOW_GRID_LABEL" description="TPL_HC_CARLIX_DEV_SHOW_GRID_DESC" default="0" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+				<field name="devShowBreakpoints" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_DEV_SHOW_BREAKPOINTS_LABEL" description="TPL_HC_CARLIX_DEV_SHOW_BREAKPOINTS_DESC" default="0" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+				<field name="devShowEmptyAreas" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_DEV_SHOW_EMPTY_AREAS_LABEL" description="TPL_HC_CARLIX_DEV_SHOW_EMPTY_AREAS_DESC" default="0" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+				<field name="devDisableMinification" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_DEV_DISABLE_MINIFICATION_LABEL" description="TPL_HC_CARLIX_DEV_DISABLE_MINIFICATION_DESC" default="0" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
+				<field name="devDisableAssetCache" type="radio" layout="joomla.form.field.radio.switcher" label="TPL_HC_CARLIX_DEV_DISABLE_ASSET_CACHE_LABEL" description="TPL_HC_CARLIX_DEV_DISABLE_ASSET_CACHE_DESC" default="0" filter="integer"><option value="0">JNO</option><option value="1">JYES</option></field>
 			</fieldset>
 
 			<fieldset name="seo" label="TPL_HC_CARLIX_FIELDSET_SEO">
-				<field name="seoTitleSuffix" type="text" label="TPL_HC_CARLIX_SEO_TITLE_SUFFIX_LABEL" description="TPL_HC_CARLIX_SEO_TITLE_SUFFIX_DESC" />
+				<field name="seoSiteName" type="text" label="TPL_HC_CARLIX_SEO_SITE_NAME_LABEL" description="TPL_HC_CARLIX_SEO_SITE_NAME_DESC" />
+				<field name="seoSlogan" type="text" label="TPL_HC_CARLIX_SEO_SLOGAN_LABEL" description="TPL_HC_CARLIX_SEO_SLOGAN_DESC" />
 				<field name="seoDescription" type="textarea" label="TPL_HC_CARLIX_SEO_DESCRIPTION_LABEL" description="TPL_HC_CARLIX_SEO_DESCRIPTION_DESC" rows="3" filter="string" />
 				<field name="seoRobots" type="list" label="TPL_HC_CARLIX_SEO_ROBOTS_LABEL" description="TPL_HC_CARLIX_SEO_ROBOTS_DESC" default="" validate="options">
 					<option value="">TPL_HC_CARLIX_SEO_ROBOTS_JOOMLA</option>
@@ -241,19 +329,22 @@
 					<option value="index, nofollow">index, nofollow</option>
 					<option value="noindex, nofollow">noindex, nofollow</option>
 				</field>
-				<field name="canonicalUrl" type="url" label="TPL_HC_CARLIX_CANONICAL_LABEL" description="TPL_HC_CARLIX_CANONICAL_DESC" filter="url" />
+				<field name="seoOpenGraphGroup" type="spacer" label="TPL_HC_CARLIX_GROUP_OPEN_GRAPH" />
 				<field name="ogTitle" type="text" label="TPL_HC_CARLIX_OG_TITLE_LABEL" description="TPL_HC_CARLIX_OG_TITLE_DESC" />
 				<field name="ogDescription" type="textarea" label="TPL_HC_CARLIX_OG_DESCRIPTION_LABEL" description="TPL_HC_CARLIX_OG_DESCRIPTION_DESC" rows="3" filter="string" />
-				<field name="ogImage" type="media" label="TPL_HC_CARLIX_OG_IMAGE_LABEL" description="TPL_HC_CARLIX_OG_IMAGE_DESC" />
+				<field name="ogImage" type="media" label="TPL_HC_CARLIX_OG_IMAGE_LABEL" description="TPL_HC_CARLIX_OG_IMAGE_DESC" preview="true" />
 				<field name="ogType" type="list" label="TPL_HC_CARLIX_OG_TYPE_LABEL" description="TPL_HC_CARLIX_OG_TYPE_DESC" default="website" validate="options">
 					<option value="website">website</option>
 					<option value="article">article</option>
 				</field>
+				<field name="seoTwitterGroup" type="spacer" label="TPL_HC_CARLIX_GROUP_TWITTER" />
 				<field name="twitterCard" type="list" label="TPL_HC_CARLIX_TWITTER_CARD_LABEL" description="TPL_HC_CARLIX_TWITTER_CARD_DESC" default="summary_large_image" validate="options">
 					<option value="summary_large_image">summary_large_image</option>
 					<option value="summary">summary</option>
 				</field>
+				<field name="seoSchemaGroup" type="spacer" label="TPL_HC_CARLIX_GROUP_SCHEMA" />
 				<field name="schemaJsonLd" type="textarea" label="TPL_HC_CARLIX_SCHEMA_LABEL" description="TPL_HC_CARLIX_SCHEMA_DESC" rows="8" filter="raw" />
+				<field name="canonicalUrl" type="url" label="TPL_HC_CARLIX_CANONICAL_LABEL" description="TPL_HC_CARLIX_CANONICAL_DESC" filter="url" />
 			</fieldset>
 
 		</fields>

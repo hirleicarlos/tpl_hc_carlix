@@ -5,6 +5,7 @@
 # ---------- IDEs / Editores ----------
 .idea/
 .vscode/
+.claude/
 *.iml
 *.sublime-project
 *.sublime-workspace

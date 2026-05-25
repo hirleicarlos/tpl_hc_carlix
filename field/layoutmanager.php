@@ -68,11 +68,11 @@ class JFormFieldLayoutmanager extends FormField
 		$layout        = $this->decodeLayout($value, $defaultLayout);
 
 		if ($value === '') {
-			$value = json_encode($layout, JSON_UNESCAPED_SLASHES);
+			$value = json_encode($layout, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 		}
 
-		$positionsJson = htmlspecialchars(json_encode($positions, JSON_UNESCAPED_SLASHES), ENT_QUOTES, 'UTF-8');
-		$defaultJson   = htmlspecialchars(json_encode($defaultLayout, JSON_UNESCAPED_SLASHES), ENT_QUOTES, 'UTF-8');
+		$positionsJson = htmlspecialchars(json_encode($positions, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8');
+		$defaultJson   = htmlspecialchars(json_encode($defaultLayout, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8');
 		$valueAttr     = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 		$fallbackTags  = $this->getFallbackAssetTags();
 
@@ -86,9 +86,7 @@ class JFormFieldLayoutmanager extends FormField
 			. '<p>' . Text::_('TPL_HC_CARLIX_LAYOUT_MANAGER_DESC') . '</p>'
 			. '</div>'
 			. '<div class="hc-lm-header__actions">'
-			. '<button type="button" class="hc-lm-btn hc-lm-btn--light" data-action="export">' . $this->icon('export') . '<span>' . Text::_('TPL_HC_CARLIX_LAYOUT_EXPORT') . '</span></button>'
-			. '<button type="button" class="hc-lm-btn hc-lm-btn--light" data-action="import">' . $this->icon('import') . '<span>' . Text::_('TPL_HC_CARLIX_LAYOUT_IMPORT') . '</span></button>'
-			. '<button type="button" class="hc-lm-btn hc-lm-btn--danger" data-action="reset">' . $this->icon('reset') . '<span>' . Text::_('TPL_HC_CARLIX_LAYOUT_RESET') . '</span></button>'
+			. '<button type="button" class="hc-lm-btn hc-lm-btn--light" data-action="open-tools">' . $this->icon('tools') . '<span>' . Text::_('TPL_HC_CARLIX_LAYOUT_TOOLS') . '</span></button>'
 			. '</div>'
 			. '</div>'
 			. '<div class="hc-lm-alerts" data-hc-lm-alerts></div>'
@@ -98,13 +96,34 @@ class JFormFieldLayoutmanager extends FormField
 			. '<aside class="hc-lm-panel hc-lm-settings" data-hc-lm-settings>' . $this->renderStaticSettings($layout) . '</aside>'
 			. '</div>'
 			. '<div class="hc-lm-toasts" data-hc-lm-toasts aria-live="polite" aria-atomic="false"></div>'
-			. '<div class="hc-lm-json" hidden data-hc-lm-json-wrap>'
+			. '<div class="hc-lm-modal" hidden data-hc-lm-tools-modal role="dialog" aria-modal="true" aria-labelledby="' . $this->id . '_tools_title">'
+			. '<div class="hc-lm-modal__backdrop" data-action="close-tools"></div>'
+			. '<section class="hc-lm-modal__dialog" tabindex="-1" data-hc-lm-tools-dialog>'
+			. '<header class="hc-lm-modal__head">'
+			. '<div><h3 id="' . $this->id . '_tools_title">' . Text::_('TPL_HC_CARLIX_LAYOUT_TOOLS_TITLE') . '</h3><p>' . Text::_('TPL_HC_CARLIX_LAYOUT_TOOLS_DESC') . '</p></div>'
+			. '<button type="button" class="hc-lm-modal__close" data-action="close-tools" aria-label="' . Text::_('JCLOSE') . '">&times;</button>'
+			. '</header>'
+			. '<div class="hc-lm-tools">'
+			. '<section class="hc-lm-tools__section"><h4>' . Text::_('TPL_HC_CARLIX_LAYOUT_EXPORT') . '</h4><p>' . Text::_('TPL_HC_CARLIX_LAYOUT_EXPORT_DESC') . '</p><div class="hc-lm-tools__actions">'
+			. '<button type="button" class="hc-lm-btn" data-action="copy-json">' . $this->icon('copy') . '<span>' . Text::_('TPL_HC_CARLIX_LAYOUT_COPY_JSON') . '</span></button>'
+			. '<button type="button" class="hc-lm-btn hc-lm-btn--light" data-action="download-json">' . $this->icon('download') . '<span>' . Text::_('TPL_HC_CARLIX_LAYOUT_DOWNLOAD_JSON') . '</span></button>'
+			. '</div></section>'
+			. '<section class="hc-lm-tools__section"><h4>' . Text::_('TPL_HC_CARLIX_LAYOUT_IMPORT') . '</h4><p>' . Text::_('TPL_HC_CARLIX_LAYOUT_IMPORT_DESC') . '</p>'
 			. '<label for="' . $this->id . '_json">' . Text::_('TPL_HC_CARLIX_LAYOUT_JSON_LABEL') . '</label>'
-			. '<textarea id="' . $this->id . '_json" rows="10" spellcheck="false" data-hc-lm-json></textarea>'
-			. '<div class="hc-lm-json__actions">'
-			. '<button type="button" class="hc-lm-btn" data-action="apply-json">' . Text::_('TPL_HC_CARLIX_LAYOUT_APPLY_JSON') . '</button>'
-			. '<button type="button" class="hc-lm-btn hc-lm-btn--light" data-action="close-json">' . Text::_('JCLOSE') . '</button>'
+			. '<textarea id="' . $this->id . '_json" rows="10" spellcheck="false" placeholder="' . Text::_('TPL_HC_CARLIX_LAYOUT_JSON_PLACEHOLDER') . '" data-hc-lm-json></textarea>'
+			. '<label class="hc-lm-file" for="' . $this->id . '_json_file">' . $this->icon('import') . '<span>' . Text::_('TPL_HC_CARLIX_LAYOUT_UPLOAD_JSON') . '</span></label>'
+			. '<input id="' . $this->id . '_json_file" class="hc-lm-file__input" type="file" accept=".json,application/json" data-hc-lm-json-file>'
+			. '<div class="hc-lm-tools__actions">'
+			. '<button type="button" class="hc-lm-btn" data-action="apply-json">' . $this->icon('import') . '<span>' . Text::_('TPL_HC_CARLIX_LAYOUT_APPLY_JSON') . '</span></button>'
+			. '</div></section>'
+			. '<section class="hc-lm-tools__section hc-lm-tools__section--danger"><h4>' . Text::_('TPL_HC_CARLIX_LAYOUT_RESET') . '</h4><p>' . Text::_('TPL_HC_CARLIX_LAYOUT_RESET_DESC') . '</p>'
+			. '<button type="button" class="hc-lm-btn hc-lm-btn--danger" data-action="reset">' . $this->icon('reset') . '<span>' . Text::_('TPL_HC_CARLIX_LAYOUT_RESET') . '</span></button>'
+			. '<div class="hc-lm-reset-confirm" hidden data-hc-lm-reset-confirm><p>' . Text::_('TPL_HC_CARLIX_LAYOUT_RESET_CONFIRM') . '</p><div class="hc-lm-tools__actions">'
+			. '<button type="button" class="hc-lm-btn hc-lm-btn--light" data-action="cancel-reset">' . Text::_('JCANCEL') . '</button>'
+			. '<button type="button" class="hc-lm-btn hc-lm-btn--danger" data-action="confirm-reset">' . Text::_('TPL_HC_CARLIX_LAYOUT_CONFIRM_RESET') . '</button>'
+			. '</div></div></section>'
 			. '</div>'
+			. '</section>'
 			. '</div>'
 			. '</div>'
 			. '</div>';
@@ -120,12 +139,14 @@ class JFormFieldLayoutmanager extends FormField
 		return [
 			'bodyBg'               => $this->getParamValue('bodyBg', '#ffffff'),
 			'textColor'            => $this->getParamValue('textColor', '#333333'),
-			'primaryColor'         => $this->getParamValue('primaryColor', '#d32f2f'),
-			'secondaryColor'       => $this->getParamValue('secondaryColor', '#151515'),
 			'containerWidthValue'  => $this->getParamValue('containerWidthValue', '1320'),
 			'containerWidthUnit'   => $this->getParamValue('containerWidthUnit', 'px'),
 			'containerWidthCustom' => $this->getParamValue('containerWidthCustom', ''),
 			'backToTop'            => $this->getParamValue('backToTop', '0'),
+			'smoothScroll'         => $this->getParamValue('smoothScroll', '1'),
+			'reduceMotion'         => $this->getParamValue('reduceMotion', '0'),
+			'visibleFocus'         => $this->getParamValue('visibleFocus', '1'),
+			'enhancedContrast'     => $this->getParamValue('enhancedContrast', '0'),
 		];
 	}
 
@@ -159,13 +180,13 @@ class JFormFieldLayoutmanager extends FormField
 		$wa->registerAndUseStyle(
 			'template.hc_carlix.layout-manager.admin',
 			'media/templates/site/hc_carlix/css/layout-manager.css',
-			['version' => '1.2.3']
+			['version' => '1.2.17']
 		);
 
 		$wa->registerAndUseScript(
 			'template.hc_carlix.layout-manager.admin',
 			'media/templates/site/hc_carlix/js/layout-manager.js',
-			['version' => '1.2.3'],
+			['version' => '1.2.17'],
 			['defer' => true]
 		);
 	}
@@ -179,10 +200,11 @@ class JFormFieldLayoutmanager extends FormField
 	private function getFallbackAssetTags(): string
 	{
 		$base = rtrim(Uri::root(true), '/') . '/media/templates/site/hc_carlix';
-		$ver  = '1.2.3';
+		$cssVer = '1.2.17';
+		$jsVer  = '1.2.17';
 
-		return '<link rel="stylesheet" href="' . htmlspecialchars($base . '/css/layout-manager.css?' . $ver, ENT_QUOTES, 'UTF-8') . '" data-hc-layout-manager-fallback>'
-			. '<script defer src="' . htmlspecialchars($base . '/js/layout-manager.js?' . $ver, ENT_QUOTES, 'UTF-8') . '" data-hc-layout-manager-fallback></script>';
+		return '<link rel="stylesheet" href="' . htmlspecialchars($base . '/css/layout-manager.css?' . $cssVer, ENT_QUOTES, 'UTF-8') . '" data-hc-layout-manager-fallback>'
+			. '<script defer src="' . htmlspecialchars($base . '/js/layout-manager.js?' . $jsVer, ENT_QUOTES, 'UTF-8') . '" data-hc-layout-manager-fallback></script>';
 	}
 
 	/**
@@ -244,15 +266,15 @@ class JFormFieldLayoutmanager extends FormField
 			. '<div class="hc-lm-palette-list">'
 			. $this->paletteButton('header', 'Header', 'Elemento principal. Apenas um.', $hasHeader)
 			. $this->paletteButton('nav', 'Nav', 'Menu principal como section. Apenas um.', $hasNav)
-			. $this->paletteButton('section', 'Section', 'Area estrutural livre.', false)
-			. $this->paletteButton('row', 'Row', 'Adicionar dentro do item selecionado.', false)
-			. $this->paletteButton('column', 'Column', 'Adicionar dentro da Row selecionada.', false)
-			. $this->paletteButton('footer', 'Footer', 'Rodape estrutural. Apenas um.', $hasFooter)
+			. $this->paletteButton('section', 'Section', 'Área estrutural livre.', false)
+			. $this->paletteButton('row', 'Linha', 'Adicionar dentro do item selecionado.', false)
+			. $this->paletteButton('column', 'Coluna', 'Adicionar dentro da Linha selecionada.', false)
+			. $this->paletteButton('footer', 'Footer', 'Rodapé estrutural. Apenas um.', $hasFooter)
 			. '</div>'
 			. '<div class="hc-lm-status">'
 			. $this->statusItem('Header', $hasHeader ? 1 : 0)
 			. $this->statusItem('Main Navigation', $hasNav ? 1 : 0)
-			. $this->statusItem('Component Area', $hasComponent ? 1 : 0)
+			. $this->statusItem('Área do componente', $hasComponent ? 1 : 0)
 			. $this->statusItem('Footer', $hasFooter ? 1 : 0)
 			. '</div>';
 	}
@@ -291,8 +313,11 @@ class JFormFieldLayoutmanager extends FormField
 			'row' => '<path d="M4 7h16v10H4z"/><path d="M9 7v10"/><path d="M15 7v10"/>',
 			'column' => '<path d="M5 4h5v16H5z"/><path d="M14 4h5v16h-5z"/>',
 			'footer' => '<path d="M3 5h18v14H3z"/><path d="M3 15h18"/>',
+			'tools' => '<path d="M4 7h16"/><path d="M7 7v10"/><path d="M17 7v10"/><path d="M4 17h16"/><circle cx="7" cy="7" r="2"/><circle cx="17" cy="17" r="2"/>',
 			'export' => '<path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/>',
 			'import' => '<path d="M12 4v12"/><path d="m7 11 5 5 5-5"/><path d="M5 20h14"/>',
+			'copy' => '<path d="M8 8h11v11H8z"/><path d="M5 16H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v1"/>',
+			'download' => '<path d="M12 4v12"/><path d="m7 11 5 5 5-5"/><path d="M5 20h14"/>',
 			'reset' => '<path d="M20 12a8 8 0 1 1-2.35-5.65"/><path d="M20 4v6h-6"/>',
 		];
 
@@ -341,6 +366,11 @@ class JFormFieldLayoutmanager extends FormField
 	{
 		$type = (string) ($item['type'] ?? 'section');
 		$title = (string) ($item['title'] ?? ucfirst($type));
+		if ($type === 'row') {
+			$title = 'Linha';
+		} elseif ($type === 'column') {
+			$title = 'Coluna';
+		}
 		$classes = 'hc-lm-node hc-lm-node--' . $type . ($selected ? ' is-selected' : '') . (($item['enabled'] ?? true) ? '' : ' is-disabled');
 		$html = '<div class="' . htmlspecialchars($classes, ENT_QUOTES, 'UTF-8') . '" draggable="true" data-node-id="' . htmlspecialchars((string) ($item['id'] ?? ''), ENT_QUOTES, 'UTF-8') . '" data-node-type="' . htmlspecialchars($type, ENT_QUOTES, 'UTF-8') . '">'
 			. '<div class="hc-lm-node__bar" data-action="select" data-id="' . htmlspecialchars((string) ($item['id'] ?? ''), ENT_QUOTES, 'UTF-8') . '">'
@@ -377,8 +407,8 @@ class JFormFieldLayoutmanager extends FormField
 	 */
 	private function renderStaticSettings(array $layout): string
 	{
-		return '<div class="hc-lm-panel__head"><div><h3 class="hc-lm-panel__title">Configuracoes</h3><p class="hc-lm-panel__hint">SITE: configuracoes globais</p></div></div>'
-			. '<div class="hc-lm-form"><section class="hc-lm-form-section"><h4>Carregando campos</h4><p class="hc-lm-panel__hint">O JavaScript do Layout Manager vai abrir as configuracoes globais automaticamente.</p></section></div>';
+		return '<div class="hc-lm-panel__head"><div><h3 class="hc-lm-panel__title">Configurações</h3><p class="hc-lm-panel__hint">SITE: configurações globais</p></div></div>'
+			. '<div class="hc-lm-form"><section class="hc-lm-form-section"><h4>Carregando campos</h4><p class="hc-lm-panel__hint">O JavaScript do Layout Manager vai abrir as configurações globais automaticamente.</p></section></div>';
 	}
 
 	/**
@@ -559,12 +589,13 @@ class JFormFieldLayoutmanager extends FormField
 			$columns = [];
 			$count   = max(1, count($positions));
 			$desktop = (string) max(1, (int) floor(12 / $count));
+			$tablet  = $count <= 2 ? '12' : $desktop;
 
 			foreach ($positions as $position) {
 				$columns[] = $this->column(
 					ucwords(str_replace(['-', '_'], ' ', $position)),
 					$position,
-					['phone' => '12', 'largePhone' => '12', 'tablet' => $count > 2 ? '6' : '12', 'smallDesktop' => $desktop, 'largeDesktop' => $desktop, 'extraLargeDesktop' => $desktop]
+					['phone' => '12', 'largePhone' => '12', 'tablet' => $tablet, 'smallDesktop' => $desktop, 'largeDesktop' => $desktop, 'extraLargeDesktop' => $desktop]
 				);
 			}
 
@@ -602,17 +633,35 @@ class JFormFieldLayoutmanager extends FormField
 			'id'                   => 'site-root',
 			'type'                 => 'site',
 			'title'                => 'SITE',
-			'bodyBg'               => $settings['bodyBg'] ?? '#ffffff',
-			'textColor'            => $settings['textColor'] ?? '#333333',
-			'primaryColor'         => $settings['primaryColor'] ?? '#d32f2f',
-			'secondaryColor'       => $settings['secondaryColor'] ?? '#151515',
+			'visual'               => [
+				'backgroundType'       => 'color',
+				'backgroundColor'      => $settings['bodyBg'] ?? '#ffffff',
+				'backgroundGradient'   => '',
+				'backgroundImage'      => '',
+				'backgroundPosition'   => 'center center',
+				'backgroundSize'       => 'cover',
+				'backgroundRepeat'     => 'no-repeat',
+				'backgroundAttachment' => 'scroll',
+				'backgroundOpacity'    => '1',
+				'overlayEnabled'       => false,
+				'overlayColor'         => 'rgba(0,0,0,.35)',
+				'overlayOpacity'       => '0.35',
+				'textColor'            => $settings['textColor'] ?? '#333333',
+			],
 			'containerWidthValue'  => $settings['containerWidthValue'] ?? '1320',
 			'containerWidthUnit'   => $settings['containerWidthUnit'] ?? 'px',
 			'containerWidthCustom' => $settings['containerWidthCustom'] ?? '',
+			'behavior'             => [
+				'backToTop'    => (string) ($settings['backToTop'] ?? '0') === '1',
+				'smoothScroll' => (string) ($settings['smoothScroll'] ?? '1') === '1',
+				'reduceMotion' => (string) ($settings['reduceMotion'] ?? '0') === '1',
+			],
+			'accessibility'        => [
+				'visibleFocus'     => (string) ($settings['visibleFocus'] ?? '1') === '1',
+				'reduceMotion'     => (string) ($settings['reduceMotion'] ?? '0') === '1',
+				'enhancedContrast' => (string) ($settings['enhancedContrast'] ?? '0') === '1',
+			],
 			'backToTop'            => (string) ($settings['backToTop'] ?? '0') === '1',
-			'typography'           => '',
-			'maxWidth'             => '',
-			'globalBehavior'       => 'default',
 		];
 	}
 
@@ -651,33 +700,86 @@ class JFormFieldLayoutmanager extends FormField
 	private function settings(string $className): array
 	{
 		return [
-			'customClass'      => $className,
-			'customId'         => '',
-			'backgroundColor'  => '',
-			'backgroundImage'  => '',
-			'backgroundPosition' => 'center center',
-			'backgroundSize'   => 'cover',
-			'backgroundRepeat' => 'no-repeat',
-			'backgroundOpacity'=> '1',
-			'textColor'        => '',
-			'linkColor'        => '',
-			'hoverColor'       => '',
-			'borderBottom'     => '',
-			'shadow'           => '',
-			'padding'          => '',
-			'margin'           => '',
-			'paddingTop'       => '',
-			'paddingRight'     => '',
-			'paddingBottom'    => '',
-			'paddingLeft'      => '',
-			'paddingUnit'      => 'rem',
-			'marginTop'        => '',
-			'marginRight'      => '',
-			'marginBottom'     => '',
-			'marginLeft'       => '',
-			'marginUnit'       => 'rem',
-			'rowGap'           => '',
-			'visibility'       => 'all',
+			'layout'     => [],
+			'visual'     => [
+				'backgroundType'       => 'none',
+				'backgroundColor'      => '',
+				'backgroundGradient'   => '',
+				'backgroundImage'      => '',
+				'backgroundPosition'   => 'center center',
+				'backgroundSize'       => 'cover',
+				'backgroundRepeat'     => 'no-repeat',
+				'backgroundAttachment' => 'scroll',
+				'backgroundOpacity'    => '1',
+				'overlayEnabled'       => false,
+				'overlayColor'         => 'rgba(0,0,0,.35)',
+				'overlayOpacity'       => '0.35',
+				'textColor'            => '',
+				'linkColor'            => '',
+				'hoverColor'           => '',
+				'shadow'               => '',
+			],
+			'border'     => [
+				'enabled'           => false,
+				'widthTop'          => '',
+				'widthRight'        => '',
+				'widthBottom'       => '',
+				'widthLeft'         => '',
+				'widthUnit'         => 'px',
+				'style'             => 'solid',
+				'color'             => '',
+				'radiusTopLeft'     => '',
+				'radiusTopRight'    => '',
+				'radiusBottomRight' => '',
+				'radiusBottomLeft'  => '',
+				'radiusUnit'        => 'px',
+				'legacyBottom'      => '',
+			],
+			'spacing'    => [
+				'paddingTop'    => '',
+				'paddingRight'  => '',
+				'paddingBottom' => '',
+				'paddingLeft'   => '',
+				'paddingUnit'   => 'rem',
+				'marginTop'     => '',
+				'marginRight'   => '',
+				'marginBottom'  => '',
+				'marginLeft'    => '',
+				'marginUnit'    => 'rem',
+			],
+			'height'     => [
+				'mode'  => 'auto',
+				'value' => '',
+				'unit'  => 'px',
+			],
+			'alignment'  => [
+				'horizontal' => 'default',
+				'vertical'   => 'default',
+			],
+			'position'   => [
+				'type'   => 'default',
+				'top'    => '',
+				'right'  => '',
+				'bottom' => '',
+				'left'   => '',
+				'unit'   => 'px',
+			],
+			'overflow'   => [
+				'value' => 'default',
+				'x'     => 'default',
+				'y'     => 'default',
+			],
+			'responsive' => [
+				'hideTablet'            => false,
+				'hideMobile'            => false,
+				'hideDesktop'           => false,
+			],
+			'advanced'   => [
+				'customClass' => $className,
+				'customId'    => '',
+				'zIndex'      => '',
+				'order'       => '',
+			],
 		];
 	}
 }

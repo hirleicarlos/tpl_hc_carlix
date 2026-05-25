@@ -2,7 +2,7 @@
  * HC Carlix - menu.css
  * Estilos gerais para menus Joomla renderizados pelo override de mod_menu.
  *
- * Padrao do template: menu vertical em bloco.
+ * Padrão do template: menu vertical em bloco.
  * Header (.carlix-menu): menu horizontal com dropdown.
  */
 
@@ -84,7 +84,7 @@
 	transform: rotate(45deg) translateY(-0.12rem);
 }
 
-/* ---- Vertical: padrao para mod_menu em qualquer posicao fora do header ---- */
+/* ---- Vertical: padrão para mod_menu em qualquer posição fora do header ---- */
 .carlix-nav-sub {
 	display: grid;
 	gap: var(--carlix-space-1);
@@ -336,7 +336,7 @@
 	border-bottom: 1px solid var(--carlix-border);
 }
 
-/* Alinhamento da logo do offcanvas (parametro) — botao fechar fica sempre na ponta */
+/* Alinhamento da logo do offcanvas (parametro) — botão fechar fica sempre na ponta */
 .carlix-offcanvas-header--start  .carlix-brand { margin-inline-end: auto; }
 .carlix-offcanvas-header--center .carlix-brand { margin-inline: auto; }
 .carlix-offcanvas-header--end    .carlix-brand { margin-inline-start: auto; }
@@ -346,7 +346,7 @@
 }
 
 /* Altura da logo do offcanvas (parametro): sobrepoe o max-height global */
-.carlix-offcanvas-header .carlix-logo {
+.carlix-offcanvas-header .carlix-logo__image {
 	height: var(--carlix-oc-logo-h, 2.5rem);
 	width: auto;
 	max-height: none;
@@ -398,7 +398,7 @@
 	overflow: hidden;
 }
 
-/* Lado do offcanvas (parametro): direita = padrao, esquerda = variante */
+/* Lado do offcanvas (parametro): direita = padrão, esquerda = variante */
 .carlix-offcanvas--left {
 	right: auto;
 	left: 0;

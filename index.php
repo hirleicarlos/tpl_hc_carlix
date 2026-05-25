@@ -1,17 +1,17 @@
 <?php
 
 /**
- * HC Carlix Template for Joomla 6.x — organizacao das sessoes/posicoes.
+ * HC Carlix Template for Joomla 6.x — organização das seções/posições.
  *
- * SESSAO  = faixa full-width (so renderiza se algum slot tiver modulo;
+ * SEÇÃO   = faixa full-width (só renderiza se algum slot tiver módulo;
  *           HEADER/MAIN/CREDITS sempre). Gate via countModules(p).
- * POSICAO = ID unico de slot (Joomla position).
- * COLUNA  = grid.css. A largura da coluna numa faixa e calculada pelo
- *           numero de posicoes preenchidas (1=100, 2=50/50, 3=33, 4=25).
+ * POSIÇÃO = ID único de slot (Joomla position).
+ * COLUNA  = grid.css. A largura da coluna em uma faixa é calculada pelo
+ *           número de posições preenchidas (1=100, 2=50/50, 3=33, 4=25).
  *
  * @package     HC.Carlix
  * @subpackage  Templates.hc_carlix
- * @version     1.2.0
+ * @version     1.2.1
  *
  * @copyright   Copyright (C) 2026 Hirlei Carlos. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
@@ -33,7 +33,8 @@ $app    = Factory::getApplication();
 $wa     = $this->getWebAssetManager();
 $params = $this->params;
 
-$siteName  = htmlspecialchars((string) $app->get('sitename'), ENT_QUOTES, 'UTF-8');
+$siteNameRaw = (string) $app->get('sitename');
+$siteName    = htmlspecialchars($siteNameRaw, ENT_QUOTES, 'UTF-8');
 
 $cssValue = static function (string $name, string $default) use ($params): string {
 	$value = trim((string) $params->get($name, $default));
@@ -102,26 +103,61 @@ $managedLayout = $decodeLayout($layoutRaw);
 $useManagedLayout = !empty($managedLayout['items']);
 $layoutSite = is_array($managedLayout['site'] ?? null) ? $managedLayout['site'] : [];
 
-$siteParam = static function (string $layoutKey, string $legacyKey, string $default) use ($layoutSite, $params): string {
-	$value = $layoutSite[$layoutKey] ?? null;
+$sitePathValue = static function (array $source, string $path) {
+	$current = $source;
+
+	foreach (explode('.', $path) as $part) {
+		if (!is_array($current) || !array_key_exists($part, $current)) {
+			return null;
+		}
+
+		$current = $current[$part];
+	}
+
+	return $current;
+};
+
+$siteHasPath = static function (array $source, string $path) use ($sitePathValue): bool {
+	$value = $sitePathValue($source, $path);
+
+	return $value !== null && $value !== '';
+};
+
+$siteParam = static function (string $layoutKey, string $legacyKey, string $default) use ($layoutSite, $params, $sitePathValue): string {
+	$value = $sitePathValue($layoutSite, $layoutKey);
 	$aliases = [
-		'bodyBg' => 'body_background',
-		'textColor' => 'text_color',
-		'primaryColor' => 'primary_color',
-		'secondaryColor' => 'secondary_color',
-		'containerWidthValue' => 'container_value',
-		'containerWidthUnit' => 'container_unit',
-		'containerWidthCustom' => 'container_custom',
-		'backToTop' => 'back_to_top',
+		'backgroundType' => ['visual.backgroundType', 'background_type'],
+		'backgroundColor' => ['visual.backgroundColor', 'bodyBg', 'body_background', 'background_color'],
+		'backgroundGradient' => ['visual.backgroundGradient', 'background_gradient'],
+		'backgroundImage' => ['visual.backgroundImage', 'background_image'],
+		'backgroundPosition' => ['visual.backgroundPosition', 'background_position'],
+		'backgroundSize' => ['visual.backgroundSize', 'background_size'],
+		'backgroundRepeat' => ['visual.backgroundRepeat', 'background_repeat'],
+		'backgroundAttachment' => ['visual.backgroundAttachment', 'background_attachment'],
+		'backgroundOpacity' => ['visual.backgroundOpacity', 'background_opacity'],
+		'overlayColor' => ['visual.overlayColor', 'overlay_color'],
+		'overlayOpacity' => ['visual.overlayOpacity', 'overlay_opacity'],
+		'bodyBg' => ['visual.backgroundColor', 'body_background'],
+		'textColor' => ['visual.textColor', 'text_color'],
+		'primaryColor' => ['primary_color'],
+		'secondaryColor' => ['secondary_color'],
+		'containerWidthValue' => ['container_value'],
+		'containerWidthUnit' => ['container_unit'],
+		'containerWidthCustom' => ['container_custom'],
+		'backToTop' => ['behavior.backToTop', 'back_to_top'],
 	];
 
-	if ($value === null && isset($aliases[$layoutKey])) {
-		$value = $layoutSite[$aliases[$layoutKey]] ?? null;
+	foreach (($aliases[$layoutKey] ?? []) as $alias) {
+		if ($value !== null && $value !== '') {
+			break;
+		}
+
+		$value = $sitePathValue($layoutSite, $alias);
 	}
 
 	if ($value === null) {
 		$snake = strtolower((string) preg_replace('/(?<!^)[A-Z]/', '_$0', $layoutKey));
-		$value = $layoutSite[$snake] ?? null;
+		$value = $sitePathValue($layoutSite, $snake);
 	}
 
 	if ($value === null || $value === '') {
@@ -133,26 +169,35 @@ $siteParam = static function (string $layoutKey, string $legacyKey, string $defa
 	return $value === '' ? $default : $value;
 };
 
-$siteBool = static function (string $layoutKey, string $legacyKey, bool $default = false) use ($layoutSite, $params): bool {
-	$value = $layoutSite[$layoutKey] ?? null;
+$siteBool = static function (string $layoutKey, string $legacyKey, bool $default = false) use ($layoutSite, $params, $sitePathValue): bool {
+	$value = $sitePathValue($layoutSite, $layoutKey);
 	$aliases = [
-		'backToTop' => 'back_to_top',
+		'backToTop' => ['behavior.backToTop', 'back_to_top'],
+		'smoothScroll' => ['behavior.smoothScroll', 'smooth_scroll'],
+		'reduceMotion' => ['behavior.reduceMotion', 'accessibility.reduceMotion', 'reduce_motion'],
+		'visibleFocus' => ['accessibility.visibleFocus', 'visible_focus', 'focusVisible', 'focus_visible'],
+		'enhancedContrast' => ['accessibility.enhancedContrast', 'enhanced_contrast'],
+		'overlayEnabled' => ['visual.overlayEnabled', 'overlay_enabled'],
 	];
 
-	if ($value === null && isset($aliases[$layoutKey])) {
-		$value = $layoutSite[$aliases[$layoutKey]] ?? null;
+	foreach (($aliases[$layoutKey] ?? []) as $alias) {
+		if ($value !== null && $value !== '') {
+			break;
+		}
+
+		$value = $sitePathValue($layoutSite, $alias);
 	}
 
 	if ($value === null) {
 		$snake = strtolower((string) preg_replace('/(?<!^)[A-Z]/', '_$0', $layoutKey));
-		$value = $layoutSite[$snake] ?? null;
+		$value = $sitePathValue($layoutSite, $snake);
 	}
 
 	if ($value === null || $value === '') {
 		$value = $params->get($legacyKey, $default ? 1 : 0);
 	}
 
-	return $value === true || (string) $value === '1';
+	return $value === true || (string) $value === '1' || strtolower((string) $value) === 'true';
 };
 
 $siteDimensionValue = static function () use ($siteParam): string {
@@ -175,6 +220,46 @@ $siteDimensionValue = static function () use ($siteParam): string {
 	return $value . $unit;
 };
 
+$siteMediaCssValue = static function (string $value): string {
+	$value = trim($value);
+
+	if ($value === '') {
+		return '';
+	}
+
+	if (preg_match('/^(url|image-set|var|linear-gradient|radial-gradient|conic-gradient|repeating-linear-gradient|repeating-radial-gradient)\(/i', $value)) {
+		return $value;
+	}
+
+	$value = preg_replace('#^local-images:/#', 'images/', $value);
+	$value = preg_replace('#^local-files:/#', 'files/', $value);
+	$clean = HTMLHelper::cleanImageURL($value)->url;
+
+	if (!preg_match('#^https?://#i', $clean)) {
+		$clean = Uri::root(true) . '/' . ltrim($clean, '/');
+	}
+
+	return 'url("' . str_replace('"', '%22', $clean) . '")';
+};
+
+$siteBackgroundType = $siteParam('backgroundType', 'siteBackgroundType', 'none');
+$siteBackgroundColor = $siteParam('backgroundColor', 'bodyBg', '#ffffff');
+$siteBackgroundGradient = $siteParam('backgroundGradient', 'siteBackgroundGradient', '');
+$siteBackgroundImage = $siteParam('backgroundImage', 'siteBackgroundImage', '');
+$siteHasBackgroundType = $siteHasPath($layoutSite, 'visual.backgroundType')
+	|| $siteHasPath($layoutSite, 'backgroundType')
+	|| $siteHasPath($layoutSite, 'background_type');
+
+if (!$siteHasBackgroundType && $siteBackgroundType === 'none') {
+	$siteBackgroundType = $siteBackgroundImage !== '' ? 'image' : ($siteBackgroundGradient !== '' ? 'gradient' : ($siteBackgroundColor !== '' ? 'color' : 'none'));
+}
+
+$siteTextColor = $siteParam('textColor', 'textColor', '#333333');
+$siteSmoothScroll = $siteBool('smoothScroll', 'smoothScroll', true);
+$siteReduceMotion = $siteBool('reduceMotion', 'reduceMotion', false);
+$siteVisibleFocus = $siteBool('visibleFocus', 'visibleFocus', true);
+$siteEnhancedContrast = $siteBool('enhancedContrast', 'enhancedContrast', false);
+
 $sectionDefaults = [
 	'topbar' => ['bg' => '#151515', 'text' => '#f5f5f5', 'link' => '#ffffff', 'top' => '0.5rem', 'bottom' => '0.5rem'],
 	'header' => ['bg' => '#ffffff', 'text' => '#1a1a1a', 'link' => '#d32f2f', 'top' => '1rem', 'bottom' => '1rem'],
@@ -187,13 +272,59 @@ $sectionDefaults = [
 	'credits' => ['bg' => '#a51f1f', 'text' => '#ffffff', 'link' => '#ffffff', 'top' => '0.75rem', 'bottom' => '0.75rem'],
 ];
 
+$siteBackgroundBase = $siteBackgroundColor !== '' ? $siteBackgroundColor : '#ffffff';
 $cssVars = [
-	'--carlix-bg: ' . htmlspecialchars($siteParam('bodyBg', 'bodyBg', '#ffffff'), ENT_QUOTES, 'UTF-8'),
-	'--carlix-text: ' . htmlspecialchars($siteParam('textColor', 'textColor', '#333333'), ENT_QUOTES, 'UTF-8'),
+	'--carlix-bg: ' . htmlspecialchars($siteBackgroundBase, ENT_QUOTES, 'UTF-8'),
+	'--carlix-text: ' . htmlspecialchars($siteTextColor, ENT_QUOTES, 'UTF-8'),
 	'--carlix-primary: ' . htmlspecialchars($siteParam('primaryColor', 'primaryColor', '#d32f2f'), ENT_QUOTES, 'UTF-8'),
 	'--carlix-secondary: ' . htmlspecialchars($siteParam('secondaryColor', 'secondaryColor', '#151515'), ENT_QUOTES, 'UTF-8'),
 	'--carlix-submenu-min-width: ' . $cssValue('submenuMinWidth', '18rem'),
+	'--carlix-scroll-behavior: ' . ($siteSmoothScroll && !$siteReduceMotion ? 'smooth' : 'auto'),
 ];
+
+if ($siteBackgroundType === 'color' && $siteBackgroundColor !== '') {
+	$cssVars[] = '--carlix-site-bg: ' . htmlspecialchars($siteBackgroundColor, ENT_QUOTES, 'UTF-8');
+} elseif ($siteBackgroundType === 'gradient' && $siteBackgroundGradient !== '') {
+	$cssVars[] = '--carlix-site-bg: ' . htmlspecialchars($siteBackgroundGradient, ENT_QUOTES, 'UTF-8');
+} elseif ($siteBackgroundType === 'image' && $siteBackgroundImage !== '') {
+	$siteBackgroundImageCss = $siteMediaCssValue($siteBackgroundImage);
+
+	if ($siteBackgroundImageCss !== '') {
+		$cssVars[] = '--carlix-site-bg-image: ' . htmlspecialchars($siteBackgroundImageCss, ENT_QUOTES, 'UTF-8');
+	}
+
+	foreach ([
+		'backgroundPosition' => '--carlix-site-bg-position',
+		'backgroundSize' => '--carlix-site-bg-size',
+		'backgroundRepeat' => '--carlix-site-bg-repeat',
+		'backgroundAttachment' => '--carlix-site-bg-attachment',
+	] as $key => $property) {
+		$value = $siteParam($key, 'site' . ucfirst($key), '');
+
+		if ($value !== '') {
+			$cssVars[] = $property . ': ' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+		}
+	}
+}
+
+$siteBackgroundOpacity = $siteParam('backgroundOpacity', 'siteBackgroundOpacity', '1');
+if ($siteBackgroundOpacity !== '' && $siteBackgroundOpacity !== '1') {
+	$cssVars[] = '--carlix-site-bg-opacity: ' . htmlspecialchars($siteBackgroundOpacity, ENT_QUOTES, 'UTF-8');
+}
+
+if ($siteBool('overlayEnabled', 'siteOverlayEnabled', false)) {
+	$siteOverlayColor = $siteParam('overlayColor', 'siteOverlayColor', 'rgba(0,0,0,.35)');
+	$siteOverlayOpacity = $siteParam('overlayOpacity', 'siteOverlayOpacity', '0.35');
+
+	if ($siteOverlayColor !== '') {
+		$cssVars[] = '--carlix-site-overlay-bg: ' . htmlspecialchars($siteOverlayColor, ENT_QUOTES, 'UTF-8');
+		$cssVars[] = '--carlix-site-overlay-opacity: ' . htmlspecialchars($siteOverlayOpacity !== '' ? $siteOverlayOpacity : '0.35', ENT_QUOTES, 'UTF-8');
+	}
+}
+
+if ($siteEnhancedContrast) {
+	$cssVars[] = '--carlix-focus-ring: 3px solid #ffbf47';
+}
 
 foreach ($sectionDefaults as $section => $defaults) {
 	$fieldPrefix = str_replace(' ', '', lcfirst(str_replace('-', ' ', $section)));
@@ -207,7 +338,7 @@ foreach ($sectionDefaults as $section => $defaults) {
 	$cssVars[] = '--carlix-' . $section . '-space-top-mobile: ' . $cssValue($fieldPrefix . 'SpaceTopMobile', $defaults['top']);
 	$cssVars[] = '--carlix-' . $section . '-space-bottom-mobile: ' . $cssValue($fieldPrefix . 'SpaceBottomMobile', $defaults['bottom']);
 
-	/* Largura do container desta secao (vazio = herda a global; "full" = sem limite) */
+	/* Largura do container desta seção (vazio = herda a global; "full" = sem limite) */
 	$secContainer = trim((string) $params->get($fieldPrefix . 'Container', ''));
 	if ($secContainer !== '') {
 		$cssVars[] = '--carlix-' . $section . '-container: '
@@ -223,20 +354,147 @@ if ($containerWidth === '') {
 $cssVars[] = '--carlix-container: '
 	. (strcasecmp($containerWidth, 'full') === 0 ? 'none' : htmlspecialchars($containerWidth, ENT_QUOTES, 'UTF-8'));
 
-/* Logo: param OU webp empacotado (sem texto) */
-$logoParam = trim((string) $params->get('logo', ''));
-if ($logoParam !== '') {
-	$logoSrc = Uri::root(true) . '/' . ltrim(HTMLHelper::cleanImageURL($logoParam)->url, '/');
-} else {
-	$logoSrc = Uri::root(true) . '/media/templates/site/hc_carlix/images/hc-carlix_logo.webp';
+/* Logo / identidade */
+$mediaUrl = static function (string $value): string {
+	$value = trim($value);
+
+	if ($value === '') {
+		return '';
+	}
+
+	$clean = HTMLHelper::cleanImageURL($value)->url;
+
+	if (preg_match('#^(https?:)?//#i', $clean)) {
+		return $clean;
+	}
+
+	return Uri::root(true) . '/' . ltrim($clean, '/');
+};
+
+$siteLink = static function (string $value): string {
+	$value = trim($value);
+
+	if ($value === '' || $value === '/') {
+		return Uri::root();
+	}
+
+	if (preg_match('#^(https?:)?//#i', $value) || preg_match('#^(mailto|tel):#i', $value) || str_starts_with($value, '#')) {
+		return $value;
+	}
+
+	return rtrim(Uri::root(), '/') . '/' . ltrim($value, '/');
+};
+
+$cssDimension = static function (string $value): string {
+	$value = trim($value);
+
+	if ($value === '') {
+		return '';
+	}
+
+	if (preg_match('/^\d+(\.\d+)?$/', $value)) {
+		return $value . 'px';
+	}
+
+	if (preg_match('/^\d+(\.\d+)?(px|rem|em|%|vw|vh)$/', $value) || $value === 'auto') {
+		return $value;
+	}
+
+	return '';
+};
+
+$logoIdentityKeys = ['logoType', 'logoText', 'logoSlogan', 'retinaLogo', 'mobileLogo', 'stickyLogo', 'logoAlt', 'logoWidth', 'logoHeight', 'logoCustomLink'];
+$hasLogoIdentityParams = false;
+
+foreach ($logoIdentityKeys as $logoIdentityKey) {
+	if ((method_exists($params, 'exists') && $params->exists($logoIdentityKey)) || (!method_exists($params, 'exists') && $params->get($logoIdentityKey, null) !== null)) {
+		$hasLogoIdentityParams = true;
+		break;
+	}
 }
-$logoHtml = '<a class="carlix-brand" href="' . Uri::root() . '" aria-label="' . $siteName . '">'
-	. '<img class="carlix-logo" src="' . htmlspecialchars($logoSrc, ENT_QUOTES, 'UTF-8')
-	. '" alt="' . $siteName . '"></a>';
+
+$logoType = strtolower(trim((string) $params->get('logoType', 'image')));
+$logoType = in_array($logoType, ['image', 'text'], true) ? $logoType : 'image';
+$logoText = trim((string) $params->get('logoText', 'HC Carlix')) ?: 'HC Carlix';
+$logoSlogan = trim((string) $params->get('logoSlogan', 'Lightweight Joomla Template'));
+$logoAlt = trim((string) $params->get('logoAlt', 'HC Carlix')) ?: 'HC Carlix';
+$logoHref = htmlspecialchars($siteLink((string) $params->get('logoCustomLink', '/')), ENT_QUOTES, 'UTF-8');
+$logoWidthRaw = trim((string) $params->get('logoWidth', ''));
+$logoHeightRaw = trim((string) $params->get('logoHeight', ''));
+$logoWidth = $cssDimension($logoWidthRaw);
+$logoHeight = $cssDimension($logoHeightRaw);
+$logoWidthAttr = preg_match('/^\d+$/', $logoWidthRaw) ? $logoWidthRaw : '';
+$logoHeightAttr = preg_match('/^\d+$/', $logoHeightRaw) ? $logoHeightRaw : '';
+$logoStyle = [];
+
+if ($logoWidth !== '') {
+	$logoStyle[] = 'width: ' . $logoWidth;
+}
+
+if ($logoHeight !== '') {
+	$logoStyle[] = 'height: ' . $logoHeight;
+	$logoStyle[] = 'max-height: none';
+}
+
+if ($logoType === 'text') {
+	$logoHtml = '<a class="carlix-brand carlix-logo carlix-logo--text carlix-brand--text" href="' . $logoHref . '" aria-label="' . htmlspecialchars($logoText, ENT_QUOTES, 'UTF-8') . '" data-carlix-logo-type="text">'
+		. '<span class="carlix-logo__title carlix-brand-title">' . htmlspecialchars($logoText, ENT_QUOTES, 'UTF-8') . '</span>'
+		. ($logoSlogan !== '' ? '<span class="carlix-logo__slogan carlix-brand-slogan">' . htmlspecialchars($logoSlogan, ENT_QUOTES, 'UTF-8') . '</span>' : '')
+		. '</a>';
+} else {
+	$logoSrc = $mediaUrl((string) $params->get('logo', ''));
+	$retinaLogoSrc = $mediaUrl((string) $params->get('retinaLogo', ''));
+	$mobileLogoSrc = $mediaUrl((string) $params->get('mobileLogo', ''));
+	$stickyLogoSrc = $mediaUrl((string) $params->get('stickyLogo', ''));
+
+	if ($logoSrc === '') {
+		$logoSrc = Uri::root(true) . '/media/templates/site/hc_carlix/images/hc-carlix_logo.webp';
+	}
+
+	$imgAttrs = [
+		'class="carlix-logo__image"',
+		'src="' . htmlspecialchars($logoSrc, ENT_QUOTES, 'UTF-8') . '"',
+		'alt="' . htmlspecialchars($logoAlt, ENT_QUOTES, 'UTF-8') . '"',
+		'decoding="async"',
+	];
+
+	if ($logoWidthAttr !== '') {
+		$imgAttrs[] = 'width="' . htmlspecialchars($logoWidthAttr, ENT_QUOTES, 'UTF-8') . '"';
+	}
+
+	if ($logoHeightAttr !== '') {
+		$imgAttrs[] = 'height="' . htmlspecialchars($logoHeightAttr, ENT_QUOTES, 'UTF-8') . '"';
+	}
+
+	if ($retinaLogoSrc !== '') {
+		$imgAttrs[] = 'srcset="' . htmlspecialchars($logoSrc . ' 1x, ' . $retinaLogoSrc . ' 2x', ENT_QUOTES, 'UTF-8') . '"';
+	}
+
+	if ($stickyLogoSrc !== '') {
+		$imgAttrs[] = 'data-carlix-sticky-logo="' . htmlspecialchars($stickyLogoSrc, ENT_QUOTES, 'UTF-8') . '"';
+	}
+
+	if ($logoStyle) {
+		$imgAttrs[] = 'style="' . htmlspecialchars(implode('; ', $logoStyle), ENT_QUOTES, 'UTF-8') . '"';
+	}
+
+	$logoImage = '<img ' . implode(' ', $imgAttrs) . '>';
+
+	if ($mobileLogoSrc !== '') {
+		$logoImage = '<picture class="carlix-logo__picture carlix-logo-picture">'
+			. '<source media="(max-width: 640px)" srcset="' . htmlspecialchars($mobileLogoSrc, ENT_QUOTES, 'UTF-8') . '">'
+			. $logoImage
+			. '</picture>';
+	}
+
+	$logoHtml = '<a class="carlix-brand carlix-logo carlix-logo--image carlix-brand--image" href="' . $logoHref . '" aria-label="' . htmlspecialchars($logoAlt, ENT_QUOTES, 'UTF-8') . '" data-carlix-logo-type="image">' . $logoImage . '</a>';
+}
+
 $logoAlign = (string) $params->get('logoAlign', 'start');
 $logoAlign = in_array($logoAlign, ['start', 'center', 'end'], true) ? $logoAlign : 'start';
+$renderLegacyLogoModule = !$hasLogoIdentityParams;
 
-/* Navegacao (parametros) */
+/* Navegação (parâmetros) */
 $navigationType = (string) $params->get('navigationType', 'menu-offcanvas');
 $navigationType = in_array($navigationType, ['menu', 'menu-offcanvas', 'offcanvas'], true) ? $navigationType : 'menu-offcanvas';
 $menuAlign      = (string) $params->get('menuAlign', 'start');
@@ -251,6 +509,44 @@ $offcanvasSide  = $params->get('offcanvasSide', 'right') === 'left' ? 'left' : '
 $headerBehavior = (string) $params->get('headerBehavior', 'sticky');
 $headerBehavior = in_array($headerBehavior, ['static', 'sticky', 'fixed', 'floating'], true) ? $headerBehavior : 'sticky';
 $backToTop      = $siteBool('backToTop', 'backToTop', false) ? 1 : 0;
+$siteResponsiveClasses = [];
+$siteResponsive = $sitePathValue($layoutSite, 'responsive');
+
+if (is_array($siteResponsive)) {
+	foreach ([
+		'hideDesktop' => 'carlix-hide-desktop',
+		'hideTablet' => 'carlix-hide-tablet',
+		'hideMobile' => 'carlix-hide-mobile',
+	] as $key => $class) {
+		$value = $siteResponsive[$key] ?? false;
+
+		if ($value === true || (string) $value === '1' || strtolower((string) $value) === 'true') {
+			$siteResponsiveClasses[] = $class;
+		}
+	}
+}
+
+$bodyClasses = [
+	'carlix-site',
+	'carlix-nav-type-' . $navigationType,
+	$siteSmoothScroll && !$siteReduceMotion ? 'carlix-smooth-scroll' : '',
+	$siteReduceMotion ? 'carlix-reduce-motion' : '',
+	$siteVisibleFocus ? 'carlix-focus-visible' : 'carlix-focus-muted',
+	$siteEnhancedContrast ? 'carlix-enhanced-contrast' : '',
+	$paramBool('deferJavaScript') ? 'carlix-defer-js' : '',
+	$paramBool('asyncScripts') ? 'carlix-async-scripts' : '',
+	$enableLazyImages ? 'carlix-lazy-images' : '',
+	$enableLazyIframes ? 'carlix-lazy-iframes' : '',
+	$paramBool('fontDisplaySwap', true) ? 'carlix-font-display-swap' : '',
+	$paramBool('removeRenderBlocking') ? 'carlix-remove-render-blocking' : '',
+	$paramBool('devShowPositions') ? 'carlix-dev-show-positions' : '',
+	$paramBool('devShowGrid') ? 'carlix-dev-show-grid' : '',
+	$paramBool('devShowBreakpoints') ? 'carlix-dev-show-breakpoints' : '',
+	$paramBool('devShowEmptyAreas') ? 'carlix-dev-show-empty-areas' : '',
+	$paramBool('devDisableMinification') ? 'carlix-dev-no-minify' : '',
+	$paramBool('devDisableAssetCache') ? 'carlix-dev-no-asset-cache' : '',
+];
+$bodyClasses = array_merge($bodyClasses, $siteResponsiveClasses);
 $offcanvasShowLogo = (int) $params->get('offcanvasShowLogo', 1) === 1;
 $offcanvasCloseOnClick = (int) $params->get('offcanvasCloseOnClick', 1) === 1;
 $mobileButtonPosition = (string) $params->get('mobileButtonPosition', 'end');
@@ -258,10 +554,10 @@ $mobileButtonPosition = in_array($mobileButtonPosition, ['start', 'center', 'end
 
 $offcanvasLogoParam = trim((string) $params->get('offcanvasLogo', ''));
 if ($offcanvasLogoParam !== '') {
-	$ocLogoSrc = Uri::root(true) . '/' . ltrim(HTMLHelper::cleanImageURL($offcanvasLogoParam)->url, '/');
-	$offcanvasLogoHtml = '<a class="carlix-brand" href="' . Uri::root() . '" aria-label="' . $siteName . '">'
-		. '<img class="carlix-logo" src="' . htmlspecialchars($ocLogoSrc, ENT_QUOTES, 'UTF-8')
-		. '" alt="' . $siteName . '"></a>';
+	$ocLogoSrc = $mediaUrl($offcanvasLogoParam);
+	$offcanvasLogoHtml = '<a class="carlix-brand carlix-logo carlix-logo--image carlix-brand--image" href="' . $logoHref . '" aria-label="' . $siteName . '">'
+		. '<img class="carlix-logo__image" src="' . htmlspecialchars($ocLogoSrc, ENT_QUOTES, 'UTF-8')
+		. '" alt="' . htmlspecialchars($logoAlt, ENT_QUOTES, 'UTF-8') . '"></a>';
 } else {
 	$offcanvasLogoHtml = $logoHtml;
 }
@@ -282,22 +578,64 @@ $cssVars[]   = '--carlix-mobile-button-border: ' . $cssValue('mobileButtonBorder
 $cssVars[]   = '--carlix-mobile-button-radius: ' . $cssValue('mobileButtonRadius', '0.5rem');
 $cssVars[]   = '--carlix-submenu-delay: ' . $cssValue('submenuDelay', '0ms');
 
-/* Avancado: favicon, SEO, Google Analytics e codigo custom */
+/* Avançado: favicon, SEO, Google Analytics e código custom */
 $faviconParam = trim((string) $params->get('favicon', ''));
 $faviconSrc   = $faviconParam !== ''
-	? Uri::root(true) . '/' . ltrim(HTMLHelper::cleanImageURL($faviconParam)->url, '/')
+	? $mediaUrl($faviconParam)
 	: Uri::root(true) . '/media/templates/site/hc_carlix/images/hc-carlix_icon.webp';
 $faviconExt   = strtolower(pathinfo((string) parse_url($faviconSrc, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'webp');
 $faviconType  = [
 	'ico' => 'image/x-icon', 'svg' => 'image/svg+xml', 'png' => 'image/png',
 	'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'gif' => 'image/gif', 'webp' => 'image/webp',
 ][$faviconExt] ?? 'image/webp';
+$appleTouchIconSrc = $mediaUrl((string) $params->get('appleTouchIcon', ''));
+$themeColor = trim((string) $params->get('themeColor', '#d32f2f'));
+$themeColor = preg_match('/^#[0-9a-f]{3,8}$/i', $themeColor) ? $themeColor : '#d32f2f';
 
-$gaId      = preg_replace('/[^A-Za-z0-9_\-]/', '', (string) $params->get('gaId', ''));
+$paramBool = static fn (string $name, bool $default = false): bool => (int) $params->get($name, $default ? 1 : 0) === 1;
+$paramRaw = static fn (string $name): string => trim((string) $params->get($name, ''));
+$paramToken = static fn (string $name): string => preg_replace('/[^A-Za-z0-9_\-]/', '', (string) $params->get($name, ''));
 $customCss = (string) $params->get('customCss', '');
+$criticalCss = (string) $params->get('criticalCss', '');
+$customCssDesktop = (string) $params->get('customCssDesktop', '');
+$customCssTablet = (string) $params->get('customCssTablet', '');
+$customCssMobile = (string) $params->get('customCssMobile', '');
+$additionalCss = (string) $params->get('additionalCss', '');
 $headCode  = (string) $params->get('headCode', '');
+$bodyStartCode = (string) $params->get('bodyStartCode', '');
 $bodyCode  = (string) $params->get('bodyCode', '');
+$noscriptCode = (string) $params->get('noscriptCode', '');
+$customJsHead = (string) $params->get('customJsHead', '');
+$customJsFooter = (string) $params->get('customJsFooter', '');
+$customJsDomReady = (string) $params->get('customJsDomReady', '');
+$gtmId = $paramToken('gtmId');
+$gaMeasurementId = $paramToken('gaMeasurementId');
+$legacyGaId = preg_replace('/[^A-Za-z0-9_\-]/', '', (string) $params->get('gaId', ''));
+$gaMeasurementId = $gaMeasurementId !== '' ? $gaMeasurementId : $legacyGaId;
+$metaPixelId = $paramToken('metaPixelId');
+$tiktokPixelId = $paramToken('tiktokPixelId');
+$clarityId = $paramToken('clarityId');
+$hotjarId = $paramToken('hotjarId');
+$linkedInPartnerId = $paramToken('linkedInPartnerId');
+$verificationMetas = [
+	'google-site-verification' => $paramRaw('googleSiteVerification'),
+	'msvalidate.01' => $paramRaw('bingSiteVerification'),
+	'p:domain_verify' => $paramRaw('pinterestVerification'),
+	'facebook-domain-verification' => $paramRaw('facebookDomainVerification'),
+];
+$enableLazyImages = $paramBool('lazyImages');
+$enableLazyIframes = $paramBool('lazyIframes');
+$enableDnsPrefetch = $paramBool('dnsPrefetch');
+$enablePreconnect = $paramBool('externalPreconnect');
+$enablePreloadFonts = $paramBool('preloadFonts');
+$enablePreloadCriticalImage = $paramBool('preloadCriticalImage');
+$enableReferrerPolicy = $paramBool('enableReferrerPolicy');
+$enableXFrameOptions = $paramBool('xFrameOptionsHelper');
+$enableCspHelper = $paramBool('cspHelper');
 
+$seoSiteName    = trim((string) $params->get('seoSiteName', ''));
+$seoSiteName    = $seoSiteName !== '' ? $seoSiteName : $siteNameRaw;
+$seoSlogan      = trim((string) $params->get('seoSlogan', ''));
 $seoTitleSuffix = trim((string) $params->get('seoTitleSuffix', ''));
 $seoDescription = trim((string) $params->get('seoDescription', ''));
 $seoRobots      = trim((string) $params->get('seoRobots', ''));
@@ -359,6 +697,86 @@ $metaTag = static function (string $attribute, string $name, string $content) us
 	);
 };
 
+$linesFromTextarea = static function (string $value): array {
+	$lines = preg_split('/\R+/', trim($value)) ?: [];
+
+	return array_values(array_filter(array_map('trim', $lines), static fn (string $line): bool => $line !== ''));
+};
+
+$assetUrl = static function (string $value): string {
+	$value = trim($value);
+
+	if ($value === '') {
+		return '';
+	}
+
+	if (preg_match('#^(https?:)?//#i', $value)) {
+		return $value;
+	}
+
+	return Uri::root(true) . '/' . ltrim($value, '/');
+};
+
+$originUrl = static function (string $value): string {
+	$value = trim($value);
+
+	if ($value === '') {
+		return '';
+	}
+
+	if (str_starts_with($value, '//')) {
+		return $value;
+	}
+
+	if (!preg_match('#^https?://#i', $value)) {
+		$value = '//' . ltrim($value, '/');
+	}
+
+	return $value;
+};
+
+$styleBlock = static function (string $css, string $media = ''): string {
+	$css = trim($css);
+
+	if ($css === '') {
+		return '';
+	}
+
+	if ($media !== '') {
+		$css = '@media ' . $media . ' {' . "\n" . $css . "\n" . '}';
+	}
+
+	return '<style>' . "\n" . $css . "\n" . '</style>' . "\n";
+};
+
+$scriptBlock = static function (string $code): string {
+	$code = trim($code);
+
+	if ($code === '') {
+		return '';
+	}
+
+	if (stripos($code, '<script') !== false) {
+		return $code . "\n";
+	}
+
+	return '<script>' . "\n" . $code . "\n" . '</script>' . "\n";
+};
+
+$domReadyBlock = static function (string $code): string {
+	$code = trim($code);
+
+	if ($code === '') {
+		return '';
+	}
+
+	if (stripos($code, '<script') !== false) {
+		return $code . "\n";
+	}
+
+	return '<script>document.addEventListener("DOMContentLoaded",function(){' . "\n" . $code . "\n" . '});</script>' . "\n";
+};
+
 $absoluteImage = static function (string $image) : string {
 	$image = trim($image);
 
@@ -376,10 +794,10 @@ $absoluteImage = static function (string $image) : string {
 };
 
 $pageTitle = $ogTitle !== '' ? $ogTitle : (string) $this->getTitle();
-$pageDesc  = $ogDescription !== '' ? $ogDescription : $seoDescription;
+$pageDesc  = $ogDescription !== '' ? $ogDescription : ($seoDescription !== '' ? $seoDescription : $seoSlogan);
 $ogImage   = $absoluteImage($ogImageParam);
 
-$metaTag('property', 'og:site_name', (string) $app->get('sitename'));
+$metaTag('property', 'og:site_name', $seoSiteName);
 $metaTag('property', 'og:title', $pageTitle);
 $metaTag('property', 'og:description', $pageDesc);
 $metaTag('property', 'og:type', $ogType);
@@ -389,6 +807,111 @@ $metaTag('name', 'twitter:card', $twitterCard);
 $metaTag('name', 'twitter:title', $pageTitle);
 $metaTag('name', 'twitter:description', $pageDesc);
 $metaTag('name', 'twitter:image', $ogImage);
+
+$autoBodyStartCode = '';
+
+foreach ($verificationMetas as $name => $content) {
+	$metaTag('name', $name, $content);
+}
+
+if ($enableReferrerPolicy) {
+	$referrerPolicy = (string) $params->get('referrerPolicyValue', 'strict-origin-when-cross-origin');
+	$allowedReferrers = ['no-referrer', 'no-referrer-when-downgrade', 'origin', 'origin-when-cross-origin', 'same-origin', 'strict-origin', 'strict-origin-when-cross-origin', 'unsafe-url'];
+
+	if (in_array($referrerPolicy, $allowedReferrers, true)) {
+		$metaTag('name', 'referrer', $referrerPolicy);
+	}
+}
+
+if ($enableXFrameOptions) {
+	$xFrameValue = (string) $params->get('xFrameOptionsValue', 'SAMEORIGIN');
+	$xFrameValue = in_array($xFrameValue, ['SAMEORIGIN', 'DENY'], true) ? $xFrameValue : 'SAMEORIGIN';
+	$this->addCustomTag('<meta http-equiv="X-Frame-Options" content="' . htmlspecialchars($xFrameValue, ENT_QUOTES, 'UTF-8') . '">');
+}
+
+if ($enableCspHelper) {
+	$cspPolicy = trim((string) $params->get('cspPolicy', ''));
+
+	if ($cspPolicy !== '') {
+		$this->addCustomTag('<meta http-equiv="Content-Security-Policy" content="' . htmlspecialchars($cspPolicy, ENT_QUOTES, 'UTF-8') . '">');
+	}
+}
+
+if ($enableDnsPrefetch) {
+	foreach ($linesFromTextarea((string) $params->get('dnsPrefetchHosts', '')) as $host) {
+		$url = $originUrl($host);
+
+		if ($url !== '') {
+			$this->addCustomTag('<link rel="dns-prefetch" href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '">');
+		}
+	}
+}
+
+if ($enablePreconnect) {
+	foreach ($linesFromTextarea((string) $params->get('preconnectUrls', '')) as $host) {
+		$url = $originUrl($host);
+
+		if ($url !== '') {
+			$this->addCustomTag('<link rel="preconnect" href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '" crossorigin>');
+		}
+	}
+}
+
+if ($enablePreloadFonts) {
+	foreach ($linesFromTextarea((string) $params->get('preloadFontUrls', '')) as $fontUrl) {
+		$url = $assetUrl($fontUrl);
+
+		if ($url !== '') {
+			$this->addCustomTag('<link rel="preload" href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '" as="font" type="font/woff2" crossorigin>');
+		}
+	}
+}
+
+if ($enablePreloadCriticalImage) {
+	$criticalImageUrl = $assetUrl((string) $params->get('preloadCriticalImageUrl', ''));
+
+	if ($criticalImageUrl !== '') {
+		$this->addCustomTag('<link rel="preload" href="' . htmlspecialchars($criticalImageUrl, ENT_QUOTES, 'UTF-8') . '" as="image">');
+	}
+}
+
+if ($gtmId !== '') {
+	$gtmJson = json_encode($gtmId, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+	$this->addCustomTag('<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({"gtm.start":new Date().getTime(),event:"gtm.js"});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!="dataLayer"?"&l="+l:"";j.async=true;j.src="https://www.googletagmanager.com/gtm.js?id="+i+dl;f.parentNode.insertBefore(j,f);})(window,document,"script","dataLayer",' . $gtmJson . ');</script>');
+	$autoBodyStartCode .= '<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=' . htmlspecialchars($gtmId, ENT_QUOTES, 'UTF-8') . '" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>' . "\n";
+}
+
+if ($gaMeasurementId !== '') {
+	$gaJson = json_encode($gaMeasurementId, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+	$this->addCustomTag('<script async src="https://www.googletagmanager.com/gtag/js?id=' . htmlspecialchars($gaMeasurementId, ENT_QUOTES, 'UTF-8') . '"></script>');
+	$this->addCustomTag('<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config",' . $gaJson . ');</script>');
+}
+
+if ($metaPixelId !== '') {
+	$metaPixelJson = json_encode($metaPixelId, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+	$this->addCustomTag('<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version="2.0";n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");fbq("init",' . $metaPixelJson . ');fbq("track","PageView");</script>');
+	$autoBodyStartCode .= '<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=' . htmlspecialchars($metaPixelId, ENT_QUOTES, 'UTF-8') . '&amp;ev=PageView&amp;noscript=1" alt=""></noscript>' . "\n";
+}
+
+if ($tiktokPixelId !== '') {
+	$tiktokJson = json_encode($tiktokPixelId, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+	$this->addCustomTag('<script>!function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.load=function(e){var i="https://analytics.tiktok.com/i18n/pixel/events.js",n=d.createElement("script");n.type="text/javascript";n.async=!0;n.src=i+"?sdkid="+e+"&lib="+t;var a=d.getElementsByTagName("script")[0];a.parentNode.insertBefore(n,a)};ttq.load(' . $tiktokJson . ');ttq.page();}(window,document,"ttq");</script>');
+}
+
+if ($clarityId !== '') {
+	$clarityJson = json_encode($clarityId, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+	$this->addCustomTag('<script>(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script",' . $clarityJson . ');</script>');
+}
+
+if ($hotjarId !== '') {
+	$hotjarJson = json_encode($hotjarId, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+	$this->addCustomTag('<script>(function(h,o,t,j,a,r){h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};h._hjSettings={hjid:' . $hotjarJson . ',hjsv:6};a=o.getElementsByTagName("head")[0];r=o.createElement("script");r.async=1;r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;a.appendChild(r);})(window,document,"https://static.hotjar.com/c/hotjar-",".js?sv=");</script>');
+}
+
+if ($linkedInPartnerId !== '') {
+	$linkedInJson = json_encode($linkedInPartnerId, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+	$this->addCustomTag('<script>_linkedin_partner_id=' . $linkedInJson . ';window._linkedin_data_partner_ids=window._linkedin_data_partner_ids||[];window._linkedin_data_partner_ids.push(_linkedin_partner_id);</script><script>(function(l){if(!l){window.lintrk=function(a,b){window.lintrk.q.push([a,b])};window.lintrk.q=[]}var s=document.getElementsByTagName("script")[0];var b=document.createElement("script");b.type="text/javascript";b.async=true;b.src="https://snap.licdn.com/li.lms-analytics/insight.min.js";s.parentNode.insertBefore(b,s)})(window.lintrk);</script>');
+}
 
 if ($schemaJsonLd !== '') {
 	$decodedSchema = json_decode($schemaJsonLd, false);
@@ -413,7 +936,7 @@ $activeOf = static function (array $positions, HtmlDocument $doc): array {
 	return $out;
 };
 
-/* Classe de coluna conforme nº de posicoes preenchidas na faixa */
+/* Classe de coluna conforme nº de posições preenchidas na faixa */
 $colClass = static fn (int $n): string => match (max(1, $n)) {
 	1       => 'col-12',
 	2       => 'col-12 col-lg-6',
@@ -421,7 +944,7 @@ $colClass = static fn (int $n): string => match (max(1, $n)) {
 	default => 'col-12 col-md-6 col-lg-3',
 };
 
-/* Renderiza posicoes sem herdar layouts fixados por outro template. */
+/* Renderiza posições sem herdar layouts fixados por outro template. */
 $renderModules = static function (string $position, array $attribs = ['style' => 'none'], ?string $forcedMenuLayout = null, array $paramOverrides = []): void {
 	foreach (ModuleHelper::getModules($position) as $module) {
 		$moduleParams = new Registry($module->params);
@@ -483,10 +1006,73 @@ $safeToken = static function (string $value): string {
 	return preg_replace('/[^A-Za-z0-9_\- ]/', '', $value) ?: '';
 };
 
-$styleAttr = static function (array $settings): string {
+$settingGroup = static function (array $settings, string $group): array {
+	return is_array($settings[$group] ?? null) ? $settings[$group] : [];
+};
+
+$settingValue = static function (array $settings, string $group, string $key, string $legacyKey = '', string $default = '') use ($settingGroup): string {
+	$hasGroup    = is_array($settings[$group] ?? null);
+	$groupValues = $settingGroup($settings, $group);
+	$value       = $groupValues[$key] ?? null;
+
+	if (!$hasGroup && ($value === null || $value === '') && $legacyKey !== '') {
+		$value = $settings[$legacyKey] ?? null;
+	}
+
+	return $value === null ? $default : (string) $value;
+};
+
+$truthy = static function ($value): bool {
+	return $value === true || $value === 1 || strtolower((string) $value) === 'true' || (string) $value === '1';
+};
+
+$cssDimension = static function (string $value, string $unit, array $allowedUnits, string $fallbackUnit = 'px'): string {
+	$value = trim($value);
+
+	if ($value === '') {
+		return '';
+	}
+
+	$unit = in_array($unit, $allowedUnits, true) ? $unit : $fallbackUnit;
+
+	if ($unit === 'custom' || !preg_match('/^-?\d+(\.\d+)?$/', $value)) {
+		return $value;
+	}
+
+	return $value . $unit;
+};
+
+$mediaCssValue = static function (string $value): string {
+	$value = trim($value);
+
+	if ($value === '') {
+		return '';
+	}
+
+	if (preg_match('/^(url|image-set|var|linear-gradient|radial-gradient|conic-gradient|repeating-linear-gradient|repeating-radial-gradient)\(/i', $value)) {
+		return $value;
+	}
+
+	$value = preg_replace('#^local-images:/#', 'images/', $value);
+	$value = preg_replace('#^local-files:/#', 'files/', $value);
+	$clean = HTMLHelper::cleanImageURL($value)->url;
+
+	if (!preg_match('#^https?://#i', $clean)) {
+		$clean = Uri::root(true) . '/' . ltrim($clean, '/');
+	}
+
+	return 'url("' . str_replace('"', '%22', $clean) . '")';
+};
+
+$styleAttr = static function (array $settings) use ($settingGroup, $settingValue, $truthy, $cssDimension, $mediaCssValue): string {
 	$styles = [];
-	$boxValue = static function (array $settings, string $prefix): string {
-		$unit = (string) ($settings[$prefix . 'Unit'] ?? 'rem');
+	$isGradient = static function (string $value): bool {
+		return (bool) preg_match('/gradient\(/i', $value);
+	};
+	$boxValue = static function (array $settings, string $prefix) use ($settingGroup): string {
+		$spacing = $settingGroup($settings, 'spacing');
+		$hasSpacing = is_array($settings['spacing'] ?? null);
+		$unit = (string) ($spacing[$prefix . 'Unit'] ?? (!$hasSpacing ? ($settings[$prefix . 'Unit'] ?? 'rem') : 'rem'));
 		$allowedUnits = ['px', 'rem', 'em', '%', 'vw', 'vh'];
 		$unit = in_array($unit, $allowedUnits, true) ? $unit : 'rem';
 		$keys = [$prefix . 'Top', $prefix . 'Right', $prefix . 'Bottom', $prefix . 'Left'];
@@ -494,7 +1080,7 @@ $styleAttr = static function (array $settings): string {
 		$hasValue = false;
 
 		foreach ($keys as $key) {
-			$value = trim((string) ($settings[$key] ?? ''));
+			$value = trim((string) ($spacing[$key] ?? (!$hasSpacing ? ($settings[$key] ?? '') : '')));
 
 			if ($value !== '') {
 				$hasValue = true;
@@ -507,43 +1093,90 @@ $styleAttr = static function (array $settings): string {
 	};
 	$paddingBox = $boxValue($settings, 'padding');
 	$marginBox = $boxValue($settings, 'margin');
-	$map = [
-		'backgroundColor' => 'background-color',
-		'backgroundImage' => 'background-image',
-		'backgroundPosition' => 'background-position',
-		'backgroundSize' => 'background-size',
-		'backgroundRepeat' => 'background-repeat',
+	$visual = $settingGroup($settings, 'visual');
+	$border = $settingGroup($settings, 'border');
+	$height = $settingGroup($settings, 'height');
+	$alignment = $settingGroup($settings, 'alignment');
+	$position = $settingGroup($settings, 'position');
+	$overflow = $settingGroup($settings, 'overflow');
+	$advanced = $settingGroup($settings, 'advanced');
+	$hasVisual = is_array($settings['visual'] ?? null);
+	$hasBorder = is_array($settings['border'] ?? null);
+	$hasBackgroundType = $hasVisual && array_key_exists('backgroundType', $visual) && trim((string) $visual['backgroundType']) !== '';
+
+	$legacyBackgroundColor = trim((string) ($settings['backgroundColor'] ?? ''));
+	$legacyBackgroundImage = trim((string) ($settings['backgroundImage'] ?? ''));
+	$backgroundType = trim((string) ($visual['backgroundType'] ?? ''));
+	$backgroundColor = trim((string) ($visual['backgroundColor'] ?? ''));
+	$backgroundGradient = trim((string) ($visual['backgroundGradient'] ?? ''));
+	$backgroundImage = trim((string) ($visual['backgroundImage'] ?? ''));
+
+	if (!$hasVisual && $backgroundColor === '' && !$isGradient($legacyBackgroundColor)) {
+		$backgroundColor = $legacyBackgroundColor;
+	}
+
+	if (!$hasVisual && $backgroundGradient === '') {
+		$backgroundGradient = $isGradient($legacyBackgroundColor) ? $legacyBackgroundColor : ($isGradient($legacyBackgroundImage) ? $legacyBackgroundImage : '');
+	}
+
+	if (!$hasVisual && $backgroundImage === '' && !$isGradient($legacyBackgroundImage)) {
+		$backgroundImage = $legacyBackgroundImage;
+	}
+
+	if ($backgroundType === '' || (!$hasBackgroundType && $backgroundType === 'none')) {
+		$backgroundType = $backgroundImage !== '' ? 'image' : ($backgroundGradient !== '' ? 'gradient' : ($backgroundColor !== '' ? 'color' : 'none'));
+	}
+
+	if ($backgroundType === 'color' && $backgroundColor !== '') {
+		$styles[] = '--carlix-managed-bg: ' . $backgroundColor;
+	} elseif ($backgroundType === 'gradient' && $backgroundGradient !== '') {
+		$styles[] = '--carlix-managed-bg: ' . $backgroundGradient;
+	} elseif ($backgroundType === 'image' && $backgroundImage !== '') {
+		$imageValue = $mediaCssValue($backgroundImage);
+
+		if ($imageValue !== '') {
+			$styles[] = '--carlix-managed-bg-image: ' . $imageValue;
+		}
+	}
+
+	if ($backgroundType === 'image' && $backgroundImage !== '') {
+		foreach ([
+			'backgroundPosition'   => '--carlix-managed-bg-position',
+			'backgroundSize'       => '--carlix-managed-bg-size',
+			'backgroundRepeat'     => '--carlix-managed-bg-repeat',
+			'backgroundAttachment' => '--carlix-managed-bg-attachment',
+		] as $key => $property) {
+			$value = trim((string) ($visual[$key] ?? $settings[$key] ?? ''));
+
+			if ($value !== '') {
+				$styles[] = $property . ': ' . $value;
+			}
+		}
+
+		if ($truthy($visual['overlayEnabled'] ?? false)) {
+			$overlayColor = trim((string) ($visual['overlayColor'] ?? ''));
+			$overlayOpacity = trim((string) ($visual['overlayOpacity'] ?? ''));
+
+			if ($overlayColor !== '') {
+				$styles[] = '--carlix-managed-overlay-bg: ' . $overlayColor;
+				$styles[] = '--carlix-managed-overlay-opacity: ' . ($overlayOpacity !== '' ? $overlayOpacity : '0.35');
+			}
+		}
+	}
+
+	foreach ([
 		'textColor' => 'color',
-		'borderBottom' => 'border-bottom',
-		'shadow' => 'box-shadow',
-		'padding' => 'padding',
-		'margin' => 'margin',
-		'rowGap' => '--carlix-managed-row-gap',
-		'rowColumnGap' => '--carlix-row-gap',
 		'linkColor' => '--carlix-managed-link',
 		'hoverColor' => '--carlix-managed-hover',
-	];
+		'shadow' => 'box-shadow',
+		'rowGap' => '--carlix-managed-row-gap',
+		'rowColumnGap' => '--carlix-row-gap',
+	] as $key => $property) {
+		$value = in_array($key, ['rowGap', 'rowColumnGap'], true) ? trim((string) ($settings[$key] ?? '')) : trim($settingValue($settings, 'visual', $key, $key));
 
-	foreach ($map as $key => $property) {
-		$value = trim((string) ($settings[$key] ?? ''));
-
-		if ($value === '') {
-			continue;
+		if ($value !== '') {
+			$styles[] = $property . ': ' . $value;
 		}
-
-		if ($key === 'backgroundImage' && !preg_match('/^url\(/i', $value)) {
-			$value = preg_replace('#^local-images:/#', 'images/', $value);
-			$value = preg_replace('#^local-files:/#', 'files/', $value);
-			$clean = HTMLHelper::cleanImageURL($value)->url;
-
-			if (!preg_match('#^https?://#i', $clean)) {
-				$clean = Uri::root(true) . '/' . ltrim($clean, '/');
-			}
-
-			$value = 'url("' . str_replace('"', '%22', $clean) . '")';
-		}
-
-		$styles[] = $property . ': ' . $value;
 	}
 
 	if ($paddingBox !== '') {
@@ -554,22 +1187,169 @@ $styleAttr = static function (array $settings): string {
 		$styles[] = 'margin: ' . $marginBox;
 	}
 
-	$opacity = trim((string) ($settings['backgroundOpacity'] ?? ''));
+	$opacity = trim((string) ($visual['backgroundOpacity'] ?? $settings['backgroundOpacity'] ?? ''));
 	if ($opacity !== '' && $opacity !== '1') {
 		$styles[] = '--carlix-managed-bg-opacity: ' . $opacity;
+	}
+
+	$legacyBorder = trim((string) ($border['legacyBottom'] ?? (!$hasBorder ? ($settings['borderBottom'] ?? '') : '')));
+	$borderEnabled = $truthy($border['enabled'] ?? false) || $legacyBorder !== '';
+
+	if ($borderEnabled) {
+		$borderUnit = in_array((string) ($border['widthUnit'] ?? 'px'), ['px', 'rem', 'em', '%'], true) ? (string) $border['widthUnit'] : 'px';
+		$borderStyle = in_array((string) ($border['style'] ?? 'solid'), ['none', 'solid', 'dashed', 'dotted', 'double'], true) ? (string) $border['style'] : 'solid';
+		$borderColor = trim((string) ($border['color'] ?? ''));
+		$hasBorderWidth = false;
+
+		foreach (['top' => 'widthTop', 'right' => 'widthRight', 'bottom' => 'widthBottom', 'left' => 'widthLeft'] as $side => $key) {
+			$value = $cssDimension((string) ($border[$key] ?? ''), $borderUnit, ['px', 'rem', 'em', '%']);
+
+			if ($value !== '') {
+				$styles[] = 'border-' . $side . '-width: ' . $value;
+				$hasBorderWidth = true;
+			}
+		}
+
+		if ($hasBorderWidth) {
+			$styles[] = 'border-style: ' . $borderStyle;
+
+			if ($borderColor !== '') {
+				$styles[] = $isGradient($borderColor) ? 'border-image: ' . $borderColor . ' 1' : 'border-color: ' . $borderColor;
+			}
+		} elseif ($legacyBorder !== '') {
+			$styles[] = 'border-bottom: ' . $legacyBorder;
+		}
+	}
+
+	$radiusUnit = in_array((string) ($border['radiusUnit'] ?? 'px'), ['px', 'rem', 'em', '%'], true) ? (string) $border['radiusUnit'] : 'px';
+	foreach ([
+		'top-left' => 'radiusTopLeft',
+		'top-right' => 'radiusTopRight',
+		'bottom-right' => 'radiusBottomRight',
+		'bottom-left' => 'radiusBottomLeft',
+	] as $corner => $key) {
+		$value = $cssDimension((string) ($border[$key] ?? ''), $radiusUnit, ['px', 'rem', 'em', '%']);
+
+		if ($value !== '') {
+			$styles[] = 'border-' . $corner . '-radius: ' . $value;
+		}
+	}
+
+	$heightMode = (string) ($height['mode'] ?? 'auto');
+	if ($heightMode !== 'auto') {
+		$heightValue = $cssDimension((string) ($height['value'] ?? ''), (string) ($height['unit'] ?? 'px'), ['px', 'rem', 'em', 'vh', '%', 'custom']);
+
+		if ($heightMode === 'min-height' && $heightValue !== '') {
+			$styles[] = 'min-height: ' . $heightValue;
+		} elseif ($heightMode === 'fixed' && $heightValue !== '') {
+			$styles[] = 'height: ' . $heightValue;
+		} elseif ($heightMode === 'viewport') {
+			$styles[] = 'min-height: ' . ($heightValue !== '' ? $heightValue : '100vh');
+		}
+	}
+
+	$horizontalMap = [
+		'left' => 'flex-start',
+		'center' => 'center',
+		'right' => 'flex-end',
+		'space-between' => 'space-between',
+		'space-around' => 'space-around',
+		'space-evenly' => 'space-evenly',
+	];
+	$verticalMap = [
+		'top' => 'flex-start',
+		'center' => 'center',
+		'bottom' => 'flex-end',
+		'stretch' => 'stretch',
+	];
+	$horizontal = $horizontalMap[(string) ($alignment['horizontal'] ?? 'default')] ?? '';
+	$vertical = $verticalMap[(string) ($alignment['vertical'] ?? 'default')] ?? '';
+
+	if ($horizontal !== '') {
+		$styles[] = '--carlix-align-horizontal: ' . $horizontal;
+	}
+
+	if ($vertical !== '') {
+		$styles[] = '--carlix-align-vertical: ' . $vertical;
+	}
+
+	foreach (['value' => 'overflow', 'x' => 'overflow-x', 'y' => 'overflow-y'] as $key => $property) {
+		$value = (string) ($overflow[$key] ?? 'default');
+
+		if (in_array($value, ['visible', 'hidden', 'auto', 'scroll', 'clip'], true)) {
+			$styles[] = $property . ': ' . $value;
+		}
+	}
+
+	$positionType = (string) ($position['type'] ?? 'default');
+	if (in_array($positionType, ['relative', 'sticky', 'fixed', 'absolute'], true)) {
+		$styles[] = 'position: ' . $positionType;
+	}
+
+	$positionUnit = in_array((string) ($position['unit'] ?? 'px'), ['px', 'rem', 'em', '%', 'vh', 'vw', 'custom'], true) ? (string) $position['unit'] : 'px';
+	foreach (['top', 'right', 'bottom', 'left'] as $side) {
+		$value = $cssDimension((string) ($position[$side] ?? ''), $positionUnit, ['px', 'rem', 'em', '%', 'vh', 'vw', 'custom']);
+
+		if ($value !== '') {
+			$styles[] = $side . ': ' . $value;
+		}
+	}
+
+	$zIndex = trim((string) ($advanced['zIndex'] ?? $settings['zIndex'] ?? ''));
+	if ($zIndex !== '' && preg_match('/^-?\d+$/', $zIndex)) {
+		$styles[] = 'z-index: ' . $zIndex;
+	}
+
+	$order = trim((string) ($advanced['order'] ?? $settings['order'] ?? ''));
+	if ($order !== '' && preg_match('/^-?\d+$/', $order)) {
+		$styles[] = 'order: ' . $order;
 	}
 
 	return $styles ? ' style="' . htmlspecialchars(implode('; ', $styles), ENT_QUOTES, 'UTF-8') . '"' : '';
 };
 
-$visibilityClass = static function (array $settings): string {
-	return match ((string) ($settings['visibility'] ?? 'all')) {
-		'desktop' => ' carlix-visible-desktop',
-		'tablet' => ' carlix-visible-tablet',
-		'mobile' => ' carlix-visible-mobile',
-		'hidden' => ' carlix-hidden-all',
-		default => '',
-	};
+$visibilityClass = static function (array $settings) use ($settingGroup, $truthy): string {
+	$responsive = $settingGroup($settings, 'responsive');
+
+	if (!$responsive) {
+		$responsive = match ((string) ($settings['visibility'] ?? 'all')) {
+			'desktop' => ['hideTablet' => true, 'hideMobile' => true],
+			'tablet' => ['hideDesktop' => true, 'hideMobile' => true],
+			'mobile' => ['hideDesktop' => true, 'hideTablet' => true],
+			'hidden' => ['hideDesktop' => true, 'hideTablet' => true, 'hideMobile' => true],
+			default => [],
+		};
+	}
+
+	$classes = [];
+	foreach ([
+		'hideDesktop' => 'carlix-hide-desktop',
+		'hideTablet' => 'carlix-hide-tablet',
+		'hideMobile' => 'carlix-hide-mobile',
+		'hidePhone' => 'carlix-hide-phone',
+		'hideLargePhone' => 'carlix-hide-large-phone',
+		'hideSmallDesktop' => 'carlix-hide-small-desktop',
+		'hideLargeDesktop' => 'carlix-hide-large-desktop',
+		'hideExtraLargeDesktop' => 'carlix-hide-extra-large-desktop',
+	] as $key => $class) {
+		if ($truthy($responsive[$key] ?? false)) {
+			$classes[] = $class;
+		}
+	}
+
+	return $classes ? ' ' . implode(' ', $classes) : '';
+};
+
+$advancedValue = static function (array $settings, string $key, string $legacyKey = '') use ($settingGroup): string {
+	$hasAdvanced = is_array($settings['advanced'] ?? null);
+	$advanced    = $settingGroup($settings, 'advanced');
+	$value       = $advanced[$key] ?? null;
+
+	if (!$hasAdvanced && ($value === null || $value === '') && $legacyKey !== '') {
+		$value = $settings[$legacyKey] ?? null;
+	}
+
+	return trim((string) ($value ?? ''));
 };
 
 $containerClass = static function (string $width): string {
@@ -580,30 +1360,75 @@ $containerClass = static function (string $width): string {
 	};
 };
 
+/*
+ * Mapeia o objeto grid do Layout Manager (6 breakpoints) para as classes
+ * .col-* / .col-sm-* / .col-md-* / .col-lg-* / .col-xl-* / .col-xxl-* do
+ * grid.css. Mobile-first: se um breakpoint não tem valor definido, herda
+ * do breakpoint anterior — assim, layouts antigos que só configuraram
+ * desktop não caem indevidamente para "12" em mobile/tablet.
+ */
 $gridClass = static function (array $grid): string {
-	$map = [
-		'phone' => 'col',
-		'largePhone' => 'col-sm',
-		'tablet' => 'col-md',
-		'smallDesktop' => 'col-lg',
-		'largeDesktop' => 'col-xl',
-		'extraLargeDesktop' => 'col-xxl',
+	$order = [
+		'phone'              => 'col',
+		'largePhone'         => 'col-sm',
+		'tablet'             => 'col-md',
+		'smallDesktop'       => 'col-lg',
+		'largeDesktop'       => 'col-xl',
+		'extraLargeDesktop'  => 'col-xxl',
 	];
-	$classes = [];
 
-	foreach ($map as $key => $prefix) {
-		$value = (string) ($grid[$key] ?? '12');
+	$valid = static function ($value): bool {
+		if ($value === null || $value === '') {
+			return false;
+		}
+
+		if ($value === 'hidden' || $value === 'auto') {
+			return true;
+		}
+
+		$int = (int) $value;
+
+		return (string) $int === (string) $value && $int >= 1 && $int <= 12;
+	};
+
+	$resolved = [];
+	$last     = '12';
+
+	foreach ($order as $key => $_prefix) {
+		$raw = isset($grid[$key]) ? (string) $grid[$key] : '';
+
+		if ($valid($raw)) {
+			$last = $raw;
+		}
+
+		$resolved[$key] = $last;
+	}
+
+	$classes = [];
+	$previous = null;
+
+	foreach ($order as $key => $prefix) {
+		$value = $resolved[$key];
+
+		/* Se este breakpoint resolve para o MESMO valor que o anterior,
+		   o CSS herda automaticamente. Pular evita duplicação visual e
+		   reduz o ruido no DOM. O breakpoint base (phone) sempre entra. */
+		if ($previous !== null && $value === $previous) {
+			continue;
+		}
 
 		if ($value === 'hidden') {
 			$classes[] = $prefix . '-hidden';
 		} elseif ($value === 'auto') {
 			$classes[] = $prefix . '-auto';
-		} elseif ((int) $value >= 1 && (int) $value <= 12) {
+		} else {
 			$classes[] = $prefix . '-' . (int) $value;
 		}
+
+		$previous = $value;
 	}
 
-	return implode(' ', array_unique($classes));
+	return implode(' ', $classes);
 };
 
 $columnHasContent = static function (array $column, string $sectionType = 'section') use ($document, $hasMenu): bool {
@@ -701,17 +1526,28 @@ $renderOffcanvas = static function () use ($hasOffcanvas, $hasMenu, $offcanvasSi
 	<?php
 };
 
-$renderManagedColumn = static function (array $column, string $sectionType) use ($gridClass, $safeToken, $styleAttr, $visibilityClass, $renderModules, $logoHtml, $siteName, $document, $hasOffcanvas, $hasMenu, $desktopMenuEnabled, $desktopOffcanvasEnabled, $menuAlign, $menuInteraction, $submenuDirection, $submenuAnimation, $mobileButtonPosition): void {
+$renderManagedColumn = static function (array $column, string $sectionType) use ($gridClass, $safeToken, $styleAttr, $visibilityClass, $advancedValue, $renderModules, $logoHtml, $siteName, $document, $hasOffcanvas, $hasMenu, $desktopMenuEnabled, $desktopOffcanvasEnabled, $menuAlign, $menuInteraction, $submenuDirection, $submenuAnimation, $mobileButtonPosition, $renderLegacyLogoModule): void {
 	$settings = is_array($column['settings'] ?? null) ? $column['settings'] : [];
-	$classes = [
+	$grid     = is_array($column['grid'] ?? null) ? $column['grid'] : [];
+	$columnPosition = trim((string) ($column['position'] ?? ''));
+	$classes  = [
 		'carlix-layout-column',
-		$gridClass(is_array($column['grid'] ?? null) ? $column['grid'] : []),
-		$safeToken((string) ($settings['customClass'] ?? '')),
+		$gridClass($grid),
+		$safeToken($advancedValue($settings, 'customClass', 'customClass')),
 		$visibilityClass($settings),
 	];
-	$id = $safeToken((string) ($settings['customId'] ?? ''));
+
+	/* Atributo de debug — espelha o grid do JSON em ordem mobile-first
+	   (phone, sm, md, lg, xl, xxl). Util para inspecionar o que veio do
+	   Layout Manager sem precisar olhar as classes do CSS. */
+	$gridShort = [];
+	foreach (['phone', 'largePhone', 'tablet', 'smallDesktop', 'largeDesktop', 'extraLargeDesktop'] as $bp) {
+		$gridShort[] = isset($grid[$bp]) && $grid[$bp] !== '' ? (string) $grid[$bp] : '-';
+	}
+	$dataGrid = ' data-carlix-grid="' . htmlspecialchars(implode('/', $gridShort), ENT_QUOTES, 'UTF-8') . '"';
+	$dataPosition = $columnPosition !== '' ? ' data-carlix-position="' . htmlspecialchars($columnPosition, ENT_QUOTES, 'UTF-8') . '"' : '';
 	?>
-	<div class="<?php echo htmlspecialchars(trim(implode(' ', array_filter($classes))), ENT_QUOTES, 'UTF-8'); ?>"<?php echo $id !== '' ? ' id="' . htmlspecialchars($id, ENT_QUOTES, 'UTF-8') . '"' : ''; ?><?php echo $styleAttr($settings); ?>>
+	<div class="<?php echo htmlspecialchars(trim(implode(' ', array_filter($classes))), ENT_QUOTES, 'UTF-8'); ?>"<?php echo $dataGrid; ?><?php echo $dataPosition; ?><?php echo $styleAttr($settings); ?>>
 		<?php if (!empty($column['componentArea'])) : ?>
 			<jdoc:include type="message" />
 			<jdoc:include type="component" />
@@ -731,10 +1567,14 @@ $renderManagedColumn = static function (array $column, string $sectionType) use 
 			<?php endif; ?>
 		<?php else : ?>
 			<?php
-			$position = trim((string) ($column['position'] ?? ''));
+			$position = $columnPosition;
 
-			if ($position === 'logo' && !$document->countModules('logo')) {
-				echo $logoHtml;
+			if ($position === 'logo') {
+				if ($renderLegacyLogoModule && $document->countModules('logo')) {
+					$renderModules('logo', ['style' => 'none']);
+				} else {
+					echo $logoHtml;
+				}
 			} elseif ($position !== '') {
 				$renderModules($position, ['style' => 'none'], $position === 'menu' ? '_:default' : null);
 			}
@@ -744,14 +1584,17 @@ $renderManagedColumn = static function (array $column, string $sectionType) use 
 	<?php
 };
 
-$renderManagedRow = static function (array $row, string $sectionType) use (&$renderManagedColumn, $safeToken, $styleAttr, $visibilityClass, $columnHasContent): void {
+$renderManagedRow = static function (array $row, string $sectionType) use (&$renderManagedColumn, $safeToken, $styleAttr, $visibilityClass, $advancedValue, $columnHasContent): void {
 	$settings = is_array($row['settings'] ?? null) ? $row['settings'] : [];
 	$gap = in_array((string) ($row['gap'] ?? 'md'), ['none', 'xs', 'sm', 'md', 'lg', 'xl'], true) ? (string) $row['gap'] : 'md';
 	if (array_key_exists('gapEnabled', $row)) {
-		$gapUnit = in_array((string) ($row['gapUnit'] ?? 'px'), ['px', 'rem', 'em', '%'], true) ? (string) $row['gapUnit'] : 'px';
+		$gapUnit = in_array((string) ($row['gapUnit'] ?? 'px'), ['px', 'rem', 'em', '%', 'custom'], true) ? (string) $row['gapUnit'] : 'px';
 		$gapValue = trim((string) ($row['gapValue'] ?? '15'));
 		$gapValue = preg_match('/^\d+(\.\d+)?$/', $gapValue) ? $gapValue : '15';
-		$settings['rowColumnGap'] = !empty($row['gapEnabled']) ? (($gapValue === '' ? '15' : $gapValue) . $gapUnit) : '0px';
+		$gapCustom = trim((string) ($row['gapCustom'] ?? ''));
+		$settings['rowColumnGap'] = !empty($row['gapEnabled'])
+			? ($gapUnit === 'custom' ? ($gapCustom !== '' ? $gapCustom : '15px') : (($gapValue === '' ? '15' : $gapValue) . $gapUnit))
+			: '0px';
 	}
 	$classes = [
 		'carlix-row',
@@ -759,7 +1602,7 @@ $renderManagedRow = static function (array $row, string $sectionType) use (&$ren
 		'carlix-layout-row--gap-' . $gap,
 		'carlix-layout-row--v-' . $safeToken((string) ($row['alignVertical'] ?? 'stretch')),
 		'carlix-layout-row--h-' . $safeToken((string) ($row['alignHorizontal'] ?? 'start')),
-		$safeToken((string) ($settings['customClass'] ?? '')),
+		$safeToken($advancedValue($settings, 'customClass', 'customClass')),
 		$visibilityClass($settings),
 	];
 	?>
@@ -773,14 +1616,15 @@ $renderManagedRow = static function (array $row, string $sectionType) use (&$ren
 	<?php
 };
 
-$renderManagedSection = static function (array $item) use (&$renderManagedRow, $sectionHasContent, $columnHasContent, $safeToken, $styleAttr, $visibilityClass, $containerClass, $siteName): void {
+$renderManagedSection = static function (array $item) use (&$renderManagedRow, $sectionHasContent, $columnHasContent, $safeToken, $styleAttr, $visibilityClass, $advancedValue, $containerClass, $siteName): void {
 	if (!$sectionHasContent($item)) {
 		return;
 	}
 
 	$type = in_array((string) ($item['type'] ?? 'section'), ['header', 'nav', 'section', 'footer'], true) ? (string) $item['type'] : 'section';
 	$settings = is_array($item['settings'] ?? null) ? $item['settings'] : [];
-	$semanticName = strtolower(trim((string) ($item['title'] ?? '') . ' ' . (string) ($item['id'] ?? '') . ' ' . (string) ($settings['customClass'] ?? '')));
+	$customClass = $advancedValue($settings, 'customClass', 'customClass');
+	$semanticName = strtolower(trim((string) ($item['title'] ?? '') . ' ' . (string) ($item['id'] ?? '') . ' ' . $customClass));
 	$semanticClass = match (true) {
 		str_contains($semanticName, 'topbar') => 'carlix-topbar',
 		str_contains($semanticName, 'banner') => 'carlix-banner',
@@ -791,7 +1635,7 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 		default => '',
 	};
 	$isCredits = strtolower((string) ($item['title'] ?? '')) === 'credits'
-		|| str_contains(' ' . strtolower((string) ($settings['customClass'] ?? '')) . ' ', ' credits ');
+		|| str_contains(' ' . strtolower($customClass) . ' ', ' credits ');
 	$hasAnyContent = false;
 
 	foreach (($item['rows'] ?? []) as $row) {
@@ -839,10 +1683,10 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 		!empty($item['header']['transparentInitial']) ? 'carlix-header--transparent-initial' : '',
 		!empty($item['header']['blurBackground']) ? 'carlix-header--blur' : '',
 		!empty($item['header']['overlayContent']) ? 'carlix-header--overlay' : '',
-		$safeToken((string) ($settings['customClass'] ?? '')),
+		$safeToken($customClass),
 		$visibilityClass($settings),
 	];
-	$id = $safeToken((string) ($settings['customId'] ?? ''));
+	$id = in_array($type, ['header', 'footer'], true) ? $safeToken($advancedValue($settings, 'customId', 'customId')) : '';
 	$id = $hasComponent && $id === '' ? 'carlix-main' : $id;
 	$dataHeader = $type === 'header'
 		? ' data-carlix-header="' . htmlspecialchars($mode, ENT_QUOTES, 'UTF-8') . '" data-carlix-header-behavior="' . htmlspecialchars((string) ($item['header']['behavior'] ?? 'always'), ENT_QUOTES, 'UTF-8') . '"'
@@ -893,18 +1737,25 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 <head>
 	<jdoc:include type="metas" />
 	<link rel="icon" type="<?php echo $faviconType; ?>" href="<?php echo htmlspecialchars($faviconSrc, ENT_QUOTES, 'UTF-8'); ?>">
+	<?php if ($appleTouchIconSrc !== '') : ?>
+	<link rel="apple-touch-icon" href="<?php echo htmlspecialchars($appleTouchIconSrc, ENT_QUOTES, 'UTF-8'); ?>">
+	<?php endif; ?>
+	<meta name="theme-color" content="<?php echo htmlspecialchars($themeColor, ENT_QUOTES, 'UTF-8'); ?>">
+	<?php echo $styleBlock($criticalCss); ?>
 	<jdoc:include type="styles" />
 	<style>:root { <?php echo implode('; ', $cssVars); ?>; }</style>
-	<?php if (trim($customCss) !== '') : ?>
-	<style><?php echo $customCss; ?></style>
-	<?php endif; ?>
-	<?php if ($gaId !== '') : ?>
-	<script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo $gaId; ?>"></script>
-	<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','<?php echo $gaId; ?>');</script>
-	<?php endif; ?>
+	<?php echo $styleBlock($customCss); ?>
+	<?php echo $styleBlock($customCssDesktop, '(min-width: 992px)'); ?>
+	<?php echo $styleBlock($customCssTablet, '(min-width: 768px) and (max-width: 991.98px)'); ?>
+	<?php echo $styleBlock($customCssMobile, '(max-width: 767.98px)'); ?>
+	<?php echo $styleBlock($additionalCss); ?>
+	<?php echo $scriptBlock($customJsHead); ?>
 	<?php if (trim($headCode) !== '') { echo $headCode; } ?>
 </head>
-<body class="carlix-site carlix-nav-type-<?php echo htmlspecialchars($navigationType, ENT_QUOTES, 'UTF-8'); ?>">
+<body class="<?php echo htmlspecialchars(trim(implode(' ', array_filter($bodyClasses))), ENT_QUOTES, 'UTF-8'); ?>">
+	<?php if (trim($autoBodyStartCode) !== '') { echo $autoBodyStartCode; } ?>
+	<?php if (trim($bodyStartCode) !== '') { echo $bodyStartCode; } ?>
+	<?php if (trim($noscriptCode) !== '') { echo $noscriptCode; } ?>
 
 	<a class="carlix-skip-link" href="#carlix-main"><?php echo Text::_('TPL_HC_CARLIX_SKIP_TO_CONTENT'); ?></a>
 
@@ -915,7 +1766,7 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 		<?php $renderOffcanvas(); ?>
 	<?php else : ?>
 
-	<?php // ===== SESSAO: TOPBAR ===== ?>
+	<?php // ===== SEÇÃO: TOPBAR ===== ?>
 	<?php if ($topbar) : $c = $colClass(count($topbar)); ?>
 	<section class="carlix-session carlix-topbar">
 		<div class="carlix-container">
@@ -928,13 +1779,13 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 	</section>
 	<?php endif; ?>
 
-	<?php // ===== SESSAO: HEADER (sempre) — logo 3 | menu 7 | busca 2 ===== ?>
+	<?php // ===== SEÇÃO: HEADER (sempre) — logo 3 | menu 7 | busca 2 ===== ?>
 	<header class="carlix-session carlix-header carlix-header--<?php echo $headerBehavior; ?>" data-carlix-header="<?php echo $headerBehavior; ?>">
 		<div class="carlix-container">
 			<div class="carlix-row">
 
 				<div class="col-8 col-lg-3 carlix-logo-slot carlix-logo-slot--<?php echo $logoAlign; ?>">
-					<?php if ($this->countModules('logo')) : ?>
+					<?php if ($renderLegacyLogoModule && $this->countModules('logo')) : ?>
 						<?php $renderModules('logo'); ?>
 					<?php else : ?>
 						<?php echo $logoHtml; ?>
@@ -968,7 +1819,7 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 
 	<?php $renderOffcanvas(); ?>
 
-	<?php // ===== SESSAO: BANNER ===== ?>
+	<?php // ===== SEÇÃO: BANNER ===== ?>
 	<?php if ($this->countModules('banner')) : ?>
 	<section class="carlix-session carlix-banner">
 		<div class="carlix-container">
@@ -979,7 +1830,7 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 	</section>
 	<?php endif; ?>
 
-	<?php // ===== SESSAO: BREADCRUMBS ===== ?>
+	<?php // ===== SEÇÃO: BREADCRUMBS ===== ?>
 	<?php if ($this->countModules('breadcrumbs')) : ?>
 	<nav class="carlix-session carlix-breadcrumbs" aria-label="<?php echo Text::_('TPL_HC_CARLIX_BREADCRUMB'); ?>">
 		<div class="carlix-container">
@@ -990,7 +1841,7 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 	</nav>
 	<?php endif; ?>
 
-	<?php // ===== SESSAO: TOP ===== ?>
+	<?php // ===== SEÇÃO: TOP ===== ?>
 	<?php if ($top) : $c = $colClass(count($top)); ?>
 	<section class="carlix-session carlix-top">
 		<div class="carlix-container">
@@ -1003,7 +1854,7 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 	</section>
 	<?php endif; ?>
 
-	<?php // ===== SESSAO: MAIN (sempre) — [sidebar-left] conteudo [sidebar-right] ===== ?>
+	<?php // ===== SEÇÃO: MAIN (sempre) — [sidebar-left] conteúdo [sidebar-right] ===== ?>
 	<main id="carlix-main" class="carlix-session carlix-main" role="main" tabindex="-1">
 		<div class="carlix-container">
 			<div class="carlix-row">
@@ -1041,7 +1892,7 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 		</div>
 	</main>
 
-	<?php // ===== SESSAO: BOTTOM ===== ?>
+	<?php // ===== SEÇÃO: BOTTOM ===== ?>
 	<?php if ($bottom) : $c = $colClass(count($bottom)); ?>
 	<section class="carlix-session carlix-bottom">
 		<div class="carlix-container">
@@ -1054,7 +1905,7 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 	</section>
 	<?php endif; ?>
 
-	<?php // ===== SESSAO: FOOTER ===== ?>
+	<?php // ===== SEÇÃO: FOOTER ===== ?>
 	<?php if ($foot) : $c = $colClass(count($foot)); ?>
 	<section class="carlix-session carlix-footer">
 		<div class="carlix-container">
@@ -1067,7 +1918,7 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 	</section>
 	<?php endif; ?>
 
-	<?php // ===== SESSAO: CREDITS (sempre) — ate 4 colunas; senao fallback © ===== ?>
+	<?php // ===== SEÇÃO: CREDITS (sempre) — até 4 colunas; senão fallback © ===== ?>
 	<footer class="carlix-session carlix-credits" role="contentinfo">
 		<div class="carlix-container">
 			<div class="carlix-row">
@@ -1097,6 +1948,11 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 	<?php endif; ?>
 
 	<jdoc:include type="scripts" />
+	<?php if ($enableLazyImages || $enableLazyIframes) : ?>
+	<script>document.addEventListener("DOMContentLoaded",function(){<?php if ($enableLazyImages) : ?>document.querySelectorAll("img:not([loading])").forEach(function(el){el.loading="lazy";});<?php endif; ?><?php if ($enableLazyIframes) : ?>document.querySelectorAll("iframe:not([loading])").forEach(function(el){el.loading="lazy";});<?php endif; ?>});</script>
+	<?php endif; ?>
+	<?php echo $scriptBlock($customJsFooter); ?>
+	<?php echo $domReadyBlock($customJsDomReady); ?>
 	<?php if (trim($bodyCode) !== '') { echo $bodyCode; } ?>
 </body>
 </html>

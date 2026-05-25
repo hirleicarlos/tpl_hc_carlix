@@ -1,9 +1,9 @@
 /**
  * HC Carlix - template.js
  *
- * Tres recursos independentes (cada um com seu proprio guard):
+ * Tres recursos independentes (cada um com seu próprio guard):
  *   - Offcanvas mobile (toggle, backdrop, submenu, focus-trap, ESC)
- *   - Botao voltar-ao-topo
+ *   - Botão voltar-ao-topo
  *   - Compensacao do header fixo
  */
 (function () {
@@ -317,8 +317,9 @@
 		}
 
 		btn.addEventListener('click', function () {
-			var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-			window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+			var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.body.classList.contains('carlix-reduce-motion');
+			var smooth = document.body.classList.contains('carlix-smooth-scroll');
+			window.scrollTo({ top: 0, behavior: reduce || !smooth ? 'auto' : 'smooth' });
 		});
 
 		window.addEventListener('scroll', onScroll, { passive: true });
@@ -337,9 +338,67 @@
 		var body = document.body;
 		var ticking = false;
 		var lastScrollY = window.scrollY;
+		var stickyLogoImages = document.querySelectorAll('[data-carlix-sticky-logo]');
+		var canUseStickyLogo = behavior === 'sticky' || behavior === 'fixed' || behavior === 'floating';
 
 		function setOffset() {
 			body.style.setProperty('--carlix-header-h', header.offsetHeight + 'px');
+		}
+
+		function swapPictureSources(img, stickySrc, active) {
+			var picture = img.parentElement && img.parentElement.tagName === 'PICTURE' ? img.parentElement : null;
+
+			if (!picture) {
+				return;
+			}
+
+			picture.querySelectorAll('source').forEach(function (source) {
+				if (!source.dataset.carlixDefaultSrcset) {
+					source.dataset.carlixDefaultSrcset = source.getAttribute('srcset') || '';
+				}
+
+				if (active) {
+					source.setAttribute('srcset', stickySrc);
+				} else if (source.dataset.carlixDefaultSrcset) {
+					source.setAttribute('srcset', source.dataset.carlixDefaultSrcset);
+				} else {
+					source.removeAttribute('srcset');
+				}
+			});
+		}
+
+		function setStickyLogo(active) {
+			stickyLogoImages.forEach(function (img) {
+				var stickySrc = img.getAttribute('data-carlix-sticky-logo');
+
+				if (!stickySrc) {
+					return;
+				}
+
+				if (!img.dataset.carlixDefaultSrc) {
+					img.dataset.carlixDefaultSrc = img.getAttribute('src') || '';
+				}
+
+				if (!img.dataset.carlixDefaultSrcset) {
+					img.dataset.carlixDefaultSrcset = img.getAttribute('srcset') || '';
+				}
+
+				swapPictureSources(img, stickySrc, active);
+
+				if (active) {
+					img.setAttribute('src', stickySrc);
+					img.removeAttribute('srcset');
+					return;
+				}
+
+				if (img.dataset.carlixDefaultSrc) {
+					img.setAttribute('src', img.dataset.carlixDefaultSrc);
+				}
+
+				if (img.dataset.carlixDefaultSrcset) {
+					img.setAttribute('srcset', img.dataset.carlixDefaultSrcset);
+				}
+			});
 		}
 
 		function setScrolled() {
@@ -349,6 +408,7 @@
 
 			body.classList.toggle('carlix-header-scrolled', currentY > 12);
 			body.classList.toggle('carlix-header-is-hidden', scrollBehavior === 'hide-down-show-up' && goingDown);
+			setStickyLogo(canUseStickyLogo && currentY > 12);
 			lastScrollY = currentY;
 		}
 

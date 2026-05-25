@@ -2,8 +2,8 @@
  * HC Carlix - template.css
  * Base geral do template: reset leve, estrutura e secoes principais.
  *
- * Nao colocar aqui componentes especificos como menu, breadcrumb,
- * botoes, formularios, hero, artigos ou modulos. Eles ficam em arquivos
+ * Não colocar aqui componentes especificos como menu, breadcrumb,
+ * botões, formulários, hero, artigos ou módulos. Eles ficam em arquivos
  * CSS proprios para facilitar manutencao e overrides.
  */
 
@@ -11,6 +11,7 @@
 
 html {
 	overflow-x: clip;
+	scroll-behavior: var(--carlix-scroll-behavior, auto);
 	-webkit-text-size-adjust: 100%;
 	text-size-adjust: 100%;
 }
@@ -35,9 +36,54 @@ img, picture, video, svg {
 a { color: inherit; }
 
 .carlix-site {
+	position: relative;
+	min-height: 100vh;
+	background: var(--carlix-bg);
+	color: var(--carlix-text);
+	isolation: isolate;
+}
+
+.carlix-site::before,
+.carlix-site::after {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	content: "";
+}
+
+.carlix-site::before {
 	background:
-		linear-gradient(180deg, #fff 0, #f7f8fa 38rem, #fff 38rem),
-		var(--carlix-bg);
+		var(--carlix-site-bg-image, none),
+		var(--carlix-site-bg, transparent);
+	background-position: var(--carlix-site-bg-position, center center);
+	background-size: var(--carlix-site-bg-size, cover);
+	background-repeat: var(--carlix-site-bg-repeat, no-repeat);
+	background-attachment: var(--carlix-site-bg-attachment, scroll);
+	opacity: var(--carlix-site-bg-opacity, 1);
+}
+
+.carlix-site::after {
+	background: var(--carlix-site-overlay-bg, transparent);
+	opacity: var(--carlix-site-overlay-opacity, 0);
+}
+
+.carlix-site > * {
+	position: relative;
+	z-index: 1;
+}
+
+.carlix-reduce-motion *,
+.carlix-reduce-motion *::before,
+.carlix-reduce-motion *::after {
+	scroll-behavior: auto !important;
+	animation-duration: 0.001ms !important;
+	animation-iteration-count: 1 !important;
+	transition-duration: 0.001ms !important;
+}
+
+.carlix-enhanced-contrast {
+	color-scheme: light;
 }
 
 .carlix-session {
@@ -63,15 +109,52 @@ a { color: inherit; }
 	padding-inline: 0;
 }
 
-.carlix-layout-section {
+.carlix-layout-section,
+.carlix-layout-row,
+.carlix-layout-column {
 	position: relative;
 	color: inherit;
+	isolation: isolate;
+}
+
+.carlix-layout-section::before,
+.carlix-layout-row::before,
+.carlix-layout-column::before,
+.carlix-layout-section::after,
+.carlix-layout-row::after,
+.carlix-layout-column::after {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	content: "";
+}
+
+.carlix-layout-section::before,
+.carlix-layout-row::before,
+.carlix-layout-column::before {
+	background:
+		var(--carlix-managed-bg-image, none),
+		var(--carlix-managed-bg, transparent);
+	background-position: var(--carlix-managed-bg-position, center center);
+	background-size: var(--carlix-managed-bg-size, cover);
+	background-repeat: var(--carlix-managed-bg-repeat, no-repeat);
+	background-attachment: var(--carlix-managed-bg-attachment, scroll);
+	opacity: var(--carlix-managed-bg-opacity, 1);
+}
+
+.carlix-layout-section::after,
+.carlix-layout-row::after,
+.carlix-layout-column::after {
+	background: var(--carlix-managed-overlay-bg, transparent);
+	opacity: var(--carlix-managed-overlay-opacity, 0);
 }
 
 .carlix-layout-section > *,
 .carlix-layout-column > *,
 .carlix-layout-row > * {
 	position: relative;
+	z-index: 1;
 }
 
 .carlix-layout-section a,
@@ -86,16 +169,29 @@ a { color: inherit; }
 	color: var(--carlix-managed-hover, var(--carlix-managed-link, inherit));
 }
 
+/* Container das secoes do Layout Manager: empilha as Rows na vertical e
+   ESTICA cada Row para 100% da largura. Antes era display:grid sem
+   grid-template-columns, o que criava uma célula auto-sized e fazia a
+   .carlix-row interna contrair até a largura mínima do conteúdo
+   (sintoma: banner e colunas "pequenas" mesmo com col-12). Flex column
+   resolve sem mexer na .carlix-row (que continua com seu próprio grid
+   de 12 colunas vindo do grid.css). */
 .carlix-layout-section > .carlix-container,
 .carlix-layout-section > .carlix-container-fluid,
 .carlix-layout-section > .carlix-container-full {
-	display: grid;
+	display: flex;
+	flex-direction: column;
 	gap: var(--carlix-managed-row-gap, var(--carlix-grid-gap, 1.5rem));
+	align-items: var(--carlix-align-horizontal, stretch);
+	justify-content: var(--carlix-align-vertical, flex-start);
 }
 
 .carlix-layout-row {
 	position: relative;
+	width: 100%;
 	gap: var(--carlix-row-gap, var(--carlix-grid-gap, 1.5rem));
+	align-items: var(--carlix-align-vertical, stretch);
+	justify-content: var(--carlix-align-horizontal, start);
 }
 
 .carlix-layout-row--gap-none { --carlix-row-gap: 0; }
@@ -105,22 +201,144 @@ a { color: inherit; }
 .carlix-layout-row--gap-lg { --carlix-row-gap: 2rem; }
 .carlix-layout-row--gap-xl { --carlix-row-gap: 3rem; }
 
-.carlix-layout-row--v-start { align-items: start; }
-.carlix-layout-row--v-center { align-items: center; }
-.carlix-layout-row--v-end { align-items: end; }
-.carlix-layout-row--v-stretch { align-items: stretch; }
+.carlix-layout-row--v-start { align-items: var(--carlix-align-vertical, start); }
+.carlix-layout-row--v-center { align-items: var(--carlix-align-vertical, center); }
+.carlix-layout-row--v-end { align-items: var(--carlix-align-vertical, end); }
+.carlix-layout-row--v-stretch { align-items: var(--carlix-align-vertical, stretch); }
 
-.carlix-layout-row--h-start { justify-items: start; }
-.carlix-layout-row--h-center { justify-items: center; }
-.carlix-layout-row--h-end { justify-items: end; }
-.carlix-layout-row--h-between { justify-content: space-between; }
+/* Alinhamento horizontal do GRUPO de colunas dentro da Row. justify-content
+   atua quando as colunas não somam 12 (sobra espaço no track). NUNCA usar
+   justify-items aqui — ele torna justify-self:start em cada coluna e faz
+   a célula contrair ao tamanho do conteúdo, quebrando o grid de 12 cols. */
+.carlix-layout-row--h-start { justify-content: var(--carlix-align-horizontal, start); }
+.carlix-layout-row--h-center { justify-content: var(--carlix-align-horizontal, center); }
+.carlix-layout-row--h-end { justify-content: var(--carlix-align-horizontal, end); }
+.carlix-layout-row--h-between { justify-content: var(--carlix-align-horizontal, space-between); }
 
 .carlix-layout-column {
+	display: flex;
+	flex-direction: column;
 	position: relative;
+	width: 100%;
 	min-width: 0;
+	align-items: var(--carlix-align-horizontal, stretch);
+	justify-content: var(--carlix-align-vertical, flex-start);
+}
+
+/* Conteúdo solto dentro da coluna ocupa a largura disponível da célula
+   do grid. Não força em módulos que já tenham largura própria (img/svg
+   continuam com max-width:100% pelo reset, formulários continuam livres). */
+.carlix-layout-column > * {
+	max-width: 100%;
 }
 
 .carlix-hidden-all { display: none !important; }
+
+@media (max-width: 767.98px) {
+	.carlix-hide-mobile { display: none !important; }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.carlix-hide-tablet { display: none !important; }
+}
+
+@media (min-width: 992px) {
+	.carlix-hide-desktop { display: none !important; }
+}
+
+@media (max-width: 575.98px) {
+	.carlix-hide-phone { display: none !important; }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+	.carlix-hide-large-phone { display: none !important; }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.carlix-hide-tablet { display: none !important; }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+	.carlix-hide-small-desktop { display: none !important; }
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+	.carlix-hide-large-desktop { display: none !important; }
+}
+
+@media (min-width: 1400px) {
+	.carlix-hide-extra-large-desktop { display: none !important; }
+}
+
+.carlix-dev-show-grid .carlix-row,
+.carlix-dev-show-grid .carlix-layout-column {
+	outline: 1px dashed rgba(211, 47, 47, 0.55);
+	outline-offset: -1px;
+}
+
+.carlix-dev-show-grid .carlix-layout-column::after,
+.carlix-dev-show-positions .carlix-layout-column[data-carlix-position]::before {
+	position: absolute;
+	top: 0.25rem;
+	z-index: 20;
+	display: inline-flex;
+	align-items: center;
+	min-height: 1.25rem;
+	padding: 0.12rem 0.42rem;
+	color: #ffffff;
+	background: rgba(13, 19, 27, 0.88);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	border-radius: 0.25rem;
+	font-size: 0.68rem;
+	font-weight: 700;
+	line-height: 1;
+	pointer-events: none;
+}
+
+.carlix-dev-show-grid .carlix-layout-column::after {
+	right: 0.25rem;
+	content: attr(data-carlix-grid);
+}
+
+.carlix-dev-show-positions .carlix-layout-column[data-carlix-position]::before {
+	left: 0.25rem;
+	content: attr(data-carlix-position);
+}
+
+.carlix-dev-show-empty-areas .carlix-layout-column:empty {
+	min-height: 4rem;
+	background: repeating-linear-gradient(
+		-45deg,
+		rgba(211, 47, 47, 0.08),
+		rgba(211, 47, 47, 0.08) 8px,
+		rgba(255, 255, 255, 0.04) 8px,
+		rgba(255, 255, 255, 0.04) 16px
+	);
+}
+
+.carlix-dev-show-breakpoints::after {
+	position: fixed;
+	right: 0.75rem;
+	bottom: 0.75rem;
+	z-index: 9999;
+	padding: 0.38rem 0.55rem;
+	color: #ffffff;
+	background: rgba(13, 19, 27, 0.9);
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	border-radius: 0.35rem;
+	font-size: 0.75rem;
+	font-weight: 800;
+	content: "desktop";
+	pointer-events: none;
+}
+
+@media (max-width: 767.98px) {
+	.carlix-dev-show-breakpoints::after { content: "mobile"; }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+	.carlix-dev-show-breakpoints::after { content: "tablet"; }
+}
 
 @media (min-width: 1024px) {
 	.carlix-visible-tablet,
@@ -137,7 +355,7 @@ a { color: inherit; }
 	.carlix-visible-tablet { display: none !important; }
 }
 
-/* Largura do container por secao (override) com fallback na global.
+/* Largura do container por seção (override) com fallback na global.
    "full" vira "none" (max-width: none = largura total, com padding). */
 .carlix-topbar      > .carlix-container { max-width: var(--carlix-topbar-container,      var(--carlix-container)); }
 .carlix-header      > .carlix-container { max-width: var(--carlix-header-container,      var(--carlix-container)); }
@@ -174,7 +392,7 @@ a { color: inherit; }
 	box-shadow: var(--carlix-shadow-sm);
 }
 
-/* Comportamento do cabecalho (parametro) */
+/* Comportamento do cabeçalho (parametro) */
 .carlix-header--static { position: static; }
 .carlix-header--sticky {
 	position: sticky;
@@ -275,10 +493,65 @@ body.carlix-header-is-fixed:not(.carlix-header-overlay-content) { padding-top: v
 	text-decoration: none;
 }
 
+.carlix-brand {
+	color: inherit;
+	gap: 0.15rem;
+}
+
+.carlix-logo {
+	min-width: 0;
+}
+
+.carlix-brand--text {
+	flex-direction: column;
+	align-items: flex-start;
+	line-height: 1.05;
+}
+
+.carlix-logo-slot--center .carlix-brand--text,
+.carlix-logo-slot--center .carlix-logo--text {
+	align-items: center;
+	text-align: center;
+}
+
+.carlix-logo-slot--end .carlix-brand--text,
+.carlix-logo-slot--end .carlix-logo--text {
+	align-items: flex-end;
+	text-align: right;
+}
+
+.carlix-brand-title,
+.carlix-logo__title {
+	color: var(--carlix-secondary);
+	font-family: var(--carlix-font-heading);
+	font-size: clamp(1.35rem, 2vw, 1.9rem);
+	font-weight: 800;
+	letter-spacing: 0;
+}
+
+.carlix-brand-slogan,
+.carlix-logo__slogan {
+	color: var(--carlix-primary);
+	font-size: 0.72rem;
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.carlix-logo-picture,
+.carlix-logo__picture {
+	display: inline-flex;
+	align-items: center;
+}
+
 .carlix-brand img,
+.carlix-logo__image,
 .hc-logo-showcase img {
 	max-height: 4rem;
 	object-fit: contain;
+}
+
+.carlix-logo--image {
+	line-height: 0;
 }
 
 .carlix-menu {
@@ -289,7 +562,7 @@ body.carlix-header-is-fixed:not(.carlix-header-overlay-content) { padding-top: v
 .carlix-menu--center { justify-content: center; }
 .carlix-menu--end    { justify-content: flex-end; }
 
-/* Botao voltar ao topo (parametro) */
+/* Botão voltar ao topo (parametro) */
 .carlix-to-top {
 	position: fixed;
 	right: 1.25rem;

@@ -4,8 +4,17 @@
  */
 
 :focus-visible {
-	outline: 3px solid color-mix(in srgb, var(--carlix-primary) 45%, #f5c542);
-	outline-offset: 3px;
+	outline: var(--carlix-focus-ring, 3px solid color-mix(in srgb, var(--carlix-primary) 45%, #f5c542));
+	outline-offset: var(--carlix-focus-offset, 3px);
+}
+
+.carlix-focus-muted :focus-visible {
+	outline-width: 2px;
+	outline-offset: 2px;
+}
+
+.carlix-enhanced-contrast :focus-visible {
+	outline: var(--carlix-focus-ring, 3px solid #ffbf47);
 }
 
 .visually-hidden {

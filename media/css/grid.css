@@ -5,7 +5,17 @@
  *
  * LINHA      .carlix-row            (container prefixado — só nosso, sem colisão)
  * COLUNAS    .col-1 .. .col-12      (span N de 12; simples)
- * RESPONSIVO .col-md-N (>=768)  .col-lg-N (>=1024)
+ *
+ * MAPA DE BREAKPOINTS (sincronizado JS/JSON/PHP/CSS):
+ *   phone               .col-N         (< 576px, mobile-first base)
+ *   largePhone          .col-sm-N      (>= 576px)
+ *   tablet              .col-md-N      (>= 768px)
+ *   smallDesktop        .col-lg-N      (>= 992px)
+ *   largeDesktop        .col-xl-N      (>= 1200px)
+ *   extraLargeDesktop   .col-xxl-N     (>= 1400px)
+ *
+ * EXTRAS    .col-auto / .col-hidden (e variantes por breakpoint) =
+ *            largura automática / ocultar no breakpoint
  * OFFSET     .off-1 .. .off-11     (empurra a coluna para a direita)
  * AUTO       .carlix-row.cols-N     (N colunas iguais sem marcar cada uma)
  * GAP        padrão / .carlix-row--nogap / .carlix-row--gap-lg
@@ -18,8 +28,12 @@
 
 .carlix-row {
 	display: grid;
-	grid-template-columns: repeat(12, 1fr);
+	/* minmax(0, 1fr) impede que conteúdo intrinseco "empurre" o track e
+	   quebre a divisao de 12 colunas (sintoma classico: col-6 ficando
+	   maior que 50% por causa de uma imagem/iframe sem max-width). */
+	grid-template-columns: repeat(12, minmax(0, 1fr));
 	gap: var(--carlix-grid-gap, 1.5rem);
+	width: 100%;
 }
 
 /* Tamanho do espaço entre colunas */
@@ -102,8 +116,8 @@
 	.carlix-row > .col-md-12 { display: block; grid-column: span 12; }
 }
 
-/* ===== Breakpoint lg (>= 1024px) — desktop ===== */
-@media (min-width: 1024px) {
+/* ===== Breakpoint lg (>= 992px) — small desktop ===== */
+@media (min-width: 992px) {
 	.carlix-row > .col-lg-auto { display: block; grid-column: auto; }
 	.carlix-row > .col-lg-hidden { display: none; }
 	.carlix-row > .col-lg-1  { display: block; grid-column: span 1; }
@@ -138,8 +152,8 @@
 	.carlix-row > .col-xl-12 { display: block; grid-column: span 12; }
 }
 
-/* ===== Breakpoint xxl (>= 1440px) — extra large desktop ===== */
-@media (min-width: 1440px) {
+/* ===== Breakpoint xxl (>= 1400px) — extra large desktop ===== */
+@media (min-width: 1400px) {
 	.carlix-row > .col-xxl-auto { display: block; grid-column: auto; }
 	.carlix-row > .col-xxl-hidden { display: none; }
 	.carlix-row > .col-xxl-1  { display: block; grid-column: span 1; }
