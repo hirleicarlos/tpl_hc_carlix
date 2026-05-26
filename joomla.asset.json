@@ -24,7 +24,7 @@
 			"name": "template.hc_carlix.menu",
 			"type": "style",
 			"uri": "menu.css",
-			"version": "1.2.2",
+			"version": "1.2.8",
 			"dependencies": [
 				"template.hc_carlix.variables"
 			]
@@ -33,7 +33,7 @@
 			"name": "template.hc_carlix.template",
 			"type": "style",
 			"uri": "template.css",
-			"version": "1.0.19",
+			"version": "1.0.29",
 			"dependencies": [
 				"template.hc_carlix.grid"
 			]
@@ -122,7 +122,7 @@
 			"name": "template.hc_carlix.layout-manager",
 			"type": "script",
 			"uri": "layout-manager.js",
-			"version": "1.2.17",
+			"version": "1.2.18",
 			"attributes": {
 				"defer": true
 			}

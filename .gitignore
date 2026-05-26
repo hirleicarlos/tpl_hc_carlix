@@ -31,9 +31,14 @@ $RECYCLE.BIN/
 
 # ---------- Logs / Temporários ----------
 *.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
 *.tmp
 *.temp
 *.bak
+*.orig
+*.rej
 *.swp
 *.swo
 *~
@@ -50,12 +55,19 @@ pnpm-lock.yaml
 # ---------- Builds e distribuição ----------
 dist/
 build/
+release/
+releases/
+packages/
+pkg/
 *.zip
 *.tar
 *.tar.gz
 *.tgz
 *.rar
 *.7z
+*.jpa
+*.jps
+tpl_hc_carlix.zip
 tpl_hc_carlix-*.zip
 
 # ---------- Cache / Build de assets ----------
@@ -83,13 +95,17 @@ phpunit.xml
 # ---------- Documentação gerada ----------
 docs/_build/
 phpdoc-cache/
+layout-manager-test.png
+*-test.png
 
 # ---------- Joomla artifacts (caso o repo seja testado dentro de uma instalação) ----------
 configuration.php
 administrator/cache/
+administrator/logs/
 cache/
 tmp/
 logs/
+installation/
 
 # ---------- Mantém estes mesmo sendo "vazios" ----------
 !html/.gitkeep

@@ -810,6 +810,241 @@
 		}[value] || 'default';
 	}
 
+	function sameValue(left, right) {
+		return JSON.stringify(left) === JSON.stringify(right);
+	}
+
+	function compactAgainstDefaults(value, defaults) {
+		var output = {};
+
+		Object.keys(value || {}).forEach(function (key) {
+			var current = value[key];
+			var defaultValue = defaults ? defaults[key] : undefined;
+			var compacted = isPlainObject(current)
+				? compactAgainstDefaults(current, isPlainObject(defaultValue) ? defaultValue : {})
+				: current;
+
+			if (isPlainObject(compacted) && !Object.keys(compacted).length) {
+				return;
+			}
+
+			if (Array.isArray(compacted) && !compacted.length) {
+				return;
+			}
+
+			if (defaultValue !== undefined && sameValue(compacted, defaultValue)) {
+				return;
+			}
+
+			if (defaultValue === undefined && (compacted == null || compacted === '' || compacted === false)) {
+				return;
+			}
+
+			output[key] = compacted;
+		});
+
+		return output;
+	}
+
+	function compactSettings(settings) {
+		var normalized = normalizeSettings(settings || {});
+		var defaults = defaultSettings();
+		var compact = compactAgainstDefaults({
+			layout: normalized.layout || {},
+			visual: normalized.visual || {},
+			border: normalized.border || {},
+			spacing: normalized.spacing || {},
+			height: normalized.height || {},
+			alignment: normalized.alignment || {},
+			position: normalized.position || {},
+			overflow: normalized.overflow || {},
+			responsive: normalized.responsive || {},
+			advanced: normalized.advanced || {}
+		}, defaults);
+
+		if (normalized.visual && normalized.visual.overlayEnabled && compact.visual) {
+			compact.visual.overlayColor = normalized.visual.overlayColor || defaults.visual.overlayColor;
+			compact.visual.overlayOpacity = normalized.visual.overlayOpacity || defaults.visual.overlayOpacity;
+		}
+
+		return compact;
+	}
+
+	function compactSite(site) {
+		var normalized = normalizeSite(site || {}, defaultSiteSettings());
+		var defaults = defaultSiteSettings();
+		var compact = {
+			id: SITE_ID,
+			type: 'site',
+			title: 'SITE'
+		};
+		var visual = compactAgainstDefaults(normalized.visual || {}, defaults.visual);
+		var responsive = compactAgainstDefaults(normalized.responsive || {}, defaults.responsive);
+		var behavior = compactAgainstDefaults(normalized.behavior || {}, defaults.behavior);
+		var accessibility = compactAgainstDefaults(normalized.accessibility || {}, defaults.accessibility);
+
+		if (normalized.visual && normalized.visual.overlayEnabled) {
+			visual.overlayColor = normalized.visual.overlayColor || defaults.visual.overlayColor;
+			visual.overlayOpacity = normalized.visual.overlayOpacity || defaults.visual.overlayOpacity;
+		}
+
+		if (Object.keys(visual).length) {
+			compact.visual = visual;
+		}
+
+		if (normalized.containerWidthValue !== defaults.containerWidthValue) {
+			compact.containerWidthValue = normalized.containerWidthValue;
+		}
+
+		if (normalized.containerWidthUnit !== defaults.containerWidthUnit) {
+			compact.containerWidthUnit = normalized.containerWidthUnit;
+		}
+
+		if (normalized.containerWidthCustom !== defaults.containerWidthCustom) {
+			compact.containerWidthCustom = normalized.containerWidthCustom;
+		}
+
+		if (Object.keys(behavior).length) {
+			compact.behavior = behavior;
+		}
+
+		if (Object.keys(accessibility).length) {
+			compact.accessibility = accessibility;
+		}
+
+		if (Object.keys(responsive).length) {
+			compact.responsive = responsive;
+		}
+
+		return compact;
+	}
+
+	function compactColumn(column) {
+		var normalized = normalizeColumn(clone(column || {}));
+		var compact = {
+			id: normalized.id,
+			type: 'column'
+		};
+		var settings = compactSettings(normalized.settings);
+		var grid = compactAgainstDefaults(normalized.grid || {}, defaultGrid());
+
+		if (normalized.position) {
+			compact.position = normalized.position;
+		}
+
+		if (normalized.componentArea) {
+			compact.componentArea = true;
+		}
+
+		if (normalized.mainNavigation) {
+			compact.mainNavigation = true;
+		}
+
+		if (Object.keys(grid).length) {
+			compact.grid = grid;
+		}
+
+		if (Object.keys(settings).length) {
+			compact.settings = settings;
+		}
+
+		return compact;
+	}
+
+	function compactRow(row) {
+		var normalized = normalizeRow(clone(row || {}));
+		var compact = {
+			id: normalized.id,
+			type: 'row',
+			columns: normalized.columns.map(compactColumn)
+		};
+		var settings = compactSettings(normalized.settings);
+
+		if (normalized.width !== 'inherit') {
+			compact.width = normalized.width;
+		}
+
+		if (normalized.gap !== 'md') {
+			compact.gap = normalized.gap;
+		}
+
+		if (normalized.gapEnabled !== true) {
+			compact.gapEnabled = normalized.gapEnabled;
+		}
+
+		if (normalized.gapValue !== '15') {
+			compact.gapValue = normalized.gapValue;
+		}
+
+		if (normalized.gapUnit !== 'px') {
+			compact.gapUnit = normalized.gapUnit;
+		}
+
+		if (normalized.gapCustom) {
+			compact.gapCustom = normalized.gapCustom;
+		}
+
+		if (normalized.alignVertical !== 'stretch') {
+			compact.alignVertical = normalized.alignVertical;
+		}
+
+		if (normalized.alignHorizontal !== 'start') {
+			compact.alignHorizontal = normalized.alignHorizontal;
+		}
+
+		if (Object.keys(settings).length) {
+			compact.settings = settings;
+		}
+
+		return compact;
+	}
+
+	function compactRoot(item) {
+		var normalized = normalizeRoot(clone(item || {}));
+		var compact = {
+			id: normalized.id,
+			type: normalized.type,
+			title: normalized.title,
+			rows: normalized.rows.map(compactRow)
+		};
+		var settings = compactSettings(normalized.settings);
+		var header = normalized.type === 'header'
+			? compactAgainstDefaults(normalized.header || {}, defaultHeaderSettings())
+			: {};
+
+		if (normalized.enabled === false) {
+			compact.enabled = false;
+		}
+
+		if (normalized.width !== 'container') {
+			compact.width = normalized.width;
+		}
+
+		if (normalized.type === 'header' && normalized.mode !== 'sticky') {
+			compact.mode = normalized.mode;
+		}
+
+		if (normalized.type === 'header' && Object.keys(header).length) {
+			compact.header = header;
+		}
+
+		if (Object.keys(settings).length) {
+			compact.settings = settings;
+		}
+
+		return compact;
+	}
+
+	function compactLayout(layout) {
+		var normalized = normalizeLayout(clone(layout || {}), { version: 2, site: defaultSiteSettings(), items: [] });
+
+		return {
+			version: 2,
+			site: compactSite(normalized.site),
+			items: normalized.items.map(compactRoot)
+		};
+	}
+
 	function walkItems(layout, callback) {
 		layout.items.forEach(function visitRoot(item, index) {
 			callback(item, null, layout.items, index);
@@ -1481,7 +1716,7 @@
 		state.selectedId = state.layout.site ? state.layout.site.id : SITE_ID;
 
 		function sync() {
-			input.value = JSON.stringify(state.layout);
+			input.value = JSON.stringify(compactLayout(state.layout));
 		}
 
 		function rowGapValue(row) {
@@ -1638,7 +1873,7 @@
 		}
 
 		function currentLayoutJson() {
-			return JSON.stringify(state.layout, null, 2);
+			return JSON.stringify(compactLayout(state.layout), null, 2);
 		}
 
 		function openToolsModal(focusImport) {

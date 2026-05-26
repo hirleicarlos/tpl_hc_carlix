@@ -5,7 +5,7 @@
 ![PHP](https://img.shields.io/badge/PHP-8.3%2B-blue)
 ![CSS](https://img.shields.io/badge/CSS-Nativo%20%7C%20Custom%20Properties-red)
 ![JS](https://img.shields.io/badge/JS-Vanilla-black)
-![Version](https://img.shields.io/badge/version-1.2.1-brightgreen)
+![Version](https://img.shields.io/badge/version-1.2.1--dev-brightgreen)
 ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-green)
 
 ---
@@ -17,9 +17,9 @@ Este repositório contém o template **HC Carlix** para Joomla, construído como
 O objetivo do projeto é criar um template limpo, sem dependência de framework visual externo, usando ao máximo a estrutura real do Joomla:
 
 - 🧩 posições de módulos bem distribuídas
-- 🧭 menu principal com submenu desktop e offcanvas mobile
+- 🧭 menu principal com submenu desktop aparente e offcanvas mobile
 - 🧱 layout por seções reutilizáveis
-- 🎛 parâmetros administrativos para cores, espaçamentos, SEO, scripts e comportamento do header
+- 🎛 parâmetros administrativos para SITE, layout, menu, SEO, scripts e comportamento do header
 - 📚 overrides Joomla preparados para evolução
 - 🎨 CSS separado por responsabilidade
 - 🧠 HTML semântico para facilitar futuros overrides de componentes
@@ -31,6 +31,15 @@ O projeto separa completamente:
 - **Camada de apresentação** — CSS organizado por responsabilidade
 - **Camada de comportamento** — JavaScript puro, sem jQuery
 - **Camada administrativa** — parâmetros do template no estilo nativo do Joomla
+
+### Estado atual do fonte
+
+- Layout Manager com item `SITE` global para fundo do body, texto, container, comportamento e acessibilidade.
+- Controles modernos com toggles, grupos recolhíveis e responsivo por flags independentes.
+- Menu desktop com dropdown sempre aparente; offcanvas fica reservado para hamburguer/mobile ou modo escolhido na aba `Menu`.
+- Botão hamburguer renderizado como item real do grid do header, antes da logo quando fica à esquerda e como último item quando fica à direita.
+- JSON do Layout Manager compactado antes de salvar/exportar para reduzir o tamanho gravado em `params`.
+- CSS crítico pequeno no `index.php` para manter header/menu estáveis mesmo quando o Joomla ainda entrega CSS antigo em cache.
 
 ---
 
@@ -323,13 +332,15 @@ As ações de JSON ficam em uma modal acessada pelo botão `Ferramentas` no topo
 | Colunas novas | recalcula automaticamente `12`, `6+6`, `4+4+4`, `3+3+3+3` |
 | Gap da Row | liga/desliga gap e salva valor + unidade, iniciando em `15px` |
 | Responsivo | usa toggles independentes para ocultar no desktop, tablet e mobile |
+| JSON compacto | remove valores vazios/padrão antes de salvar e exportar |
+| Header/Nav | mantém dropdown sem clipping, mesmo com configurações visuais de overflow em outros itens |
 | Position visual | usa campo CSS livre com chips rápidos, permitindo até duas posições como `center top` |
 | Scroll do painel | alterar controles não deve mandar a sidebar de volta para o topo |
 | IDs | somente `Header` e `Footer` usam ID; demais estruturas usam classes |
 
 ### Validações e avisos
 
-A versão `1.2.1` mantém os avisos em painel recolhível e moderniza os controles do Layout Manager.
+A fase atual pós-`1.2.1` mantém os avisos em painel recolhível e documenta o ajuste fino do SITE, menu e salvamento compacto.
 
 | Recurso | Comportamento |
 |--------|---------------|
@@ -364,10 +375,13 @@ Configurações disponíveis:
 - overlay content
 - offset automático do body/main
 - cores, imagem de fundo, borda, sombra, padding, margin, classe e id
+- ordem semântica do hamburguer no grid do header, sem sobrepor logo, menu ou busca
+
+Quando o hamburguer está à esquerda, ele é renderizado antes da logo. Quando está à direita, ele é renderizado depois dos demais itens do header. Em ambos os casos o botão fica em uma coluna própria e centralizada pela altura do header, evitando posicionamento absoluto sobre a marca.
 
 ### JSON
 
-O JSON salvo usa `version: 2`, um objeto `site` e uma lista `items`.
+O JSON salvo usa `version: 2`, um objeto `site` e uma lista `items`. Antes de gravar no campo do Joomla ou exportar, o Layout Manager compacta o objeto para preservar somente valores úteis e manter compatibilidade com a coluna `params`.
 
 O objeto `site` guarda as configurações globais:
 
@@ -404,6 +418,8 @@ Cada item estrutural pode ter:
 - `grid` por breakpoint
 
 O `index.php` mantém fallback: se `layoutManager` estiver vazio ou inválido, o layout antigo continua funcionando.
+
+Layouts antigos continuam aceitos. Campos ausentes recebem fallback seguro durante a normalização do JSON, e valores legados de responsivo/menu são convertidos para o padrão atual quando possível.
 
 ### Importar e Exportar
 
@@ -465,11 +481,15 @@ O submenu tem:
 - largura mínima via variável `--carlix-submenu-min-width`
 - padrão `18rem`, cerca de `288px`
 - `max-width` para não estourar a tela
+- camada acima de banner, hero e conteúdo principal
+- ancestrais de navegação sem clipping para dropdown desktop
 - quebra de linha com `overflow-wrap`
 - borda externa
 - bordas internas/separadores entre itens
 - padding confortável
 - suporte a submenu em segundo nível
+
+No desktop, submenu é dropdown do menu principal. Ele não deve virar offcanvas nem ficar escondido atrás da seção seguinte.
 
 ### Menu vertical
 
@@ -498,6 +518,8 @@ Recursos:
 - submenus abrem por clique/toque
 - separadores horizontais entre itens
 - área extra para módulos na posição `offcanvas`
+
+O offcanvas é uma gaveta de navegação independente. No mobile ele é o comportamento padrão; no desktop ele aparece somente quando o tipo de navegação escolhido usa hamburguer.
 
 ---
 
@@ -610,7 +632,7 @@ Valores aceitos:
 | Logo do menu mobile | Pode ser diferente da logo normal |
 | Alinhamento da logo mobile | Esquerda, centro ou direita |
 | Altura da logo mobile | Ex.: `2.5rem`, `40px`, `3rem` |
-| Botão mobile | Posição, tamanho, cor, fundo, borda e radius |
+| Botão hamburguer | Posição esquerda/direita, tamanho, cor, fundo, borda e radius |
 
 ### Tipos de navegação
 
@@ -619,6 +641,17 @@ Valores aceitos:
 | Somente Menu | Menu horizontal tradicional | Botão hamburguer + offcanvas |
 | Menu + Offcanvas | Menu horizontal + botão hamburguer | Botão hamburguer + offcanvas |
 | Somente Offcanvas | Botão hamburguer | Botão hamburguer + offcanvas |
+
+### Ordem do hamburguer
+
+O parâmetro de posição do hamburguer aceita `esquerda` ou `direita`.
+
+| Posição | Resultado |
+|--------|-----------|
+| Esquerda | O botão entra antes da logo, em coluna própria |
+| Direita | O botão entra como último item do header, depois de menu/busca |
+
+O botão não usa posição absoluta para montar o layout do header. O grid cria uma trilha automática para o hamburguer e mantém logo, menu e busca sem sobreposição.
 
 O comportamento do `Header` (`static`, `sticky`, `fixed`) fica no item `Header` dentro do Layout Manager, não mais misturado na aba de navegação.
 
@@ -955,7 +988,7 @@ Todos os assets são declarados em `joomla.asset.json`.
 |------|---------|--------------|
 | `template.hc_carlix.variables` | `variables.css` | `1.2.1` |
 | `template.hc_carlix.grid` | `grid.css` | `1.0.1` |
-| `template.hc_carlix.template` | `template.css` | `1.0.19` |
+| `template.hc_carlix.template` | `template.css` | `1.0.29` |
 | `template.hc_carlix.utilities` | `utilities.css` | `1.0.1` |
 | `template.hc_carlix.buttons` | `buttons.css` | `1.0.1` |
 | `template.hc_carlix.forms` | `forms.css` | `1.0.1` |
@@ -963,19 +996,22 @@ Todos os assets são declarados em `joomla.asset.json`.
 | `template.hc_carlix.breadcrumbs` | `breadcrumbs.css` | `1.0.1` |
 | `template.hc_carlix.hero` | `hero.css` | `1.0.0` |
 | `template.hc_carlix.modules` | `modules.css` | `1.0.2` |
-| `template.hc_carlix.menu` | `menu.css` | `1.2.2` |
+| `template.hc_carlix.menu` | `menu.css` | `1.2.8` |
 | `template.hc_carlix.template` | `template.js` | `1.2.3` |
 | `template.hc_carlix.layout-manager` | `layout-manager.css` | `1.2.17` |
-| `template.hc_carlix.layout-manager` | `layout-manager.js` | `1.2.17` |
+| `template.hc_carlix.layout-manager` | `layout-manager.js` | `1.2.18` |
 
 ### Importante sobre versões
 
 | Tipo | Valor |
 |-----|-------|
 | Versão pública do template | `1.2.1` |
+| Estado da documentação | `1.2.2-dev` |
 | Versões de assets | controle interno de cache |
 
 O template só deve mudar de versão pública quando for decidido publicar uma nova versão. Alterações em CSS/JS podem subir versões individuais no `joomla.asset.json` para forçar atualização de cache.
+
+O `index.php` também contém um bloco mínimo de CSS crítico para header/menu. Ele existe para proteger o frontend quando uma instalação de teste ainda entrega `template.css` ou `menu.css` antigos pelo cache do Joomla/navegador. A fonte de verdade continua nos arquivos CSS do template.
 
 ---
 
@@ -988,6 +1024,10 @@ php -l index.php
 ```
 
 ```bash
+php -l field/layoutmanager.php
+```
+
+```bash
 node --check media/js/template.js
 ```
 
@@ -997,6 +1037,10 @@ node --check media/js/layout-manager.js
 
 ```bash
 node -e "JSON.parse(require('fs').readFileSync('joomla.asset.json','utf8')); console.log('JSON OK')"
+```
+
+```bash
+git diff --check -- README.md .gitignore index.php media/css/menu.css media/css/template.css media/js/layout-manager.js
 ```
 
 Validação XML via PowerShell:
@@ -1108,8 +1152,10 @@ Sistema → Estilos do site → HC Carlix
 | Criar posição `offcanvas` | Permite testar módulos dentro do menu mobile |
 | Concentrar seções no Layout Manager | Evita abas duplicadas e coloca a configuração visual no item certo |
 | Usar espaçamentos por device | Desktop, tablet e mobile podem ser diferentes dentro do layout |
-| Evoluir versão pública para `1.2.1` | Layout Manager com SITE reorganizado, toggles modernos, aba Código expandida e Position livre com chips |
+| Atualizar documentação pós-`1.2.1` | SITE global completo, JSON compacto, menu semântico e hamburguer em coluna própria |
 | Escapar tags nas descrições `.ini` | Evita quebrar o formulário do administrator |
+| Manter skip link semântico | Link de acessibilidade fica visualmente oculto até receber foco |
+| Evitar offcanvas para submenu desktop | Dropdown desktop precisa permanecer aparente e acima do conteúdo |
 
 ---
 

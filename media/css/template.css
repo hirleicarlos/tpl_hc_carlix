@@ -68,9 +68,9 @@ a { color: inherit; }
 	opacity: var(--carlix-site-overlay-opacity, 0);
 }
 
-.carlix-site > * {
+.carlix-site > :not(.carlix-skip-link):not(.carlix-offcanvas):not(.carlix-offcanvas-backdrop) {
 	position: relative;
-	z-index: 1;
+	z-index: var(--carlix-layer, 1);
 }
 
 .carlix-reduce-motion *,
@@ -384,26 +384,30 @@ a { color: inherit; }
 }
 
 .carlix-header {
+	--carlix-layer: 60;
+	position: relative;
+	overflow: visible;
 	padding-block: var(--carlix-header-space-top) var(--carlix-header-space-bottom);
 	min-height: var(--carlix-header-height-desktop, auto);
 	background: var(--carlix-header-bg);
 	color: var(--carlix-header-text);
-	backdrop-filter: blur(14px);
 	box-shadow: var(--carlix-shadow-sm);
 }
 
 /* Comportamento do cabeçalho (parametro) */
-.carlix-header--static { position: static; }
+.carlix-header--static { position: relative; }
 .carlix-header--sticky {
+	--carlix-layer: 70;
 	position: sticky;
 	top: 0;
-	z-index: 50;
+	z-index: 70;
 }
 .carlix-header--fixed {
+	--carlix-layer: 70;
 	position: fixed;
 	top: 0;
 	inset-inline: 0;
-	z-index: 50;
+	z-index: 70;
 }
 
 .carlix-header--transparent-initial {
@@ -446,9 +450,10 @@ body.carlix-header-scrolled .carlix-header--shrink-on-scroll {
 }
 
 .carlix-header--floating {
+	--carlix-layer: 70;
 	position: sticky;
 	top: var(--carlix-space-3);
-	z-index: 50;
+	z-index: 70;
 	background: transparent;
 	box-shadow: none;
 	border-top: 0;
@@ -474,6 +479,71 @@ body.carlix-header-is-fixed:not(.carlix-header-overlay-content) { padding-top: v
 
 .carlix-header .carlix-row {
 	align-items: center;
+}
+
+.carlix-header .carlix-row--toggle-start {
+	grid-template-columns: auto repeat(12, minmax(0, 1fr));
+}
+
+.carlix-header .carlix-row--toggle-end {
+	grid-template-columns: repeat(12, minmax(0, 1fr)) auto;
+}
+
+.carlix-header .carlix-nav-toggle-column {
+	position: relative;
+	top: auto;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	align-self: center;
+	justify-self: center;
+	width: auto;
+	min-width: var(--carlix-mobile-button-size, 2.75rem);
+	height: auto;
+	transform: none;
+}
+
+.carlix-header .carlix-nav-toggle-column--start {
+	grid-column: 1 / 2;
+	grid-row: 1;
+}
+
+.carlix-header .carlix-nav-toggle-column--end {
+	grid-column: -2 / -1;
+	grid-row: 1;
+}
+
+@media (max-width: 1023px) {
+	.carlix-header .carlix-nav-toggle-column {
+		display: flex;
+	}
+}
+
+@media (min-width: 1024px) {
+	.carlix-header .carlix-nav-toggle-column:not(.carlix-mobile-nav--desktop) {
+		display: none;
+	}
+
+	.carlix-header .carlix-nav-toggle-column.carlix-mobile-nav--desktop {
+		display: flex;
+	}
+}
+
+.carlix-header > .carlix-container,
+.carlix-header .carlix-row,
+.carlix-header .carlix-layout-row,
+.carlix-header .carlix-layout-column,
+.carlix-navigation,
+.carlix-navigation > .carlix-container,
+.carlix-navigation .carlix-row,
+.carlix-navigation .carlix-layout-row,
+.carlix-navigation .carlix-layout-column {
+	overflow: visible;
+}
+
+.carlix-navigation {
+	--carlix-layer: 60;
+	position: relative;
 }
 
 .carlix-logo-slot {
@@ -561,6 +631,16 @@ body.carlix-header-is-fixed:not(.carlix-header-overlay-content) { padding-top: v
 .carlix-menu--start  { justify-content: flex-start; }
 .carlix-menu--center { justify-content: center; }
 .carlix-menu--end    { justify-content: flex-end; }
+
+.carlix-nav-type-offcanvas .carlix-menu {
+	display: none;
+}
+
+@media (max-width: 1023px) {
+	.carlix-menu {
+		display: none;
+	}
+}
 
 /* Botão voltar ao topo (parametro) */
 .carlix-to-top {
@@ -682,20 +762,37 @@ body.carlix-header-is-fixed:not(.carlix-header-overlay-content) { padding-top: v
 .carlix-credits a { color: var(--carlix-credits-link); }
 
 .carlix-skip-link {
-	position: absolute;
-	left: -9999px;
+	position: fixed !important;
+	left: 0;
 	top: 0;
 	z-index: 9999;
-	padding: var(--carlix-space-3) var(--carlix-space-4);
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	clip-path: inset(50%);
+	white-space: nowrap;
 	background: var(--carlix-primary);
 	color: #fff;
 	text-decoration: none;
+	border: 0;
 	border-radius: var(--carlix-radius);
 }
 
-.carlix-skip-link:focus {
+.carlix-skip-link:focus,
+.carlix-skip-link:focus-visible {
 	left: var(--carlix-space-4);
 	top: var(--carlix-space-4);
+	width: auto;
+	height: auto;
+	padding: var(--carlix-space-3) var(--carlix-space-4);
+	margin: 0;
+	overflow: visible;
+	clip: auto;
+	clip-path: none;
+	white-space: normal;
 }
 
 @media (max-width: 1023px) {

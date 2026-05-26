@@ -233,7 +233,6 @@
 				<field name="offcanvasLogoHeight" type="text" label="TPL_HC_CARLIX_OFFCANVAS_LOGO_HEIGHT_LABEL" description="TPL_HC_CARLIX_OFFCANVAS_LOGO_HEIGHT_DESC" default="2.5rem" />
 				<field name="mobileButtonPosition" type="list" label="TPL_HC_CARLIX_MOBILE_BUTTON_POSITION_LABEL" description="TPL_HC_CARLIX_MOBILE_BUTTON_POSITION_DESC" default="end" validate="options">
 					<option value="start">TPL_HC_CARLIX_ALIGN_START</option>
-					<option value="center">TPL_HC_CARLIX_ALIGN_CENTER</option>
 					<option value="end">TPL_HC_CARLIX_ALIGN_END</option>
 				</field>
 				<field name="mobileButtonSize" type="text" label="TPL_HC_CARLIX_MOBILE_BUTTON_SIZE_LABEL" description="TPL_HC_CARLIX_MOBILE_BUTTON_SIZE_DESC" default="2.75rem" />

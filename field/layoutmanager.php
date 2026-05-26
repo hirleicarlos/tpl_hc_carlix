@@ -186,7 +186,7 @@ class JFormFieldLayoutmanager extends FormField
 		$wa->registerAndUseScript(
 			'template.hc_carlix.layout-manager.admin',
 			'media/templates/site/hc_carlix/js/layout-manager.js',
-			['version' => '1.2.17'],
+			['version' => '1.2.18'],
 			['defer' => true]
 		);
 	}
@@ -201,7 +201,7 @@ class JFormFieldLayoutmanager extends FormField
 	{
 		$base = rtrim(Uri::root(true), '/') . '/media/templates/site/hc_carlix';
 		$cssVer = '1.2.17';
-		$jsVer  = '1.2.17';
+		$jsVer  = '1.2.18';
 
 		return '<link rel="stylesheet" href="' . htmlspecialchars($base . '/css/layout-manager.css?' . $cssVer, ENT_QUOTES, 'UTF-8') . '" data-hc-layout-manager-fallback>'
 			. '<script defer src="' . htmlspecialchars($base . '/js/layout-manager.js?' . $jsVer, ENT_QUOTES, 'UTF-8') . '" data-hc-layout-manager-fallback></script>';

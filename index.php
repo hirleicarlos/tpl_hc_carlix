@@ -494,6 +494,10 @@ $logoAlign = (string) $params->get('logoAlign', 'start');
 $logoAlign = in_array($logoAlign, ['start', 'center', 'end'], true) ? $logoAlign : 'start';
 $renderLegacyLogoModule = !$hasLogoIdentityParams;
 
+$paramBool = static fn (string $name, bool $default = false): bool => (int) $params->get($name, $default ? 1 : 0) === 1;
+$paramRaw = static fn (string $name): string => trim((string) $params->get($name, ''));
+$paramToken = static fn (string $name): string => preg_replace('/[^A-Za-z0-9_\-]/', '', (string) $params->get($name, ''));
+
 /* Navegação (parâmetros) */
 $navigationType = (string) $params->get('navigationType', 'menu-offcanvas');
 $navigationType = in_array($navigationType, ['menu', 'menu-offcanvas', 'offcanvas'], true) ? $navigationType : 'menu-offcanvas';
@@ -526,6 +530,8 @@ if (is_array($siteResponsive)) {
 	}
 }
 
+$enableLazyImages = $paramBool('lazyImages');
+$enableLazyIframes = $paramBool('lazyIframes');
 $bodyClasses = [
 	'carlix-site',
 	'carlix-nav-type-' . $navigationType,
@@ -550,7 +556,7 @@ $bodyClasses = array_merge($bodyClasses, $siteResponsiveClasses);
 $offcanvasShowLogo = (int) $params->get('offcanvasShowLogo', 1) === 1;
 $offcanvasCloseOnClick = (int) $params->get('offcanvasCloseOnClick', 1) === 1;
 $mobileButtonPosition = (string) $params->get('mobileButtonPosition', 'end');
-$mobileButtonPosition = in_array($mobileButtonPosition, ['start', 'center', 'end'], true) ? $mobileButtonPosition : 'end';
+$mobileButtonPosition = in_array($mobileButtonPosition, ['start', 'end'], true) ? $mobileButtonPosition : 'end';
 
 $offcanvasLogoParam = trim((string) $params->get('offcanvasLogo', ''));
 if ($offcanvasLogoParam !== '') {
@@ -592,9 +598,6 @@ $appleTouchIconSrc = $mediaUrl((string) $params->get('appleTouchIcon', ''));
 $themeColor = trim((string) $params->get('themeColor', '#d32f2f'));
 $themeColor = preg_match('/^#[0-9a-f]{3,8}$/i', $themeColor) ? $themeColor : '#d32f2f';
 
-$paramBool = static fn (string $name, bool $default = false): bool => (int) $params->get($name, $default ? 1 : 0) === 1;
-$paramRaw = static fn (string $name): string => trim((string) $params->get($name, ''));
-$paramToken = static fn (string $name): string => preg_replace('/[^A-Za-z0-9_\-]/', '', (string) $params->get($name, ''));
 $customCss = (string) $params->get('customCss', '');
 $criticalCss = (string) $params->get('criticalCss', '');
 $customCssDesktop = (string) $params->get('customCssDesktop', '');
@@ -623,8 +626,6 @@ $verificationMetas = [
 	'p:domain_verify' => $paramRaw('pinterestVerification'),
 	'facebook-domain-verification' => $paramRaw('facebookDomainVerification'),
 ];
-$enableLazyImages = $paramBool('lazyImages');
-$enableLazyIframes = $paramBool('lazyIframes');
 $enableDnsPrefetch = $paramBool('dnsPrefetch');
 $enablePreconnect = $paramBool('externalPreconnect');
 $enablePreloadFonts = $paramBool('preloadFonts');
@@ -992,6 +993,7 @@ $hasOffcanvas = $hasMenu
 	|| (bool) $this->countModules('offcanvas')
 	|| (bool) $this->countModules('mobile-menu')
 	|| (bool) $this->countModules('navigation-mobile');
+$debugLayoutAttrs = $paramBool('devShowGrid') || $paramBool('devShowPositions') || $paramBool('devShowBreakpoints');
 $leftSpan    = $hasL ? 2 : 0;
 $rightSpan   = $hasR ? 3 : 0;
 $contentSpan = 12 - $leftSpan - $rightSpan; // 12, 10/9 ou 7
@@ -1064,7 +1066,7 @@ $mediaCssValue = static function (string $value): string {
 	return 'url("' . str_replace('"', '%22', $clean) . '")';
 };
 
-$styleAttr = static function (array $settings) use ($settingGroup, $settingValue, $truthy, $cssDimension, $mediaCssValue): string {
+$styleAttr = static function (array $settings, bool $allowOverflow = true) use ($settingGroup, $settingValue, $truthy, $cssDimension, $mediaCssValue): string {
 	$styles = [];
 	$isGradient = static function (string $value): bool {
 		return (bool) preg_match('/gradient\(/i', $value);
@@ -1273,11 +1275,13 @@ $styleAttr = static function (array $settings) use ($settingGroup, $settingValue
 		$styles[] = '--carlix-align-vertical: ' . $vertical;
 	}
 
-	foreach (['value' => 'overflow', 'x' => 'overflow-x', 'y' => 'overflow-y'] as $key => $property) {
-		$value = (string) ($overflow[$key] ?? 'default');
+	if ($allowOverflow) {
+		foreach (['value' => 'overflow', 'x' => 'overflow-x', 'y' => 'overflow-y'] as $key => $property) {
+			$value = (string) ($overflow[$key] ?? 'default');
 
-		if (in_array($value, ['visible', 'hidden', 'auto', 'scroll', 'clip'], true)) {
-			$styles[] = $property . ': ' . $value;
+			if (in_array($value, ['visible', 'hidden', 'auto', 'scroll', 'clip'], true)) {
+				$styles[] = $property . ': ' . $value;
+			}
 		}
 	}
 
@@ -1431,13 +1435,21 @@ $gridClass = static function (array $grid): string {
 	return implode(' ', $classes);
 };
 
-$columnHasContent = static function (array $column, string $sectionType = 'section') use ($document, $hasMenu): bool {
+$columnIsNavigation = static function (array $column, string $sectionType): bool {
+	$position = trim((string) ($column['position'] ?? ''));
+
+	return !empty($column['mainNavigation'])
+		|| $sectionType === 'nav'
+		|| ($position === 'menu' && in_array($sectionType, ['header', 'nav'], true));
+};
+
+$columnHasContent = static function (array $column, string $sectionType = 'section') use ($document, $hasMenu, $hasOffcanvas, $desktopMenuEnabled, $columnIsNavigation): bool {
 	if (!empty($column['componentArea'])) {
 		return true;
 	}
 
-	if (!empty($column['mainNavigation']) || $sectionType === 'nav') {
-		return $hasMenu;
+	if ($columnIsNavigation($column, $sectionType)) {
+		return $hasMenu && ($desktopMenuEnabled || $hasOffcanvas);
 	}
 
 	$position = trim((string) ($column['position'] ?? ''));
@@ -1482,7 +1494,7 @@ $renderOffcanvas = static function () use ($hasOffcanvas, $hasMenu, $offcanvasSi
 		return;
 	}
 	?>
-	<div class="carlix-offcanvas-backdrop" data-carlix-offcanvas-close hidden></div>
+	<div class="carlix-offcanvas-backdrop" data-carlix-offcanvas-close aria-hidden="true" hidden></div>
 	<aside id="carlix-offcanvas-menu" class="carlix-offcanvas carlix-offcanvas--<?php echo $offcanvasSide; ?>" aria-label="<?php echo Text::_('TPL_HC_CARLIX_MAIN_MENU'); ?>" aria-hidden="true" data-carlix-close-on-click="<?php echo $offcanvasCloseOnClick ? '1' : '0'; ?>">
 		<?php if ($offcanvasShowLogo) : ?>
 		<div class="carlix-offcanvas-header carlix-offcanvas-header--<?php echo $ocLogoAlign; ?>">
@@ -1526,12 +1538,35 @@ $renderOffcanvas = static function () use ($hasOffcanvas, $hasMenu, $offcanvasSi
 	<?php
 };
 
-$renderManagedColumn = static function (array $column, string $sectionType) use ($gridClass, $safeToken, $styleAttr, $visibilityClass, $advancedValue, $renderModules, $logoHtml, $siteName, $document, $hasOffcanvas, $hasMenu, $desktopMenuEnabled, $desktopOffcanvasEnabled, $menuAlign, $menuInteraction, $submenuDirection, $submenuAnimation, $mobileButtonPosition, $renderLegacyLogoModule): void {
+$renderMenuToggle = static function () use ($hasOffcanvas, $desktopOffcanvasEnabled, $mobileButtonPosition): void {
+	if (!$hasOffcanvas) {
+		return;
+	}
+
+	$position = htmlspecialchars($mobileButtonPosition, ENT_QUOTES, 'UTF-8');
+	?>
+	<div class="carlix-mobile-nav carlix-nav-toggle-column carlix-nav-toggle-column--<?php echo $position; ?> carlix-mobile-nav--<?php echo $position; ?><?php echo $desktopOffcanvasEnabled ? ' carlix-mobile-nav--desktop' : ''; ?>">
+		<button class="carlix-menu-toggle" type="button" aria-controls="carlix-offcanvas-menu" aria-expanded="false">
+			<span class="carlix-menu-toggle-bars" aria-hidden="true"></span>
+			<span class="visually-hidden"><?php echo Text::_('TPL_HC_CARLIX_TOGGLE_MENU'); ?></span>
+		</button>
+	</div>
+	<?php
+};
+
+$renderManagedColumn = static function (array $column, string $sectionType) use ($gridClass, $safeToken, $styleAttr, $visibilityClass, $advancedValue, $renderModules, $logoHtml, $document, $hasMenu, $desktopMenuEnabled, $menuAlign, $menuInteraction, $submenuDirection, $submenuAnimation, $renderLegacyLogoModule, $debugLayoutAttrs, $columnIsNavigation): void {
 	$settings = is_array($column['settings'] ?? null) ? $column['settings'] : [];
 	$grid     = is_array($column['grid'] ?? null) ? $column['grid'] : [];
 	$columnPosition = trim((string) ($column['position'] ?? ''));
+	$isNavigationColumn = $columnIsNavigation($column, $sectionType);
+
+	if ($isNavigationColumn && (!$desktopMenuEnabled || !$hasMenu)) {
+		return;
+	}
+
 	$classes  = [
 		'carlix-layout-column',
+		$isNavigationColumn ? 'carlix-nav-column' : '',
 		$gridClass($grid),
 		$safeToken($advancedValue($settings, 'customClass', 'customClass')),
 		$visibilityClass($settings),
@@ -1540,29 +1575,27 @@ $renderManagedColumn = static function (array $column, string $sectionType) use 
 	/* Atributo de debug — espelha o grid do JSON em ordem mobile-first
 	   (phone, sm, md, lg, xl, xxl). Util para inspecionar o que veio do
 	   Layout Manager sem precisar olhar as classes do CSS. */
-	$gridShort = [];
-	foreach (['phone', 'largePhone', 'tablet', 'smallDesktop', 'largeDesktop', 'extraLargeDesktop'] as $bp) {
-		$gridShort[] = isset($grid[$bp]) && $grid[$bp] !== '' ? (string) $grid[$bp] : '-';
+	$dataGrid = '';
+	$dataPosition = '';
+
+	if ($debugLayoutAttrs) {
+		$gridShort = [];
+		foreach (['phone', 'largePhone', 'tablet', 'smallDesktop', 'largeDesktop', 'extraLargeDesktop'] as $bp) {
+			$gridShort[] = isset($grid[$bp]) && $grid[$bp] !== '' ? (string) $grid[$bp] : '-';
+		}
+
+		$dataGrid = ' data-carlix-grid="' . htmlspecialchars(implode('/', $gridShort), ENT_QUOTES, 'UTF-8') . '"';
+		$dataPosition = $columnPosition !== '' ? ' data-carlix-position="' . htmlspecialchars($columnPosition, ENT_QUOTES, 'UTF-8') . '"' : '';
 	}
-	$dataGrid = ' data-carlix-grid="' . htmlspecialchars(implode('/', $gridShort), ENT_QUOTES, 'UTF-8') . '"';
-	$dataPosition = $columnPosition !== '' ? ' data-carlix-position="' . htmlspecialchars($columnPosition, ENT_QUOTES, 'UTF-8') . '"' : '';
 	?>
-	<div class="<?php echo htmlspecialchars(trim(implode(' ', array_filter($classes))), ENT_QUOTES, 'UTF-8'); ?>"<?php echo $dataGrid; ?><?php echo $dataPosition; ?><?php echo $styleAttr($settings); ?>>
+	<div class="<?php echo htmlspecialchars(trim(implode(' ', array_filter($classes))), ENT_QUOTES, 'UTF-8'); ?>"<?php echo $dataGrid; ?><?php echo $dataPosition; ?><?php echo $styleAttr($settings, !$isNavigationColumn); ?>>
 		<?php if (!empty($column['componentArea'])) : ?>
 			<jdoc:include type="message" />
 			<jdoc:include type="component" />
-		<?php elseif (!empty($column['mainNavigation']) || $sectionType === 'nav') : ?>
+		<?php elseif ($isNavigationColumn) : ?>
 			<?php if ($desktopMenuEnabled && $hasMenu) : ?>
 			<div class="carlix-menu carlix-menu--<?php echo htmlspecialchars($menuAlign, ENT_QUOTES, 'UTF-8'); ?> carlix-menu--interaction-<?php echo htmlspecialchars($menuInteraction, ENT_QUOTES, 'UTF-8'); ?> carlix-menu--submenu-<?php echo htmlspecialchars($submenuDirection, ENT_QUOTES, 'UTF-8'); ?> carlix-menu--anim-<?php echo htmlspecialchars($submenuAnimation, ENT_QUOTES, 'UTF-8'); ?>" data-carlix-menu-interaction="<?php echo htmlspecialchars($menuInteraction, ENT_QUOTES, 'UTF-8'); ?>">
 				<?php $renderModules('menu', ['style' => 'none'], '_:default'); ?>
-			</div>
-			<?php endif; ?>
-			<?php if ($hasOffcanvas) : ?>
-			<div class="carlix-mobile-nav carlix-mobile-nav--<?php echo htmlspecialchars($mobileButtonPosition, ENT_QUOTES, 'UTF-8'); ?><?php echo $desktopOffcanvasEnabled ? ' carlix-mobile-nav--desktop' : ''; ?>">
-				<button class="carlix-menu-toggle" type="button" aria-controls="carlix-offcanvas-menu" aria-expanded="false">
-					<span class="carlix-menu-toggle-bars" aria-hidden="true"></span>
-					<span class="visually-hidden"><?php echo Text::_('TPL_HC_CARLIX_TOGGLE_MENU'); ?></span>
-				</button>
 			</div>
 			<?php endif; ?>
 		<?php else : ?>
@@ -1584,7 +1617,7 @@ $renderManagedColumn = static function (array $column, string $sectionType) use 
 	<?php
 };
 
-$renderManagedRow = static function (array $row, string $sectionType) use (&$renderManagedColumn, $safeToken, $styleAttr, $visibilityClass, $advancedValue, $columnHasContent): void {
+$renderManagedRow = static function (array $row, string $sectionType) use (&$renderManagedColumn, $renderMenuToggle, $safeToken, $styleAttr, $visibilityClass, $advancedValue, $columnHasContent, $columnIsNavigation, $hasOffcanvas, $mobileButtonPosition): void {
 	$settings = is_array($row['settings'] ?? null) ? $row['settings'] : [];
 	$gap = in_array((string) ($row['gap'] ?? 'md'), ['none', 'xs', 'sm', 'md', 'lg', 'xl'], true) ? (string) $row['gap'] : 'md';
 	if (array_key_exists('gapEnabled', $row)) {
@@ -1596,22 +1629,39 @@ $renderManagedRow = static function (array $row, string $sectionType) use (&$ren
 			? ($gapUnit === 'custom' ? ($gapCustom !== '' ? $gapCustom : '15px') : (($gapValue === '' ? '15' : $gapValue) . $gapUnit))
 			: '0px';
 	}
+	$rowHasNavigation = false;
+
+	if ($hasOffcanvas && in_array($sectionType, ['header', 'nav'], true)) {
+		foreach (($row['columns'] ?? []) as $column) {
+			if ($columnIsNavigation($column, $sectionType)) {
+				$rowHasNavigation = true;
+				break;
+			}
+		}
+	}
 	$classes = [
 		'carlix-row',
 		'carlix-layout-row',
 		'carlix-layout-row--gap-' . $gap,
 		'carlix-layout-row--v-' . $safeToken((string) ($row['alignVertical'] ?? 'stretch')),
 		'carlix-layout-row--h-' . $safeToken((string) ($row['alignHorizontal'] ?? 'start')),
+		$rowHasNavigation ? 'carlix-row--toggle-' . $safeToken($mobileButtonPosition) : '',
 		$safeToken($advancedValue($settings, 'customClass', 'customClass')),
 		$visibilityClass($settings),
 	];
 	?>
-	<div class="<?php echo htmlspecialchars(trim(implode(' ', array_filter($classes))), ENT_QUOTES, 'UTF-8'); ?>"<?php echo $styleAttr($settings); ?>>
+	<div class="<?php echo htmlspecialchars(trim(implode(' ', array_filter($classes))), ENT_QUOTES, 'UTF-8'); ?>"<?php echo $styleAttr($settings, !$rowHasNavigation); ?>>
+		<?php if ($rowHasNavigation && $mobileButtonPosition === 'start') : ?>
+			<?php $renderMenuToggle(); ?>
+		<?php endif; ?>
 		<?php foreach (($row['columns'] ?? []) as $column) : ?>
 			<?php if ($columnHasContent($column, $sectionType)) : ?>
 				<?php $renderManagedColumn($column, $sectionType); ?>
 			<?php endif; ?>
 		<?php endforeach; ?>
+		<?php if ($rowHasNavigation && $mobileButtonPosition === 'end') : ?>
+			<?php $renderMenuToggle(); ?>
+		<?php endif; ?>
 	</div>
 	<?php
 };
@@ -1652,6 +1702,15 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 		'footer' => 'footer',
 		default => 'section',
 	};
+
+	if ($type === 'section') {
+		$tag = match ($semanticClass) {
+			'carlix-topbar' => 'aside',
+			'carlix-breadcrumbs', 'carlix-credits' => 'div',
+			default => $tag,
+		};
+	}
+
 	$hasComponent = false;
 
 	foreach (($item['rows'] ?? []) as $row) {
@@ -1667,7 +1726,8 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 		$tag = 'main';
 	}
 
-	$mode = in_array((string) ($item['mode'] ?? 'sticky'), ['static', 'sticky', 'fixed'], true) ? (string) $item['mode'] : 'sticky';
+	$modeValue = (string) ($item['mode'] ?? 'sticky');
+	$mode = in_array($modeValue, ['static', 'sticky', 'fixed'], true) ? $modeValue : 'sticky';
 	$classes = [
 		'carlix-session',
 		'carlix-layout-section',
@@ -1691,7 +1751,8 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 	$dataHeader = $type === 'header'
 		? ' data-carlix-header="' . htmlspecialchars($mode, ENT_QUOTES, 'UTF-8') . '" data-carlix-header-behavior="' . htmlspecialchars((string) ($item['header']['behavior'] ?? 'always'), ENT_QUOTES, 'UTF-8') . '"'
 		: '';
-	$sectionStyle = $styleAttr($settings);
+	$mainAttrs = $hasComponent ? ' tabindex="-1"' : '';
+	$sectionStyle = $styleAttr($settings, !in_array($type, ['header', 'nav'], true));
 
 	if ($type === 'header') {
 		$headerStyles = [];
@@ -1718,7 +1779,7 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 		}
 	}
 	?>
-	<<?php echo $tag; ?> class="<?php echo htmlspecialchars(trim(implode(' ', array_filter($classes))), ENT_QUOTES, 'UTF-8'); ?>"<?php echo $id !== '' ? ' id="' . htmlspecialchars($id, ENT_QUOTES, 'UTF-8') . '"' : ''; ?><?php echo $hasComponent ? ' role="main" tabindex="-1"' : ''; ?><?php echo $dataHeader; ?><?php echo $sectionStyle; ?>>
+	<<?php echo $tag; ?> class="<?php echo htmlspecialchars(trim(implode(' ', array_filter($classes))), ENT_QUOTES, 'UTF-8'); ?>"<?php echo $id !== '' ? ' id="' . htmlspecialchars($id, ENT_QUOTES, 'UTF-8') . '"' : ''; ?><?php echo $mainAttrs; ?><?php echo $dataHeader; ?><?php echo $sectionStyle; ?>>
 		<div class="<?php echo htmlspecialchars($containerClass((string) ($item['width'] ?? 'container')), ENT_QUOTES, 'UTF-8'); ?>">
 			<?php if ($isCredits && !$hasAnyContent) : ?>
 				<p class="carlix-credits-text">&copy; <?php echo date('Y'); ?> <?php echo $siteName; ?></p>
@@ -1744,6 +1805,40 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 	<?php echo $styleBlock($criticalCss); ?>
 	<jdoc:include type="styles" />
 	<style>:root { <?php echo implode('; ', $cssVars); ?>; }</style>
+	<style>
+	.carlix-site > :not(.carlix-skip-link):not(.carlix-offcanvas):not(.carlix-offcanvas-backdrop) { position: relative; z-index: var(--carlix-layer, 1); }
+	.carlix-header,
+	.carlix-navigation { --carlix-layer: 60; position: relative; z-index: var(--carlix-layer); overflow: visible; }
+	.carlix-header--sticky,
+	.carlix-header--fixed,
+	.carlix-header--floating { --carlix-layer: 70; }
+	.carlix-header > .carlix-container,
+	.carlix-header .carlix-row,
+	.carlix-header .carlix-layout-row,
+	.carlix-header .carlix-layout-column,
+	.carlix-navigation > .carlix-container,
+	.carlix-navigation .carlix-row,
+	.carlix-navigation .carlix-layout-row,
+	.carlix-navigation .carlix-layout-column { overflow: visible; }
+	.carlix-header .carlix-row--toggle-start { grid-template-columns: auto repeat(12, minmax(0, 1fr)); }
+	.carlix-header .carlix-row--toggle-end { grid-template-columns: repeat(12, minmax(0, 1fr)) auto; }
+	.carlix-header .carlix-nav-toggle-column { position: relative; top: auto; display: none; align-items: center; justify-content: center; align-self: center; justify-self: center; width: auto; min-width: var(--carlix-mobile-button-size, 2.75rem); height: auto; transform: none; }
+	.carlix-header .carlix-nav-toggle-column--start { grid-column: 1 / 2; grid-row: 1; }
+	.carlix-header .carlix-nav-toggle-column--end { grid-column: -2 / -1; grid-row: 1; }
+	.carlix-menu .carlix-nav > .has-submenu { z-index: 20; }
+	.carlix-menu .carlix-nav > .has-submenu:hover,
+	.carlix-menu .carlix-nav > .has-submenu:focus-within,
+	.carlix-menu .carlix-nav > .submenu-open { z-index: 120; }
+	.carlix-menu .carlix-nav-sub { z-index: 120; }
+	@media (max-width: 1023px) {
+		.carlix-header .carlix-nav-column { display: none; }
+		.carlix-header .carlix-nav-toggle-column { display: flex; }
+	}
+	@media (min-width: 1024px) {
+		.carlix-header .carlix-nav-toggle-column:not(.carlix-mobile-nav--desktop) { display: none; }
+		.carlix-header .carlix-nav-toggle-column.carlix-mobile-nav--desktop { display: flex; }
+	}
+	</style>
 	<?php echo $styleBlock($customCss); ?>
 	<?php echo $styleBlock($customCssDesktop, '(min-width: 992px)'); ?>
 	<?php echo $styleBlock($customCssTablet, '(min-width: 768px) and (max-width: 991.98px)'); ?>
@@ -1768,7 +1863,7 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 
 	<?php // ===== SEÇÃO: TOPBAR ===== ?>
 	<?php if ($topbar) : $c = $colClass(count($topbar)); ?>
-	<section class="carlix-session carlix-topbar">
+	<aside class="carlix-session carlix-topbar">
 		<div class="carlix-container">
 			<div class="carlix-row">
 				<?php foreach ($topbar as $p) : ?>
@@ -1776,13 +1871,17 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 				<?php endforeach; ?>
 			</div>
 		</div>
-	</section>
+	</aside>
 	<?php endif; ?>
 
-	<?php // ===== SEÇÃO: HEADER (sempre) — logo 3 | menu 7 | busca 2 ===== ?>
-	<header class="carlix-session carlix-header carlix-header--<?php echo $headerBehavior; ?>" data-carlix-header="<?php echo $headerBehavior; ?>">
-		<div class="carlix-container">
-			<div class="carlix-row">
+		<?php // ===== SEÇÃO: HEADER (sempre) — logo 3 | menu 7 | busca 2 ===== ?>
+		<header class="carlix-session carlix-header carlix-header--<?php echo $headerBehavior; ?>" data-carlix-header="<?php echo $headerBehavior; ?>">
+			<div class="carlix-container">
+				<div class="carlix-row<?php echo $hasOffcanvas ? ' carlix-row--toggle-' . htmlspecialchars($mobileButtonPosition, ENT_QUOTES, 'UTF-8') : ''; ?>">
+
+				<?php if ($mobileButtonPosition === 'start') : ?>
+					<?php $renderMenuToggle(); ?>
+				<?php endif; ?>
 
 				<div class="col-8 col-lg-3 carlix-logo-slot carlix-logo-slot--<?php echo $logoAlign; ?>">
 					<?php if ($renderLegacyLogoModule && $this->countModules('logo')) : ?>
@@ -1792,17 +1891,8 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 					<?php endif; ?>
 				</div>
 
-				<?php if ($hasOffcanvas) : ?>
-					<div class="col-4 <?php echo $desktopOffcanvasEnabled ? 'col-lg-1 ' : ''; ?>carlix-mobile-nav carlix-mobile-nav--<?php echo htmlspecialchars($mobileButtonPosition, ENT_QUOTES, 'UTF-8'); ?><?php echo $desktopOffcanvasEnabled ? ' carlix-mobile-nav--desktop' : ''; ?>">
-						<button class="carlix-menu-toggle" type="button" aria-controls="carlix-offcanvas-menu" aria-expanded="false">
-							<span class="carlix-menu-toggle-bars" aria-hidden="true"></span>
-							<span class="visually-hidden"><?php echo Text::_('TPL_HC_CARLIX_TOGGLE_MENU'); ?></span>
-						</button>
-					</div>
-				<?php endif; ?>
-
 				<?php if ($desktopMenuEnabled && $hasMenu) : ?>
-					<div class="col-12 <?php echo $desktopOffcanvasEnabled ? 'col-lg-6' : 'col-lg-7'; ?> carlix-menu carlix-menu--<?php echo $menuAlign; ?> carlix-menu--interaction-<?php echo htmlspecialchars($menuInteraction, ENT_QUOTES, 'UTF-8'); ?> carlix-menu--submenu-<?php echo htmlspecialchars($submenuDirection, ENT_QUOTES, 'UTF-8'); ?> carlix-menu--anim-<?php echo htmlspecialchars($submenuAnimation, ENT_QUOTES, 'UTF-8'); ?>" data-carlix-menu-interaction="<?php echo htmlspecialchars($menuInteraction, ENT_QUOTES, 'UTF-8'); ?>">
+					<div class="col-12 col-lg-7 carlix-menu carlix-menu--<?php echo $menuAlign; ?> carlix-menu--interaction-<?php echo htmlspecialchars($menuInteraction, ENT_QUOTES, 'UTF-8'); ?> carlix-menu--submenu-<?php echo htmlspecialchars($submenuDirection, ENT_QUOTES, 'UTF-8'); ?> carlix-menu--anim-<?php echo htmlspecialchars($submenuAnimation, ENT_QUOTES, 'UTF-8'); ?>" data-carlix-menu-interaction="<?php echo htmlspecialchars($menuInteraction, ENT_QUOTES, 'UTF-8'); ?>">
 						<?php $renderModules('menu', ['style' => 'none'], '_:default'); ?>
 					</div>
 				<?php endif; ?>
@@ -1811,6 +1901,10 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 					<div class="col-12 col-lg-2 carlix-search">
 						<?php $renderModules('search'); ?>
 					</div>
+				<?php endif; ?>
+
+				<?php if ($mobileButtonPosition === 'end') : ?>
+					<?php $renderMenuToggle(); ?>
 				<?php endif; ?>
 
 			</div>
@@ -1907,7 +2001,7 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 
 	<?php // ===== SEÇÃO: FOOTER ===== ?>
 	<?php if ($foot) : $c = $colClass(count($foot)); ?>
-	<section class="carlix-session carlix-footer">
+	<footer class="carlix-session carlix-footer">
 		<div class="carlix-container">
 			<div class="carlix-row">
 				<?php foreach ($foot as $p) : ?>
@@ -1915,11 +2009,11 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 				<?php endforeach; ?>
 			</div>
 		</div>
-	</section>
+	</footer>
 	<?php endif; ?>
 
 	<?php // ===== SEÇÃO: CREDITS (sempre) — até 4 colunas; senão fallback © ===== ?>
-	<footer class="carlix-session carlix-credits" role="contentinfo">
+	<div class="carlix-session carlix-credits">
 		<div class="carlix-container">
 			<div class="carlix-row">
 				<?php if ($creds) : $c = $colClass(count($creds)); ?>
@@ -1933,7 +2027,7 @@ $renderManagedSection = static function (array $item) use (&$renderManagedRow, $
 				<?php endif; ?>
 			</div>
 		</div>
-	</footer>
+	</div>
 
 	<?php endif; ?>
 
