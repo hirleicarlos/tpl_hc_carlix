@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="package" method="upgrade">
+	<name>PKG_HC_CARLIX</name>
+	<packagename>hc_carlix</packagename>
+	<creationDate>2026-05-15</creationDate>
+	<author>Hirlei Carlos</author>
+	<authorEmail>noreply@example.com</authorEmail>
+	<authorUrl>https://example.com</authorUrl>
+	<copyright>Copyright (C) 2026 Hirlei Carlos. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE</license>
+	<version>1.2.1</version>
+	<description>PKG_HC_CARLIX_XML_DESCRIPTION</description>
+	<packager>Hirlei Carlos</packager>
+	<packagerurl>https://example.com</packagerurl>
+
+	<files>
+		<file type="template" id="hc_carlix" client="site">tpl_hc_carlix.zip</file>
+	</files>
+
+	<languages>
+		<language tag="en-GB">en-GB.pkg_hc_carlix.sys.ini</language>
+		<language tag="pt-BR">pt-BR.pkg_hc_carlix.sys.ini</language>
+	</languages>
+
+	<updateservers>
+		<server type="extension" priority="1" name="HC Carlix Updates">https://hirleicarlos.github.io/updates/pkg_hc_carlix.xml</server>
+	</updateservers>
+</extension>

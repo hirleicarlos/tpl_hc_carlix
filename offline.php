@@ -21,13 +21,15 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Uri\Uri;
+use Joomla\Module\Login\Site\Helper\LoginHelper;
+use Joomla\Registry\Registry;
 
 /** @var HtmlDocument $this */
 
 $app      = Factory::getApplication();
 $wa       = $this->getWebAssetManager();
 $siteName = htmlspecialchars((string) $app->get('sitename'), ENT_QUOTES, 'UTF-8');
+$loginReturn = (new LoginHelper())->getReturnUrlString(new Registry(['login' => 0]), 'login', $app);
 
 $wa->useStyle('template.hc_carlix.template');
 
@@ -78,7 +80,7 @@ $this->setMetaData('robots', 'noindex,nofollow');
 
 				<input type="hidden" name="option" value="com_users">
 				<input type="hidden" name="task" value="user.login">
-				<input type="hidden" name="return" value="<?php echo base64_encode(Uri::base()); ?>">
+				<input type="hidden" name="return" value="<?php echo $loginReturn; ?>">
 				<?php echo HTMLHelper::_('form.token'); ?>
 			</fieldset>
 		</form>

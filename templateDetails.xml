@@ -348,4 +348,8 @@
 
 		</fields>
 	</config>
+
+	<updateservers>
+		<server type="extension" priority="1" name="HC Carlix Updates">https://hirleicarlos.github.io/updates/tpl_hc_carlix.xml</server>
+	</updateservers>
 </extension>

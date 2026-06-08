@@ -5,6 +5,9 @@
  *
  * @package     HC.Carlix
  * @subpackage  Templates.hc_carlix
+ *
+ * @copyright   Copyright (C) 2026 Hirlei Carlos. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
 \defined('_JEXEC') or die;
