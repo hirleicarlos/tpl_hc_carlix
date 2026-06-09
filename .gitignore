@@ -15,6 +15,12 @@
 nbproject/
 .history/
 
+# ---------- Agentes locais ----------
+AGENTS.md
+CLAUDE.md
+CODEX.md
+SKILL.md
+
 # ---------- Sistema Operacional ----------
 .DS_Store
 .DS_Store?
