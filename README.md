@@ -1,11 +1,11 @@
 # 🎨 HC Carlix — Template Joomla 6 Nativo & Estrutura Base de Layout
 
-![Status](https://img.shields.io/badge/status-em%20desenvolvimento-success)
+![Status](https://img.shields.io/badge/status-ativo-success)
 ![Joomla](https://img.shields.io/badge/Joomla-6.x-orange)
 ![PHP](https://img.shields.io/badge/PHP-8.3%2B-blue)
 ![CSS](https://img.shields.io/badge/CSS-Nativo%20%7C%20Custom%20Properties-red)
 ![JS](https://img.shields.io/badge/JS-Vanilla-black)
-![Version](https://img.shields.io/badge/version-1.2.1--dev-brightgreen)
+![Version](https://img.shields.io/badge/version-1.2.1-blue)
 ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-green)
 
 ---
@@ -1114,16 +1114,29 @@ Versão pública atual:
 1.2.1
 ```
 
-Exemplo de empacotamento:
+Para instalar como template direto, o `templateDetails.xml` precisa ficar na raiz do ZIP. Entre na pasta do template e compacte o conteudo dela, sem colocar a pasta `tpl_hc_carlix/` como primeiro nivel do arquivo.
+
+Exemplo de ZIP manual do template:
 
 ```bash
-cd ~/projetos
-zip -r tpl_hc_carlix-1.2.1.zip tpl_hc_carlix \
-  -x "tpl_hc_carlix/.git/*" \
-  -x "tpl_hc_carlix/.idea/*" \
-  -x "tpl_hc_carlix/tpl_hc_carlix.zip" \
-  -x "tpl_hc_carlix/README.md" \
-  -x "tpl_hc_carlix/.gitignore"
+cd ~/projetos/meg-load/tpl_hc_carlix
+zip -r ../tpl_hc_carlix-1.2.1.zip . \
+  -x ".git/*" \
+  -x ".idea/*" \
+  -x "tpl_hc_carlix.zip" \
+  -x "README.md" \
+  -x ".gitignore" \
+  -x "AGENTS.md" \
+  -x "CLAUDE.md" \
+  -x "CODEX.md" \
+  -x "SKILL.md" \
+  -x "build_template_zip.py"
+```
+
+Opcionalmente, gere o ZIP limpo do template com:
+
+```bash
+python3 build_template_zip.py
 ```
 
 Instalação pelo Joomla:
@@ -1192,31 +1205,14 @@ Resultado:
 
 ---
 
-## 🔮 Próximos Passos
+## 📬 Contato
 
-Itens previstos para evolução:
-
-- overrides de `com_content`
-- overrides de `com_contact`
-- overrides de paginação/listagem
-- página de categoria mais refinada
-- página de artigo individual
-- layout de tags
-- tela de busca
-- módulos Joomla core com HTML mais semântico
-- documentação visual das posições
-- wireframe HTML estático das posições
-- mais presets de admin para cores e espaçamento
+- 🌐 Site: [hirleicarlos.github.io](https://hirleicarlos.github.io)
+- 💼 LinkedIn: [linkedin.com/in/hirleicarlos](https://linkedin.com/in/hirleicarlos)
+- 🐙 GitHub: [github.com/hirleicarlos](https://github.com/hirleicarlos)
+- ✉️ E-mail: prof.hirleicarlos@gmail.com
 
 ---
 
-## 📬 Autor
-
-**Hirlei Carlos**
-
-Desenvolvedor Full Stack Sênior, com foco em PHP, Joomla, sistemas corporativos e arquitetura web.
-
----
-
-© 2026 — Hirlei Carlos  
-Template Joomla HC Carlix — estrutura própria, nativa e preparada para evolução.
+© 2026 — Hirlei Carlos<br>
+Desenvolvedor Full Stack Sênior | PHP & Joomla | Sistemas Corporativos | Docker | Governo e Educação
