@@ -79,6 +79,7 @@ tpl_hc_carlix/
 ├── offline.php                            ← Página offline/manutenção
 ├── LICENSE                                ← Licença GPL
 ├── README.md                              ← Documentação do projeto
+├── build_template_zip.py                  ← Geração limpa do ZIP do template
 │
 ├── field/
 │   └── layoutmanager.php                  ← Campo customizado do Layout Manager
@@ -131,7 +132,9 @@ tpl_hc_carlix/
     └── images/
         ├── hc-carlix_logo.webp            ← Logo padrão
         ├── hc-carlix_retina.webp          ← Logo retina
-        └── hc-carlix_icon.webp            ← Favicon/ícone padrão
+        ├── hc-carlix_icon.webp            ← Favicon/ícone padrão
+        ├── template_preview.png           ← Prévia exibida no administrator Joomla
+        └── template_thumbnail.png         ← Miniatura exibida no administrator Joomla
 ```
 
 ---
@@ -1104,6 +1107,20 @@ O pacote ZIP e a instalação/atualização do template ficam a cargo do mantene
 
 O desenvolvimento deve evitar alterações diretas no core do Joomla. Quando houver ajuste emergencial no runtime de teste, ele deve ser refletido no projeto fonte.
 
+### GitHub Desktop no Windows + WSL
+
+Para adicionar este repositório local no GitHub Desktop, use `File` → `Add local repository` e informe:
+
+```text
+\\wsl.localhost\Ubuntu\home\hirleicarlos\projetos\meg-load\tpl_hc_carlix
+```
+
+Se o GitHub Desktop avisar que o repositório pertence a outro usuário, marque a pasta como segura no Git do Windows:
+
+```powershell
+git config --global --add safe.directory '//wsl.localhost/Ubuntu/home/hirleicarlos/projetos/meg-load/tpl_hc_carlix'
+```
+
 ---
 
 ## 📦 Empacotamento
@@ -1114,7 +1131,7 @@ Versão pública atual:
 1.2.1
 ```
 
-Para instalar como template direto, o `templateDetails.xml` precisa ficar na raiz do ZIP. Entre na pasta do template e compacte o conteudo dela, sem colocar a pasta `tpl_hc_carlix/` como primeiro nivel do arquivo.
+Para instalar como template direto, o `templateDetails.xml` precisa ficar na raiz do ZIP. Entre na pasta do template e compacte o conteúdo dela, sem colocar a pasta `tpl_hc_carlix/` como primeiro nível do arquivo.
 
 Exemplo de ZIP manual do template:
 
