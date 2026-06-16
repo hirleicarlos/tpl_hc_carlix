@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="template" client="site" method="upgrade">
 	<name>hc_carlix</name>
-	<creationDate>2026-05-15</creationDate>
+	<creationDate>2026-06-16</creationDate>
 	<author>Hirlei Carlos</author>
 	<authorEmail>noreply@example.com</authorEmail>
 	<authorUrl>https://example.com</authorUrl>
 	<copyright>Copyright (C) 2026 Hirlei Carlos. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE</license>
-	<version>1.2.1</version>
+	<version>1.2.2</version>
 	<description>HC Carlix - Template Joomla 6.x leve, sem Bootstrap/jQuery, grid de 12 colunas, fontes self-hosted.</description>
 
 	<inheritable>1</inheritable>

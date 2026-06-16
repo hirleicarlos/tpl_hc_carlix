@@ -11,7 +11,7 @@
  *
  * @package     HC.Carlix
  * @subpackage  Templates.hc_carlix
- * @version     1.2.1
+ * @version     1.2.2
  *
  * @copyright   Copyright (C) 2026 Hirlei Carlos. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE

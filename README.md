@@ -5,7 +5,7 @@
 ![PHP](https://img.shields.io/badge/PHP-8.3%2B-blue)
 ![CSS](https://img.shields.io/badge/CSS-Nativo%20%7C%20Custom%20Properties-red)
 ![JS](https://img.shields.io/badge/JS-Vanilla-black)
-![Version](https://img.shields.io/badge/version-1.2.1-blue)
+![Version](https://img.shields.io/badge/version-1.2.2-blue)
 ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-green)
 
 ---
@@ -343,7 +343,7 @@ As ações de JSON ficam em uma modal acessada pelo botão `Ferramentas` no topo
 
 ### Validações e avisos
 
-A fase atual pós-`1.2.1` mantém os avisos em painel recolhível e documenta o ajuste fino do SITE, menu e salvamento compacto.
+A fase atual `1.2.2` registra a instalação direta do template, mantém os avisos em painel recolhível e documenta o preview/thumbnail usado pelo Joomla.
 
 | Recurso | Comportamento |
 |--------|---------------|
@@ -989,7 +989,7 @@ Todos os assets são declarados em `joomla.asset.json`.
 
 | Asset | Arquivo | Versão atual |
 |------|---------|--------------|
-| `template.hc_carlix.variables` | `variables.css` | `1.2.1` |
+| `template.hc_carlix.variables` | `variables.css` | `1.2.2` |
 | `template.hc_carlix.grid` | `grid.css` | `1.0.1` |
 | `template.hc_carlix.template` | `template.css` | `1.0.29` |
 | `template.hc_carlix.utilities` | `utilities.css` | `1.0.1` |
@@ -1008,8 +1008,8 @@ Todos os assets são declarados em `joomla.asset.json`.
 
 | Tipo | Valor |
 |-----|-------|
-| Versão pública do template | `1.2.1` |
-| Estado da documentação | `1.2.2-dev` |
+| Versão pública do template | `1.2.2` |
+| Estado da documentação | `1.2.2` |
 | Versões de assets | controle interno de cache |
 
 O template só deve mudar de versão pública quando for decidido publicar uma nova versão. Alterações em CSS/JS podem subir versões individuais no `joomla.asset.json` para forçar atualização de cache.
@@ -1128,7 +1128,7 @@ git config --global --add safe.directory '//wsl.localhost/Ubuntu/home/hirleicarl
 Versão pública atual:
 
 ```text
-1.2.1
+1.2.2
 ```
 
 Para instalar como template direto, o `templateDetails.xml` precisa ficar na raiz do ZIP. Entre na pasta do template e compacte o conteúdo dela, sem colocar a pasta `tpl_hc_carlix/` como primeiro nível do arquivo.
@@ -1137,7 +1137,7 @@ Exemplo de ZIP manual do template:
 
 ```bash
 cd ~/projetos/meg-load/tpl_hc_carlix
-zip -r ../tpl_hc_carlix-1.2.1.zip . \
+zip -r ../tpl_hc_carlix-1.2.2.zip . \
   -x ".git/*" \
   -x ".idea/*" \
   -x "tpl_hc_carlix.zip" \
@@ -1182,7 +1182,7 @@ Sistema → Estilos do site → HC Carlix
 | Criar posição `offcanvas` | Permite testar módulos dentro do menu mobile |
 | Concentrar seções no Layout Manager | Evita abas duplicadas e coloca a configuração visual no item certo |
 | Usar espaçamentos por device | Desktop, tablet e mobile podem ser diferentes dentro do layout |
-| Atualizar documentação pós-`1.2.1` | SITE global completo, JSON compacto, menu semântico e hamburguer em coluna própria |
+| Registrar versão `1.2.2` | Instalação direta do template, preview/thumbnail no Joomla e remoção do fluxo de pacote |
 | Escapar tags nas descrições `.ini` | Evita quebrar o formulário do administrator |
 | Manter skip link semântico | Link de acessibilidade fica visualmente oculto até receber foco |
 | Evitar offcanvas para submenu desktop | Dropdown desktop precisa permanecer aparente e acima do conteúdo |
