@@ -5,7 +5,7 @@
 ![PHP](https://img.shields.io/badge/PHP-8.3%2B-blue)
 ![CSS](https://img.shields.io/badge/CSS-Nativo%20%7C%20Custom%20Properties-red)
 ![JS](https://img.shields.io/badge/JS-Vanilla-black)
-![Version](https://img.shields.io/badge/version-1.2.2-blue)
+![Version](https://img.shields.io/badge/version-1.3.0-blue)
 ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-green)
 
 ---
@@ -23,6 +23,7 @@ O objetivo do projeto é criar um template limpo, sem dependência de framework 
 - 📚 overrides Joomla preparados para evolução
 - 🎨 CSS separado por responsabilidade
 - 🧠 HTML semântico para facilitar futuros overrides de componentes
+- Font Awesome Free local, sem CDN e registrado pelo Web Asset Manager
 - ⚙ Web Asset Manager do Joomla para carregar CSS/JS corretamente
 
 O projeto separa completamente:
@@ -129,12 +130,15 @@ tpl_hc_carlix/
     │   ├── inter.woff2                    ← Fonte de corpo/UI
     │   └── roboto.woff2                   ← Fonte de títulos
     │
-    └── images/
-        ├── hc-carlix_logo.webp            ← Logo padrão
-        ├── hc-carlix_retina.webp          ← Logo retina
-        ├── hc-carlix_icon.webp            ← Favicon/ícone padrão
-        ├── template_preview.png           ← Prévia exibida no administrator Joomla
-        └── template_thumbnail.png         ← Miniatura exibida no administrator Joomla
+    ├── images/
+    │   ├── hc-carlix_logo.webp            ← Logo padrão
+    │   ├── hc-carlix_retina.webp          ← Logo retina
+    │   ├── hc-carlix_icon.webp            ← Favicon/ícone padrão
+    │   ├── template_preview.png           ← Prévia exibida no administrator Joomla
+    │   └── template_thumbnail.png         ← Miniatura exibida no administrator Joomla
+    │
+    └── vendor/
+        └── fontawesome/                   ← Font Awesome Free local
 ```
 
 ---
@@ -343,7 +347,7 @@ As ações de JSON ficam em uma modal acessada pelo botão `Ferramentas` no topo
 
 ### Validações e avisos
 
-A fase atual `1.2.2` registra a instalação direta do template, mantém os avisos em painel recolhível e documenta o preview/thumbnail usado pelo Joomla.
+A fase atual `1.3.0` registra a instalação direta do template, mantém os avisos em painel recolhível, documenta o preview/thumbnail usado pelo Joomla e adiciona ícones locais via Font Awesome Free.
 
 | Recurso | Comportamento |
 |--------|---------------|
@@ -989,12 +993,17 @@ Todos os assets são declarados em `joomla.asset.json`.
 
 | Asset | Arquivo | Versão atual |
 |------|---------|--------------|
-| `template.hc_carlix.variables` | `variables.css` | `1.2.2` |
+| `template.hc_carlix.fontawesome.core` | `vendor/fontawesome/css/fontawesome.min.css` | `7.2.0` |
+| `template.hc_carlix.fontawesome.solid` | `vendor/fontawesome/css/solid.min.css` | `7.2.0` |
+| `template.hc_carlix.fontawesome.regular` | `vendor/fontawesome/css/regular.min.css` | `7.2.0` |
+| `template.hc_carlix.fontawesome.brands` | `vendor/fontawesome/css/brands.min.css` | `7.2.0` |
+| `template.hc_carlix.icons` | `icons.css` | `1.0.1` |
+| `template.hc_carlix.variables` | `variables.css` | `1.3.0` |
 | `template.hc_carlix.grid` | `grid.css` | `1.0.1` |
 | `template.hc_carlix.template` | `template.css` | `1.0.29` |
 | `template.hc_carlix.utilities` | `utilities.css` | `1.0.1` |
 | `template.hc_carlix.buttons` | `buttons.css` | `1.0.1` |
-| `template.hc_carlix.forms` | `forms.css` | `1.0.1` |
+| `template.hc_carlix.forms` | `forms.css` | `1.0.2` |
 | `template.hc_carlix.elements` | `elements.css` | `1.0.0` |
 | `template.hc_carlix.breadcrumbs` | `breadcrumbs.css` | `1.0.1` |
 | `template.hc_carlix.hero` | `hero.css` | `1.0.0` |
@@ -1008,13 +1017,55 @@ Todos os assets são declarados em `joomla.asset.json`.
 
 | Tipo | Valor |
 |-----|-------|
-| Versão pública do template | `1.2.2` |
-| Estado da documentação | `1.2.2` |
+| Versão pública do template | `1.3.0` |
+| Estado da documentação | `1.3.0` |
 | Versões de assets | controle interno de cache |
 
 O template só deve mudar de versão pública quando for decidido publicar uma nova versão. Alterações em CSS/JS podem subir versões individuais no `joomla.asset.json` para forçar atualização de cache.
 
 O `index.php` também contém um bloco mínimo de CSS crítico para header/menu. Ele existe para proteger o frontend quando uma instalação de teste ainda entrega `template.css` ou `menu.css` antigos pelo cache do Joomla/navegador. A fonte de verdade continua nos arquivos CSS do template.
+
+---
+
+## Font Awesome Free
+
+O template inclui Font Awesome Free localmente para permitir ícones consistentes
+em módulos, artigos, overrides e futuros componentes, sem CDN e sem depender de
+conexão externa em runtime.
+
+Estrutura usada:
+
+```text
+media/vendor/fontawesome/
+|-- css/
+|-- webfonts/
+`-- LICENSE.txt
+```
+
+O carregamento global é feito pelo Web Asset Manager em `index.php`,
+`component.php` e `offline.php`, usando o asset `template.hc_carlix.icons`.
+Esse asset carrega o Font Awesome Free por dependência e também ativa a
+compatibilidade com classes `icon-*` emitidas pelo Joomla core.
+
+Exemplos:
+
+```html
+<i class="fa-solid fa-house" aria-hidden="true"></i>
+<i class="fa-solid fa-gear" aria-hidden="true"></i>
+<i class="fa-solid fa-user" aria-hidden="true"></i>
+<i class="fa-solid fa-bars" aria-hidden="true"></i>
+<i class="fa-brands fa-github" aria-hidden="true"></i>
+<i class="fa-brands fa-joomla" aria-hidden="true"></i>
+```
+
+HTML original do Joomla também funciona sem override:
+
+```html
+<span class="icon-user icon-fw" aria-hidden="true"></span>
+<span class="icon-eye icon-fw" aria-hidden="true"></span>
+```
+
+Guia completo de manutenção: [`docs/fontawesome.md`](docs/fontawesome.md).
 
 ---
 
@@ -1128,7 +1179,7 @@ git config --global --add safe.directory '//wsl.localhost/Ubuntu/home/hirleicarl
 Versão pública atual:
 
 ```text
-1.2.2
+1.3.0
 ```
 
 Para instalar como template direto, o `templateDetails.xml` precisa ficar na raiz do ZIP. Entre na pasta do template e compacte o conteúdo dela, sem colocar a pasta `tpl_hc_carlix/` como primeiro nível do arquivo.
@@ -1137,7 +1188,7 @@ Exemplo de ZIP manual do template:
 
 ```bash
 cd ~/projetos/meg-load/tpl_hc_carlix
-zip -r ../tpl_hc_carlix-1.2.2.zip . \
+zip -r ../tpl_hc_carlix-1.3.0.zip . \
   -x ".git/*" \
   -x ".idea/*" \
   -x "tpl_hc_carlix.zip" \
@@ -1182,7 +1233,7 @@ Sistema → Estilos do site → HC Carlix
 | Criar posição `offcanvas` | Permite testar módulos dentro do menu mobile |
 | Concentrar seções no Layout Manager | Evita abas duplicadas e coloca a configuração visual no item certo |
 | Usar espaçamentos por device | Desktop, tablet e mobile podem ser diferentes dentro do layout |
-| Registrar versão `1.2.2` | Instalação direta do template, preview/thumbnail no Joomla e remoção do fluxo de pacote |
+| Registrar versão `1.3.0` | Instalação direta do template, preview/thumbnail no Joomla, Font Awesome Free local e compatibilidade `icon-*` |
 | Escapar tags nas descrições `.ini` | Evita quebrar o formulário do administrator |
 | Manter skip link semântico | Link de acessibilidade fica visualmente oculto até receber foco |
 | Evitar offcanvas para submenu desktop | Dropdown desktop precisa permanecer aparente e acima do conteúdo |

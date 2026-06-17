@@ -21,7 +21,8 @@ use Joomla\CMS\Document\HtmlDocument;
 /** @var HtmlDocument $this */
 
 $wa = $this->getWebAssetManager();
-$wa->useStyle('template.hc_carlix.template');
+$wa->useStyle('template.hc_carlix.icons')
+   ->useStyle('template.hc_carlix.template');
 
 $this->setMetaData('robots', 'noindex,nofollow');
 $this->setMetaData('viewport', 'width=device-width, initial-scale=1');

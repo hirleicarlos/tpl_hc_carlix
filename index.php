@@ -11,7 +11,7 @@
  *
  * @package     HC.Carlix
  * @subpackage  Templates.hc_carlix
- * @version     1.2.2
+ * @version     1.3.0
  *
  * @copyright   Copyright (C) 2026 Hirlei Carlos. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
@@ -651,7 +651,8 @@ $twitterCard    = in_array($twitterCard, ['summary_large_image', 'summary'], tru
 $schemaJsonLd   = trim((string) $params->get('schemaJsonLd', ''));
 
 /* CSS/JS: camadas separadas por responsabilidade. */
-$wa->useStyle('template.hc_carlix.variables')
+$wa->useStyle('template.hc_carlix.icons')
+   ->useStyle('template.hc_carlix.variables')
    ->useStyle('template.hc_carlix.grid')
    ->useStyle('template.hc_carlix.template')
    ->useStyle('template.hc_carlix.utilities')

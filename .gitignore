@@ -1,45 +1,51 @@
 # ============================================================
-# HC Carlix Template — .gitignore
+# HC Carlix Template - rastrear somente o pacote instalavel
 # ============================================================
 
-# ---------- IDEs / Editores ----------
-.idea/
-.vscode/
-.claude/
-*.iml
-*.sublime-project
-*.sublime-workspace
-.project
-.settings/
-.buildpath
-nbproject/
-.history/
+# Ignora tudo por padrao. O repositorio deve conter apenas o que entra
+# na instalacao do template Joomla, alem deste arquivo de controle.
+*
 
-# ---------- Agentes locais ----------
-AGENTS.md
-CLAUDE.md
-CODEX.md
-SKILL.md
+# Controle do proprio repositorio
+!.gitignore
+!README.md
 
-# ---------- Sistema Operacional ----------
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
-Desktop.ini
-$RECYCLE.BIN/
-*.lnk
+# Arquivos raiz instalaveis
+!LICENSE
+!component.php
+!error.php
+!index.php
+!joomla.asset.json
+!offline.php
+!templateDetails.xml
 
-# ---------- Logs / Temporários ----------
+# Idiomas instalaveis
+!en-GB.tpl_hc_carlix.ini
+!en-GB.tpl_hc_carlix.sys.ini
+!pt-BR.tpl_hc_carlix.ini
+!pt-BR.tpl_hc_carlix.sys.ini
+
+# Campos, overrides e layouts instalaveis
+!field/
+!field/**
+!html/
+!html/**
+
+# Media instalado pelo manifest
+!media/
+!media/css/
+!media/css/**
+!media/fonts/
+!media/fonts/**
+!media/images/
+!media/images/**
+!media/js/
+!media/js/**
+!media/vendor/
+!media/vendor/**
+
+# Nunca versionar artefatos locais mesmo dentro de pastas liberadas
 *.log
-npm-debug.log*
-yarn-debug.log*
-pnpm-debug.log*
 *.tmp
 *.temp
 *.bak
@@ -48,23 +54,8 @@ pnpm-debug.log*
 *.swp
 *.swo
 *~
-.~lock.*
-
-# ---------- Dependências (caso adicione futuramente) ----------
-node_modules/
-vendor/
-composer.lock
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
-
-# ---------- Builds e distribuição ----------
-dist/
-build/
-release/
-releases/
-packages/
-pkg/
+*.css.map
+*.js.map
 *.zip
 *.tar
 *.tar.gz
@@ -73,46 +64,7 @@ pkg/
 *.7z
 *.jpa
 *.jps
-tpl_hc_carlix.zip
-tpl_hc_carlix-*.zip
-
-# ---------- Cache / Build de assets ----------
-.cache/
-.parcel-cache/
-.sass-cache/
-.tmp/
-*.css.map
-*.js.map
-
-# ---------- Configuração local sensível ----------
-.env
-.env.local
-.env.*.local
-*.local
-
-# ---------- Cobertura de testes ----------
-coverage/
-.phpunit.result.cache
-.phpunit.cache/
-phpunit.xml
-.php-cs-fixer.cache
-.phpcs-cache
-
-# ---------- Documentação gerada ----------
-docs/_build/
-phpdoc-cache/
-layout-manager-test.png
-*-test.png
-
-# ---------- Joomla artifacts (caso o repo seja testado dentro de uma instalação) ----------
-configuration.php
-administrator/cache/
-administrator/logs/
-cache/
-tmp/
-logs/
-installation/
-
-# ---------- Mantém estes mesmo sendo "vazios" ----------
-!html/.gitkeep
-!media/images/.gitkeep
+__pycache__/
+.DS_Store
+Thumbs.db
+Desktop.ini

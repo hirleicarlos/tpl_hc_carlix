@@ -1,15 +1,59 @@
 {
 	"$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
 	"name": "hc_carlix",
-	"version": "1.2.2",
+	"version": "1.3.0",
 	"description": "HC Carlix Template Web Assets",
 	"license": "GPL-2.0-or-later",
 	"assets": [
 		{
+			"name": "template.hc_carlix.fontawesome.core",
+			"type": "style",
+			"uri": "../vendor/fontawesome/css/fontawesome.min.css",
+			"version": "7.2.0"
+		},
+		{
+			"name": "template.hc_carlix.fontawesome.solid",
+			"type": "style",
+			"uri": "../vendor/fontawesome/css/solid.min.css",
+			"version": "7.2.0",
+			"dependencies": [
+				"template.hc_carlix.fontawesome.core"
+			]
+		},
+		{
+			"name": "template.hc_carlix.fontawesome.regular",
+			"type": "style",
+			"uri": "../vendor/fontawesome/css/regular.min.css",
+			"version": "7.2.0",
+			"dependencies": [
+				"template.hc_carlix.fontawesome.core"
+			]
+		},
+		{
+			"name": "template.hc_carlix.fontawesome.brands",
+			"type": "style",
+			"uri": "../vendor/fontawesome/css/brands.min.css",
+			"version": "7.2.0",
+			"dependencies": [
+				"template.hc_carlix.fontawesome.core"
+			]
+		},
+		{
+			"name": "template.hc_carlix.icons",
+			"type": "style",
+			"uri": "icons.css",
+			"version": "1.0.1",
+			"dependencies": [
+				"template.hc_carlix.fontawesome.solid",
+				"template.hc_carlix.fontawesome.regular",
+				"template.hc_carlix.fontawesome.brands"
+			]
+		},
+		{
 			"name": "template.hc_carlix.variables",
 			"type": "style",
 			"uri": "variables.css",
-			"version": "1.2.2"
+			"version": "1.3.0"
 		},
 		{
 			"name": "template.hc_carlix.grid",
@@ -60,7 +104,7 @@
 			"name": "template.hc_carlix.forms",
 			"type": "style",
 			"uri": "forms.css",
-			"version": "1.0.1",
+			"version": "1.0.2",
 			"dependencies": [
 				"template.hc_carlix.buttons"
 			]

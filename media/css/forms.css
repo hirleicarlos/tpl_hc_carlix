@@ -198,6 +198,9 @@ input[type="radio"] {
 .input-group-text {
 	display: inline-flex;
 	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	min-width: 2.75rem;
 	min-height: 2.5rem;
 	padding: 0.55rem 0.75rem;
 	color: var(--carlix-muted);
@@ -205,6 +208,25 @@ input[type="radio"] {
 	border: 1px solid var(--carlix-border);
 	border-radius: var(--carlix-radius);
 	font-weight: 700;
+}
+
+.input-password-toggle {
+	--btn-bg: #f7f8fa;
+	--btn-border: var(--carlix-border);
+	--btn-color: var(--carlix-muted);
+	--btn-hover-bg: #eef2f5;
+	--btn-hover-border: #d9e1e8;
+	--btn-hover-color: var(--carlix-heading);
+
+	flex: 0 0 auto;
+	width: 2.75rem;
+	min-width: 2.75rem;
+	padding-inline: 0.65rem;
+}
+
+.input-group-text > :where([class^="icon-"], [class*=" icon-"]),
+.input-password-toggle > :where([class^="icon-"], [class*=" icon-"]) {
+	font-size: 1rem;
 }
 
 .mod-login,
