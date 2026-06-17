@@ -1,18 +1,18 @@
-# 🎨 HC Carlix — Template Joomla 6 Nativo & Estrutura Base de Layout
+# 🎨 HC Carlix — Template Joomla 5/6 Nativo & Estrutura Base de Layout
 
 ![Status](https://img.shields.io/badge/status-ativo-success)
-![Joomla](https://img.shields.io/badge/Joomla-6.x-orange)
+![Joomla](https://img.shields.io/badge/Joomla-5.x%20%7C%206.x-orange)
 ![PHP](https://img.shields.io/badge/PHP-8.3%2B-blue)
 ![CSS](https://img.shields.io/badge/CSS-Nativo%20%7C%20Custom%20Properties-red)
 ![JS](https://img.shields.io/badge/JS-Vanilla-black)
 ![Version](https://img.shields.io/badge/version-1.3.0-blue)
-![License](https://img.shields.io/badge/license-GPL--2.0--or--later-green)
+![License](https://img.shields.io/badge/license-GPL--3.0--or--later-green)
 
 ---
 
 ## 📌 Visão Geral
 
-Este repositório contém o template **HC Carlix** para Joomla, construído como uma base própria, nativa e controlável para Joomla 6.
+Este repositório contém o template **HC Carlix** para Joomla 5 e 6, construído como uma base própria, nativa e controlável.
 
 O objetivo do projeto é criar um template limpo, sem dependência de framework visual externo, usando ao máximo a estrutura real do Joomla:
 
@@ -78,7 +78,7 @@ tpl_hc_carlix/
 ├── component.php                          ← Layout component-only
 ├── error.php                              ← Página de erro
 ├── offline.php                            ← Página offline/manutenção
-├── LICENSE                                ← Licença GPL
+├── LICENSE                                ← Licença GPL-3.0-or-later
 ├── README.md                              ← Documentação do projeto
 │
 ├── field/
@@ -114,6 +114,7 @@ tpl_hc_carlix/
     │   ├── utilities.css                  ← Utilitários gerais
     │   ├── buttons.css                    ← Botões estilo Bootstrap-like
     │   ├── forms.css                      ← Formulários Joomla/HTML
+    │   ├── icons.css                      ← Compatibilidade icon-* e Font Awesome
     │   ├── elements.css                   ← Listas, tabelas, alertas, paginação
     │   ├── breadcrumbs.css                ← Breadcrumbs
     │   ├── hero.css                       ← Banners/heros
@@ -138,6 +139,9 @@ tpl_hc_carlix/
     │
     └── vendor/
         └── fontawesome/                   ← Font Awesome Free local
+            ├── css/                       ← CSS oficial minificado
+            ├── webfonts/                  ← Webfonts WOFF2 usados pelos estilos
+            └── LICENSE.txt                ← Licença própria do Font Awesome Free
 ```
 
 ---
@@ -441,7 +445,7 @@ Esse recurso ajuda a testar variações sem transformar o template em construtor
 
 ## 🧭 Sistema de Menu
 
-O menu foi uma das primeiras áreas ajustadas, porque o Joomla 6 mudou detalhes do `mod_menu` e o template precisava controlar o layout sem depender do Cassiopeia/Bootstrap.
+O menu foi uma das primeiras áreas ajustadas, porque o template precisava controlar o layout do `mod_menu` sem depender do Cassiopeia/Bootstrap.
 
 ### Override de `mod_menu`
 
@@ -1064,8 +1068,6 @@ HTML original do Joomla também funciona sem override:
 <span class="icon-eye icon-fw" aria-hidden="true"></span>
 ```
 
-Guia completo de manutenção: [`docs/fontawesome.md`](docs/fontawesome.md).
-
 ---
 
 ## 🧠 Decisões Técnicas Já Tomadas
@@ -1117,6 +1119,16 @@ Resultado:
 - `Salvar & Fechar` voltou a funcionar
 - `Fechar` voltou a funcionar
 - formulário voltou a conter `[name="task"]`
+
+---
+
+## Licença
+
+O template **HC Carlix** é distribuído sob `GPL-3.0-or-later`, conforme o arquivo
+`LICENSE` incluído na raiz do projeto.
+
+O **Font Awesome Free** é incluído localmente em `media/vendor/fontawesome/` e
+mantém sua própria licença em `media/vendor/fontawesome/LICENSE.txt`.
 
 ---
 

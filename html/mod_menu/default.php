@@ -10,7 +10,7 @@
  * @subpackage  Templates.hc_carlix.mod_menu
  *
  * @copyright   Copyright (C) 2026 Hirlei Carlos. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE
+ * @license     GNU General Public License version 3 or later; see LICENSE
  */
 
 \defined('_JEXEC') or die;
